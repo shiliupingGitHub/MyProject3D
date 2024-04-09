@@ -1,0 +1,1 @@
+{"bkId":1,"actors":[{"x":6,"y":4,"id":1,"fieldData":[{"fieldName":"p1","fieldValue":"3"},{"fieldName":"P4","fieldValue":"True"}]},{"x":4,"y":4,"id":1,"fieldData":[]}],"timeEvents":[{"name":"test","actions":[{"data":"","name":"testaction","type":0}],"time":0.0}],"systemEvents":[],"customEvents":[],"BaseSetting":{"fightStartTime":10.0}}

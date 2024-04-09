@@ -1,0 +1,4 @@
+int,string,Vector2Int[],int,string
+id,path,area,isBlock,name
+id±àºÅ,Â·¾¶,ÇøÓò,ÊÇ·ñ×èµ²,Ãû×Ö
+1,Assets/Game/Res/Home/TestHomeActor.asset,,,²âÊÔactor1
