@@ -186,18 +186,32 @@ namespace Game.Script.UI.Frames
                         {
                             if (null != _curMapData && null != Camera.main)
                             {
-                                var worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                                _curMapData.RemoveActor(worldPosition);
+                                var layer = LayerMask.NameToLayer("LandScape");
+                                var ray= Camera.main.ScreenPointToRay(Input.mousePosition);
+                                if (Physics.Raycast(ray, out var hitInfo, float.MaxValue, 1 << layer))
+                                {
+                                    _curMapData.RemoveActor(hitInfo.point);
+                                }
+                               
                             }
                         }
                         else if (Input.GetKey(KeyCode.LeftAlt))
                         {
                             if (null != _curMapData && null != Camera.main)
                             {
-                                var worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                                var actorData = _curMapData.GetActorData(worldPosition);
-                                var frame = UIManager.Instance.Show<ActorDataEditFrame>();
-                                frame.CurActorData = actorData;
+                                var layer = LayerMask.NameToLayer("LandScape");
+                                var ray= Camera.main.ScreenPointToRay(Input.mousePosition);
+                                if (Physics.Raycast(ray, out var hitInfo, float.MaxValue, 1 << layer))
+                                {
+                                    var actorData = _curMapData.GetActorData(hitInfo.point);
+                                    if (null != actorData)
+                                    {
+                                        var frame = UIManager.Instance.Show<ActorDataEditFrame>();
+                                        frame.CurActorData = actorData;
+                                    }
+                                    
+                                }
+                               
                             }
                         }
                     }
