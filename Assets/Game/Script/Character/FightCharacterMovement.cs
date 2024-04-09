@@ -34,9 +34,10 @@ namespace Game.Script.Character
             var virtualCameraTemplate = GameResMgr.Instance.LoadAssetSync<GameObject>("Assets/Game/Res/Player/CameraSetting.prefab");
             var virtualCameraGo = Object.Instantiate(virtualCameraTemplate);
             var brainTransform = virtualCameraGo.transform.Find("CinemachineBrain");
-            _cinemachineBrain = virtualCameraGo.GetComponent<CinemachineBrain>();
-            var cinemachineConfiner = virtualCameraGo.GetComponent<CinemachineConfiner>();
-            _cinemachineVirtualCamera = virtualCameraGo.transform.Find("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
+            _cinemachineBrain = brainTransform.GetComponent<CinemachineBrain>();
+            var vTr = virtualCameraGo.transform.Find("VirtualCamera");
+            var cinemachineConfiner = vTr.GetComponent<CinemachineConfiner>();
+            _cinemachineVirtualCamera = vTr.GetComponent<CinemachineVirtualCamera>();
             _cinemachineVirtualCamera.Follow = transform;
             _cinemachineVirtualCamera.LookAt = transform;
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
