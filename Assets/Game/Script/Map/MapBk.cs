@@ -16,7 +16,7 @@ namespace Game.Script.Map
         [Label("x方向格子大小")] public float xGridSize = 1;
         [Label("Z方向格子大小")] public float zGridSize = 1;
         public List<int> blocks = new();
-        
+
         (int, int) GetGrid(Vector3 worldPosition)
         {
             Vector3 relative = worldPosition - Offset;
@@ -43,7 +43,7 @@ namespace Game.Script.Map
                 return Vector3.zero;
             }
 
-            var ( gridX,  gridZ) = GetGrid(worldPosition);
+            var (gridX, gridZ) = GetGrid(worldPosition);
             Vector3 ret = transform.position;
 
             ret += new Vector3(gridX * xGridSize, 0, gridZ * zGridSize);
@@ -66,6 +66,7 @@ namespace Game.Script.Map
             {
                 return;
             }
+
             blocks.Add(data);
         }
 
@@ -73,41 +74,41 @@ namespace Game.Script.Map
         {
             int retX = 0;
             int retZ = 0;
-            
+
             retX = data >> 16;
             retZ = data & 0xFFFF;
-            
+
             return (retX, retZ);
         }
-        
+
 
         [ContextMenu("生成阻挡")]
         public void GenerateObstacle()
         {
             blocks.Clear();
-            var pathBlocks = transform.GetComponentsInChildren<PathBlock>();
-            foreach (var pathBlock in pathBlocks)
+
+            var colliders = GetComponentsInChildren<Collider>();
+            foreach (var collider in colliders)
             {
-                var colliders = pathBlock.GetComponentsInChildren<Collider>();
-                foreach (var collider in colliders)
+                if (collider.gameObject.layer != LayerMask.NameToLayer("Default"))
+                    continue;
+                
+                var min = collider.bounds.min;
+                var max = collider.bounds.max;
+
+                int xStep = Mathf.CeilToInt((max.x - min.x) / xGridSize);
+                int zStep = Mathf.CeilToInt((max.z - min.z) / zGridSize);
+                var (x, z) = GetGrid(min);
+                for (int i = 0; i < xStep; i++)
                 {
-                    var min = collider.bounds.min;
-                    var max = collider.bounds.max;
-                    
-                    int xStep = Mathf.CeilToInt((max.x - min.x) / xGridSize);
-                    int zStep = Mathf.CeilToInt((max.z - min.z) / zGridSize);
-                    var (x, z) = GetGrid(min);
-                    for (int i = 0; i < xStep; i++)
+                    for (int j = 0; j < zStep; j++)
                     {
-                        for (int j = 0; j < zStep; j++)
-                        {
-                           AddBlock( (ushort)(x + i), (ushort)(z+j));
-                        }
+                        AddBlock((ushort)(x + i), (ushort)(z + j));
                     }
-                    AddBlock((ushort)x, (ushort)z);
                 }
+
+                AddBlock((ushort)x, (ushort)z);
             }
-            
         }
 
 
