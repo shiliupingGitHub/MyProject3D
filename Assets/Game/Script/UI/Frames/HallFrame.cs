@@ -33,16 +33,16 @@ namespace Game.Script.UI.Frames
             {
                 var levelSubsystem = Common.Game.Instance.GetSubsystem<LevelSubsystem>();
                 var networkSubsystem = Common.Game.Instance.GetSubsystem<NetworkSubsystem>();
-                networkSubsystem.LoadNetWorkManager();
+                networkSubsystem.LoadNetWorkManager(GameMode.Host);
                 Common.Game.Instance.Mode = GameMode.Host;
-                Common.Game.Instance.FightMap = "map_test_1";
+                Common.Game.Instance.LoadMapName = "map_test_1";
                 NetworkManager.singleton.networkAddress = "localhost";
                 levelSubsystem.Enter(LevelType.Fight);
             });
             _btnJoin.onClick.AddListener(() =>
             {
                 var networkSubsystem = Common.Game.Instance.GetSubsystem<NetworkSubsystem>();
-                networkSubsystem.LoadNetWorkManager();
+                networkSubsystem.LoadNetWorkManager(GameMode.Client);
                 NetworkManager.singleton.networkAddress = !string.IsNullOrEmpty(_inputIp.text) ? _inputIp.text : "localhost";
                 Common.Game.Instance.Mode = GameMode.Client;
                 var levelSubsystem = Common.Game.Instance.GetSubsystem<LevelSubsystem>();

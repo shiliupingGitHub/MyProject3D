@@ -3,6 +3,7 @@ using Game.Script.Common;
 using Game.Script.Subsystem;
 using Game.Script.UI;
 using Game.Script.UI.Frames;
+using Mirror;
 using UnityEngine.SceneManagement;
 
 namespace Game.Script.Level
@@ -14,25 +15,14 @@ namespace Game.Script.Level
         public override void Enter()
         {
             base.Enter();
-            SceneManager.sceneUnloaded += OnLoadedScene;
-            SceneManager.LoadScene(SceneName);
+            var networkSubsystem = Common.Game.Instance.GetSubsystem<NetworkSubsystem>();
+            networkSubsystem.LoadNetWorkManager(GameMode.Home);
             Common.Game.Instance.Mode = GameMode.Home;
+            Common.Game.Instance.LoadMapName = "map_test_1";
+            NetworkManager.singleton.StartHost();
             UIManager.Instance.Show<HomeFrame>();
             
         }
-
-        void OnLoadedScene(Scene scene)
-        {
-            SceneManager.sceneUnloaded -= OnLoadedScene;
-            LoadComplete();
-            
-        }
-        async void LoadComplete()
-        {
-            await TimerSubsystem.Delay(1000);
-            UIManager.Instance.Hide<LoadingFrame>();
-            var homeSubsystem = Common.Game.Instance.GetSubsystem<HomeSubsystem>();
-            homeSubsystem.ShowHome();
-        }
+        
     }
 }

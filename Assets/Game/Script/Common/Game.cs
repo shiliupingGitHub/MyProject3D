@@ -25,7 +25,7 @@ namespace Game.Script.Common
         public System.Func<GameObject> serverFightNewPlayer;
         public GameMode Mode { set; get; } = GameMode.Host;
 
-        public string FightMap { get; set; }
+        public string LoadMapName { get; set; }
         public List<FightCharacter> Fights { get; } = new();
         private readonly Dictionary<System.Type, GameSubsystem> _subsystems = new();
         private readonly List<Pawn> _pawns = new();

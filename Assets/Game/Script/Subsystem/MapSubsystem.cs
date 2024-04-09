@@ -55,7 +55,7 @@ namespace Game.Script.Subsystem
             {
                 MapLoaded = true;
             });
-            eventSubsystem.Subscribe("serverFightSceneChanged", o => { LoadMap(Common.Game.Instance.FightMap, true); });
+            eventSubsystem.Subscribe("serverSceneChanged", o => { LoadMap(Common.Game.Instance.LoadMapName, true); });
             Common.Game.Instance.serverFightNewPlayer += () =>
             {
                 var bornPosition = GetRandomBornPosition();
@@ -113,11 +113,11 @@ namespace Game.Script.Subsystem
             return ret;
         }
 
-        bool IsFighting => Common.Game.Instance.Mode == GameMode.Client || Common.Game.Instance.Mode == GameMode.Host;
+        bool IsCanStart => Common.Game.Instance.Mode == GameMode.Client || Common.Game.Instance.Mode == GameMode.Host || Common.Game.Instance.Mode == GameMode.Home;
 
         void CheckMap()
         {
-            if (IsFighting)
+            if (IsCanStart)
             {
                 if (MapBk != null && Common.Game.Instance.MyController != null)
                 {

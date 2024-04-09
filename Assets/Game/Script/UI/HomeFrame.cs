@@ -1,5 +1,6 @@
 ﻿using Game.Script.Attribute;
 using Game.Script.Subsystem;
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,8 +18,7 @@ namespace Game.Script.UI
             
             _btnReturnHall.onClick.AddListener(() =>
             {
-                var levelSubsystem = Common.Game.Instance.GetSubsystem<LevelSubsystem>();
-                levelSubsystem.Enter(LevelType.Hall);
+                NetworkManager.singleton.StopHost();
             });
         }
     }

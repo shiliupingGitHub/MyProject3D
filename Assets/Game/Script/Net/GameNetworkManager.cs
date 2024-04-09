@@ -20,10 +20,10 @@ namespace Game.Script.Misc
         {
             base.OnServerSceneChanged(sceneName);
 
-            if (sceneName.Contains("Fight"))
+            if (sceneName == onlineScene)
             {
                 var eventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
-                eventSubsystem.Raise("serverFightSceneChanged");
+                eventSubsystem.Raise("serverSceneChanged");
             }
         }
 
