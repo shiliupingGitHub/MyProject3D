@@ -10,11 +10,9 @@ using UnityEngine;
 
 namespace Game.Script.Character
 {
-    [RequireComponent(typeof(Rigidbody2D))]
     public class AICharacter : Character
     {
- 
-
+        
         private GameBehaviorTree _gameBehaviorTree;
         public ExternalBehavior externalBehaviorTree;
         public GameBehaviorTree BehaviorTree => _gameBehaviorTree;

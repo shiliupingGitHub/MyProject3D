@@ -81,15 +81,15 @@ namespace Game.Script.Subsystem
             
         }
         
-        Vector3 ConvertPointToWorldPosition((int, int) p, Vector3 offset, float cellX, float cellY)
+        Vector3 ConvertPointToWorldPosition((int, int) p, Vector3 offset, float cellX, float cellZ)
         {
             Vector3 ret = offset;
             
             ret.x += cellX * 0.5f;
-            ret.y += cellY * 0.5f;
+            ret.z += cellZ * 0.5f;
 
             ret.x += p.Item1 * cellX;
-            ret.y += p.Item2 * cellY;
+            ret.z += p.Item2 * cellZ;
             
             
             return ret;
@@ -105,7 +105,7 @@ namespace Game.Script.Subsystem
             int num = Mathf.Min(PathNumPerFrame, _pathRequestList.Count);
             var offset = mapSubsystem.MapBk.Offset;
             var cellX =  mapSubsystem.MapBk.xGridSize;
-            var cellY =  mapSubsystem.MapBk.zGridSize;
+            var cellZ =  mapSubsystem.MapBk.zGridSize;
             if (num > 0)
             {
                 Parallel.For(0, num, (i, _) =>
@@ -120,7 +120,7 @@ namespace Game.Script.Subsystem
                         finalPath.Add(request.startPosition);
                         foreach (var p in path)
                         {
-                            var position = ConvertPointToWorldPosition(p, offset, cellX, cellY);
+                            var position = ConvertPointToWorldPosition(p, offset, cellX, cellZ);
                             finalPath.Add(position);
                         }
                         finalPath.Add(request.endPosition);

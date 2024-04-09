@@ -16,7 +16,7 @@ namespace Game.Script.Character
     public class AICharacterMovement : MonoBehaviour
     {
         public float moveSpeed = 0.5f;
-        private Rigidbody2D _rigidbody;
+        private CharacterController _characterController;
         public PathState CurPathState { get; set; } = PathState.None;
         private List<Vector3> _path;
         private int _curPathIndex = -1;
@@ -43,7 +43,7 @@ namespace Game.Script.Character
         private void Awake()
         {
             GameLoop.Add(OnUpdate);
-            _rigidbody = GetComponent<Rigidbody2D>();
+            _characterController = GetComponent<CharacterController>();
         }
 
         private void OnDestroy()
@@ -60,19 +60,18 @@ namespace Game.Script.Character
         {
             if (null == _path)
             {
-                _rigidbody.velocity = Vector3.zero;
+               
                 return;
             }
 
             if (_curPathIndex < 0)
             {
-                _rigidbody.velocity = Vector3.zero;
+             
                 return;
             }
 
             if (_curPathIndex >= _path.Count)
             {
-                _rigidbody.velocity = Vector3.zero;
                 CurPathState = PathState.Success;
 
                 _curPathIndex = -1;
@@ -87,21 +86,24 @@ namespace Game.Script.Character
             }
 
             var targetPosition = _path[_curPathIndex];
+            
             var curPosition = transform.position;
+            targetPosition.y = curPosition.y;
             var dir = targetPosition - curPosition;
 
             if (dir.sqrMagnitude < 0.1)
             {
-                _rigidbody.velocity = Vector3.zero;
+                
                 _curPathIndex++;
             }
             else
             {
                 var endPosition = _path[^1];
+                endPosition.y = curPosition.y;
                 if (_curAcceptRadius >= Vector3.Distance(curPosition, endPosition))
                 {
                     CurPathState = PathState.Success;
-                    _rigidbody.velocity = Vector3.zero;
+                   
                     _path = null;
                     _curPathIndex = -1;
                     if (null != _pathTcl)
@@ -115,8 +117,8 @@ namespace Game.Script.Character
                     var dis = Vector3.Distance(targetPosition, curPosition);
                     float pathSpeed = dis / deltaTime;
                     float speed = Mathf.Min(pathSpeed, moveSpeed);
-
-                    _rigidbody.velocity = dir.normalized * speed;
+                    
+                    _characterController.Move(dir.normalized * speed * deltaTime);
                 }
             }
         }
@@ -131,8 +133,7 @@ namespace Game.Script.Character
             {
                 if (Time.unscaledTime - _lastChangePositionTime > 0.5f)
                 {
-                    _rigidbody.velocity = Vector3.zero;
-
+                    
                     if (null != _pathTcl)
                     {
                         _pathTcl.SetResult(CurPathState);
@@ -150,15 +151,13 @@ namespace Game.Script.Character
             }
         }
         
-        private void OnCollisionEnter2D(Collision2D other)
+        private void OnCollisionEnter(Collision other)
         {
             if (CurPathState == PathState.Moving)
             {
                 CurPathState = other.gameObject == _targetGo ? PathState.Success : PathState.Fail;
             }
-
-            _rigidbody.velocity = Vector3.zero;
-
+            
             if (null != _pathTcl)
             {
                 _pathTcl.SetResult(CurPathState);
@@ -168,9 +167,10 @@ namespace Game.Script.Character
             _path = null;
             _pathTcl = null;
         }
+        
         public void CancelMove()
         {
-            _rigidbody.velocity = Vector3.zero;
+       
             CurPathState = PathState.None;
             if (null != _pathTcl)
             {
@@ -182,13 +182,12 @@ namespace Game.Script.Character
             _pathTcl = null;
         }
 
-        private void OnCollisionStay2D(Collision2D other)
+        private void OnCollisionStay(Collision other)
         {
             if (CurPathState == PathState.Moving)
             {
                 CurPathState = other.gameObject == _targetGo ? PathState.Success : PathState.Fail;
-                _rigidbody.velocity = Vector3.zero;
-
+                
                 if (null != _pathTcl)
                 {
                     _pathTcl.SetResult(CurPathState);

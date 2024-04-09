@@ -99,14 +99,17 @@ namespace Game.Script.Subsystem
 
         public MapArea GetArea(int x, int y, bool create = false)
         {
+            MapArea  ret = null;
             uint areaKey = CreateAreaIndex((uint)x, (uint)y);
-
-            if (!_areas.TryGetValue(areaKey, out var ret))
+            lock (this)
             {
-                ret = new MapArea();
-                _areas.Add(areaKey, ret);
+                if (!_areas.TryGetValue(areaKey, out  ret))
+                {
+                    ret = new MapArea();
+                    _areas.Add(areaKey, ret);
+                }
             }
-
+            
             return ret;
         }
 
