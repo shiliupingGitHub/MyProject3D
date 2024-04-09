@@ -23,10 +23,12 @@ namespace Game.Script.Setting
 #endif
         public bool ShowGrid { get; set; }
         public bool ShowBlock { get; set; }
+        public bool ShowFps { get; set; }
         public void Init()
         {
             ShowGrid = false;
             ShowBlock = false;
+            ShowFps = false;
         }
     }
 }

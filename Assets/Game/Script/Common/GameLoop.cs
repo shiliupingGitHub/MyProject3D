@@ -1,4 +1,5 @@
 ﻿using System;
+using Game.Script.Setting;
 using UnityEngine;
 
 namespace Game.Script.Common
@@ -6,7 +7,6 @@ namespace Game.Script.Common
     
     public class GameLoop : UnitySingleton<GameLoop>
     {
-        public bool drawFps = true;
         public System.Action<float> doUpdate;
         public System.Action<float> doFixedUpdate;
         private System.Action _threadAction;
@@ -53,8 +53,12 @@ namespace Game.Script.Common
 
                 _threadAction = null;
             }
+
+            if (GameSetting.Instance.ShowFps)
+            {
+                FrameCalculate();
+            }
             
-            FrameCalculate();
         }
 
         private void FrameCalculate()
@@ -76,14 +80,12 @@ namespace Game.Script.Common
         private void Start()
         {
             _lastTime = Time.realtimeSinceStartup;
-            //Application.targetFrameRate = 60;
-            QualitySettings.vSyncCount = 1;
 
         }
 
         private void OnGUI()
         {
-            if (drawFps)
+            if (GameSetting.Instance.ShowFps)
             {
                 string msg = string.Format("Fps:{0}  FpsDeltaTime:{1}", _Fps, _frameDeltaTime);
                 GUI.Label(new Rect(0, 0, 300, 50), msg);
