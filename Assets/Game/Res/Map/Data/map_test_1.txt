@@ -1,1 +1,1 @@
-{"bkId":1,"actors":[{"x":4,"z":0,"id":1,"fieldData":[]}],"timeEvents":[{"name":"test","actions":[{"data":"","name":"testaction","type":0}],"time":0.0}],"systemEvents":[],"customEvents":[],"BaseSetting":{"fightStartTime":10.0}}
+{"bkId":1,"actors":[{"x":4,"z":0,"id":1,"fieldData":[]},{"x":15,"z":17,"id":1,"fieldData":[]}],"timeEvents":[{"name":"test","actions":[{"data":"","name":"testaction","type":0}],"time":0.0}],"systemEvents":[],"customEvents":[],"BaseSetting":{"fightStartTime":10.0}}

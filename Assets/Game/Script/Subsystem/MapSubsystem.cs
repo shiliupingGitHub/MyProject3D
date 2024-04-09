@@ -204,28 +204,12 @@ namespace Game.Script.Subsystem
                 return;
             }
 
-         
-
-            // foreach (var tilemap in tileMaps)
-            // {
-            //     var bound = tilemap.cellBounds;
-            //     foreach (var pos in bound.allPositionsWithin)
-            //     {
-            //         var sp = tilemap.GetSprite(pos);
-            //
-            //         if (null != sp)
-            //         {
-            //             if (pos.x >= 0
-            //                 && pos.x < _mapBk.xGridNum
-            //                 && pos.z >= 0
-            //                 && pos.z < _mapBk.zGridNum
-            //                )
-            //             {
-            //                 AddAreaMapBlock((uint)pos.x, (uint)pos.z);
-            //             }
-            //         }
-            //     }
-            // }
+            foreach (var block in _mapBk.blocks)
+            {
+                var (x, z) = _mapBk.BlockToGrid(block);
+                AddAreaMapBlock((uint)x, (uint)z);
+            }
+            
         }
 
 

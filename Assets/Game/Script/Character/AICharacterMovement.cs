@@ -118,7 +118,20 @@ namespace Game.Script.Character
                     float pathSpeed = dis / deltaTime;
                     float speed = Mathf.Min(pathSpeed, moveSpeed);
                     
-                    _characterController.Move(dir.normalized * speed * deltaTime);
+                   var flag = _characterController.Move(dir.normalized * speed * deltaTime);
+
+                   if (flag != CollisionFlags.None)
+                   {
+                       CurPathState = PathState.Fail;
+                   
+                       _path = null;
+                       _curPathIndex = -1;
+                       if (null != _pathTcl)
+                       {
+                           _pathTcl.SetResult(CurPathState);
+                           _pathTcl = null;
+                       }
+                   }
                 }
             }
         }
