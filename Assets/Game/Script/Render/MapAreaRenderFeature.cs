@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using Game.Script.Common;
 using Game.Script.Map;
 using Game.Script.Setting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace Game.Script.Render
 {
@@ -20,7 +22,9 @@ namespace Game.Script.Render
             // The render pipeline will ensure target setup and clearing happens in a performant manner.
         
             private Mesh _gridMesh;
-            public Material drawMaterial;
+            private Mesh _blockMesh;
+            public Material gridMaterial;
+            public Material blockMaterial;
             public float lineSize = 0.1f;
             private int _curGridX = 0;
             private int _curGridY = 0;
@@ -82,36 +86,85 @@ namespace Game.Script.Render
                 {
                     return;
                 }
-
-                if (!GameSetting.Instance.ShowGrid)
-                {
-                    return;
-                }
+                
 
                 if (renderingData.cameraData.camera.cullingMask == 32)
                 {
                     return;
                 }
-
-                if (null != drawMaterial)
+                
+        
+                if (null != gridMaterial && GameSetting.Instance.ShowGrid)
                 {
-                    CreateMesh(mapBk);
+                    CreateGridMesh(mapBk);
 
                     if (null != _gridMesh)
                     {
                         CommandBuffer cmd = CommandBufferPool.Get();
                 
-                        cmd.DrawMesh(_gridMesh, Matrix4x4.identity, drawMaterial, 0);
+                        cmd.DrawMesh(_gridMesh, Matrix4x4.identity, gridMaterial, 0);
                         context.ExecuteCommandBuffer(cmd);
                         CommandBufferPool.Release(cmd);
                     }
        
                 }
+
+                if (null != blockMaterial && GameSetting.Instance.ShowBlock)
+                {
+                    CreatBlockMesh(mapBk);
+                    if (null != _blockMesh)
+                    {
+                        CommandBuffer cmd = CommandBufferPool.Get();
+                
+                        cmd.DrawMesh(_blockMesh, Matrix4x4.identity, blockMaterial, 0);
+                        context.ExecuteCommandBuffer(cmd);
+                        CommandBufferPool.Release(cmd);
+                    }
+                    
+                }
            
             
             }
 
-            void CreateMesh(MapBk bk)
+            void CreatBlockMesh(MapBk bk)
+            {
+                if (null == _blockMesh)
+                {
+                    _blockMesh = new Mesh();
+                }
+                _blockMesh.Clear();
+                int index = 0;
+                List<int> indices = new();
+                List<Vector3> vertices = new();
+                foreach (var block in bk.blocks)
+                {
+                    var p = bk.BlockToGrid(block);
+                    var position = GameUtil.ConvertPointToWorldPosition(p, bk.Offset, bk.xGridSize, bk.zGridSize);
+                    var v0 = position - new Vector3( bk.xGridSize * 0.5f, 0, bk.zGridSize * 0.5f);
+                    vertices.Add(v0);
+                    indices.Add(index);
+                    index++;
+                    
+                    var v1 = position + new Vector3( bk.xGridSize * 0.5f, 0, -bk.zGridSize * 0.5f);
+                    vertices.Add(v1);
+                    indices.Add(index);
+                    index++;
+                    
+                    var v2 = position + new Vector3(bk.xGridSize * 0.5f, 0,  bk.zGridSize * 0.5f);
+                    vertices.Add(v2);
+                    indices.Add(index);
+                    index++;
+                
+                    var v3 = position + new Vector3(-bk.xGridSize * 0.5f , 0, bk.zGridSize * 0.5f);
+                    vertices.Add(v3);
+                    indices.Add(index);
+                    index++;
+                }
+                _blockMesh.SetVertices(vertices);
+               
+                _blockMesh.SetIndices(indices, MeshTopology.Quads, 0);
+            }
+            void CreateGridMesh(MapBk bk)
             {
                 if (null == _gridMesh)
                 {
@@ -195,14 +248,16 @@ namespace Game.Script.Render
 
         CustomRenderPass _mScriptablePass;
 
-        public Material drawMaterial;
+       public Material gridMaterial;
+       public Material blockMaterial;
         public float lineSize = 0.1f;
         /// <inheritdoc/>
         public override void Create()
         {
             _mScriptablePass = new CustomRenderPass
             {
-                drawMaterial = drawMaterial,
+                gridMaterial = gridMaterial,
+                blockMaterial = blockMaterial,
                 lineSize = lineSize,
                 renderPassEvent = RenderPassEvent.AfterRenderingTransparents
             };

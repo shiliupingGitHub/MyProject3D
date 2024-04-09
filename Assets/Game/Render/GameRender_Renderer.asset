@@ -74,5 +74,6 @@ MonoBehaviour:
   m_Name: MapAreaRenderFeature
   m_EditorClassIdentifier: 
   m_Active: 1
-  drawMaterial: {fileID: 2100000, guid: 5001ae67dbf0d1c48b7f1c22093b18ce, type: 2}
+  gridMaterial: {fileID: 2100000, guid: 5001ae67dbf0d1c48b7f1c22093b18ce, type: 2}
+  blockMaterial: {fileID: 0}
   lineSize: 0.1

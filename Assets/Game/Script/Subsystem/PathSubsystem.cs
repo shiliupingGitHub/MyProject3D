@@ -81,19 +81,6 @@ namespace Game.Script.Subsystem
             
         }
         
-        Vector3 ConvertPointToWorldPosition((int, int) p, Vector3 offset, float cellX, float cellZ)
-        {
-            Vector3 ret = offset;
-            
-            ret.x += cellX * 0.5f;
-            ret.z += cellZ * 0.5f;
-
-            ret.x += p.Item1 * cellX;
-            ret.z += p.Item2 * cellZ;
-            
-            
-            return ret;
-        }
         void OnTick()
         {
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
@@ -120,7 +107,7 @@ namespace Game.Script.Subsystem
                         finalPath.Add(request.startPosition);
                         foreach (var p in path)
                         {
-                            var position = ConvertPointToWorldPosition(p, offset, cellX, cellZ);
+                            var position =GameUtil.ConvertPointToWorldPosition(p, offset, cellX, cellZ);
                             finalPath.Add(position);
                         }
                         finalPath.Add(request.endPosition);

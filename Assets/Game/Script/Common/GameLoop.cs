@@ -53,9 +53,7 @@ namespace Game.Script.Common
 
                 _threadAction = null;
             }
-
-            Physics2D.Simulate(Time.unscaledDeltaTime);
-            Physics2D.SyncTransforms();
+            
             FrameCalculate();
         }
 
