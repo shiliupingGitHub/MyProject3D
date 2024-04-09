@@ -33,7 +33,7 @@ namespace Game.Script.Common
 
          void OnApplicationQuit()
         {
-            applicationQuit.Invoke();
+            applicationQuit?.Invoke();
         }
 
         private void Update()

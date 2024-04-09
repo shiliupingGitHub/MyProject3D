@@ -237,7 +237,7 @@ namespace Game.Script.Map
                     var mapScript = _bkMapGo.GetComponent<MapBk>();
 
                     mapScript.virtualCamera.gameObject.SetActive(false);
-                    var brain = mapScript.GetComponentInChildren<CinemachineBrain>();
+                    var brain = mapScript.brain;
                     brain.gameObject.SetActive(false);
                 }
             }

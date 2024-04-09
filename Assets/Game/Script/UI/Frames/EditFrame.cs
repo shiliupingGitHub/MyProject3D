@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Game.Script.Attribute;
 using Game.Script.Common;
 using Game.Script.Map;
@@ -32,6 +31,7 @@ namespace Game.Script.UI.Frames
         private ActorConfig _curSelectActorConfig;
         private GameObject _curSelectShadow;
         private bool _bTicking;
+        private readonly List<int> _bkIds = new();
         [UIPath("InputSaveName")] private InputField _inputSaveName;
         [UIPath("Load/ddSaveMaps")] private Dropdown _ddSaveMaps;
         [UIPath("btnNew")] private Button _btnNew;
@@ -108,7 +108,8 @@ namespace Game.Script.UI.Frames
                     var newPosition = Input.mousePosition;
                     var delta = newPosition - _lastDragPosition;
 
-                    delta.z = 0;
+                    delta.z = delta.y;
+                    delta.y = 0;
 
                     if (Camera.main != null)
                     {
@@ -178,7 +179,7 @@ namespace Game.Script.UI.Frames
                     {
                         if (Input.GetKey(KeyCode.LeftShift))
                         {
-                            if (null != _curMapData)
+                            if (null != _curMapData && null != Camera.main)
                             {
                                 var worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                                 _curMapData.RemoveActor(worldPosition);
@@ -186,13 +187,12 @@ namespace Game.Script.UI.Frames
                         }
                         else if (Input.GetKey(KeyCode.LeftAlt))
                         {
-                            if(null != _curMapData)
+                            if (null != _curMapData && null != Camera.main)
                             {
                                 var worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                                 var actorData = _curMapData.GetActorData(worldPosition);
                                 var frame = UIManager.Instance.Show<ActorDataEditFrame>();
                                 frame.CurActorData = actorData;
-                                
                             }
                         }
                     }
@@ -287,7 +287,8 @@ namespace Game.Script.UI.Frames
             }
         }
 
-        private List<int> _bkIds = new();
+       
+
         void InitBks()
         {
             var mapConfigs = MapBKConfig.dic;
@@ -347,22 +348,16 @@ namespace Game.Script.UI.Frames
 
         void SetCameraCenter(MapBk mapBk)
         {
-            Grid grid = mapBk.MyGrid;
+            Vector3 center = mapBk.transform.position;
+            center += new Vector3(mapBk.xGridSize * mapBk.xGridNum * 0.5f,0, 0);
 
-            if (grid != null)
+            if (Camera.main != null)
             {
-                Vector3 center = mapBk.transform.position;
-                var cellSize = grid.cellSize;
-                center += new Vector3(cellSize.x * mapBk.xGridNum * 0.5f, cellSize.y * mapBk.yGridNum * 0.5f, 0);
-
-                if (Camera.main != null)
-                {
-                    var transform = Camera.main.transform;
-                    Vector3 cameraPosition = transform.position;
-                    cameraPosition.x = center.x;
-                    cameraPosition.y = center.y;
-                    transform.position = cameraPosition;
-                }
+                var transform = Camera.main.transform;
+                Vector3 cameraPosition = transform.position;
+                cameraPosition.x = center.x;
+                cameraPosition.z = center.z;
+                transform.position = cameraPosition;
             }
         }
 
@@ -381,7 +376,6 @@ namespace Game.Script.UI.Frames
                     var frame = UIManager.Instance.Show<MapSettingEditFrame>();
                     frame.CurMapData = _curMapData;
                 }
-              
             });
             _btnNew.onClick.AddListener(() =>
             {
@@ -401,7 +395,7 @@ namespace Game.Script.UI.Frames
                     GameSetting.Instance.ShowGrid = true;
                 }
             });
-            
+
             _btnEventEdit.onClick.AddListener(() =>
             {
                 if (_curMapData != null)

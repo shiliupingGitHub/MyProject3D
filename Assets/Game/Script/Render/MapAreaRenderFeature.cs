@@ -118,15 +118,9 @@ namespace Game.Script.Render
                     _gridMesh = new Mesh();
                 }
                 _gridMesh.Clear();
+                
 
-                Grid grid = bk.MyGrid;
-
-                if (null == grid)
-                {
-                    return;
-                }
-
-                if (_curGridX == bk.xGridNum && _curGridY == bk.yGridNum)
+                if (_curGridX == bk.xGridNum && _curGridY == bk.zGridNum)
                 {
                     return;
                 }
@@ -137,24 +131,22 @@ namespace Game.Script.Render
                 List<Vector3> vertices = new();
                 for (int x = 0; x <= bk.xGridNum; x++)
                 {
-                    var v0 = start + new Vector3(x * grid.cellSize.x, 0, 0);
+                    var v0 = start + new Vector3(x * bk.xGridSize, 0, 0);
                     vertices.Add(v0);
                     indices.Add(index);
                     index++;
-
-                    var cellSize = grid.cellSize;
-                    var v1 = start + new Vector3(x * cellSize.x, bk.yGridNum * cellSize.y, 0);
+                    
+                    var v1 = start + new Vector3(x * bk.xGridSize, 0, bk.zGridNum * bk.zGridSize);
                     vertices.Add(v1);
                     indices.Add(index);
                     index++;
-
-                    var size = grid.cellSize;
-                    var v2 = start + new Vector3(x * size.x + lineSize, bk.yGridNum * size.y, 0);
+                    
+                    var v2 = start + new Vector3(x * bk.xGridSize + lineSize, 0, bk.zGridNum * bk.zGridSize);
                     vertices.Add(v2);
                     indices.Add(index);
                     index++;
                 
-                    var v3 = start + new Vector3(x * grid.cellSize.x + lineSize, 0, 0);
+                    var v3 = start + new Vector3(x * bk.xGridSize + lineSize, 0, 0);
                     vertices.Add(v3);
                     indices.Add(index);
                     index++;
@@ -162,27 +154,25 @@ namespace Game.Script.Render
           
                 }
             
-                for (int y = 0; y <= bk.yGridNum; y++)
+                for (int y = 0; y <= bk.zGridNum; y++)
                 {
-                    var v0 = start + new Vector3(0,  y * grid.cellSize.y, 0);
+                    var v0 = start + new Vector3(0, 0, y * bk.zGridSize);
                     vertices.Add(v0);
                     indices.Add(index);
                     index++;
-
-                    var cellSize = grid.cellSize;
-                    var v1 = start + new Vector3(bk.xGridNum * cellSize.x , y * cellSize.y , 0);
+                    
+                    var v1 = start + new Vector3(bk.xGridNum * bk.xGridSize , 0, y * bk.xGridSize);
                     vertices.Add(v1);
                     indices.Add(index);
                     index++;
 
-
-                    var size = grid.cellSize;
-                    var v2 = start + new Vector3(bk.xGridNum * size.x , y * size.y + lineSize , 0);
+                    
+                    var v2 = start + new Vector3(bk.xGridNum * bk.xGridSize , 0, y * bk.zGridSize + lineSize );
                     vertices.Add(v2);
                     indices.Add(index);
                     index++;
                 
-                    var v3 = start + new Vector3(0,  y * grid.cellSize.y + lineSize, 0);
+                    var v3 = start + new Vector3(0, 0, y * bk.zGridSize + lineSize);
                     vertices.Add(v3);
                     indices.Add(index);
                     index++;
@@ -190,6 +180,7 @@ namespace Game.Script.Render
                 }
 
                 _gridMesh.SetVertices(vertices);
+               
                 _gridMesh.SetIndices(indices, MeshTopology.Quads, 0);
 
 
@@ -213,7 +204,7 @@ namespace Game.Script.Render
             {
                 drawMaterial = drawMaterial,
                 lineSize = lineSize,
-                renderPassEvent = RenderPassEvent.AfterRendering
+                renderPassEvent = RenderPassEvent.AfterRenderingTransparents
             };
         }
 

@@ -6,47 +6,32 @@ using Mirror;
 
 namespace Game.Script.Map
 {
-    [RequireComponent(typeof(Grid))]
     [RequireComponent(typeof(NetworkIdentity))]
     public class MapBk : MonoBehaviour
     {
-        [Label("X方向数量")] public int xGridNum = 100;
-
-        [Label("Y方向数量")] public int yGridNum = 100;
+        [Label("X方向数量")] public int xGridNum = 35;
+        [Label("Z方向数量")] public int zGridNum = 35;
+        [Label("x方向格子大小")] public float xGridSize = 1;
+        [Label("Z方向格子大小")] public float zGridSize = 1;
 
         public CinemachineVirtualCamera virtualCamera;
-        public Transform blockTilesRoot;
-
-        private Grid _grid;
-
-        public Grid MyGrid
-        {
-            get
-            {
-                if (null == _grid)
-                {
-                    _grid = GetComponent<Grid>();
-                }
-
-                return _grid;
-            }
-        }
-
+        public CinemachineBrain brain;
+        
         (int, int) GetGrid(Vector3 worldPosition)
         {
             Vector3 relative = worldPosition - Offset;
 
-            int gridX = Mathf.FloorToInt(relative.x / MyGrid.cellSize.x);
-            int gridY = Mathf.FloorToInt(relative.y / MyGrid.cellSize.y);
+            int gridX = Mathf.FloorToInt(relative.x / xGridSize);
+            int gridY = Mathf.FloorToInt(relative.z / zGridSize);
 
             return (gridX, gridY);
         }
 
-        public Vector3 GetPosition(int x, int y)
+        public Vector3 GetPosition(int x, int z)
         {
             Vector3 ret = transform.position;
 
-            ret += new Vector3(x * MyGrid.cellSize.x, y * MyGrid.cellSize.y, 0);
+            ret += new Vector3(x * xGridSize, 0, z * zGridSize);
 
             return ret;
         }
@@ -58,10 +43,10 @@ namespace Game.Script.Map
                 return Vector3.zero;
             }
 
-            (var gridX, var gridY) = GetGrid(worldPosition);
+            var ( gridX,  gridZ) = GetGrid(worldPosition);
             Vector3 ret = transform.position;
 
-            ret += new Vector3(gridX * MyGrid.cellSize.x, gridY * MyGrid.cellSize.y, 0);
+            ret += new Vector3(gridX * xGridSize, 0, gridZ * zGridSize);
 
             return ret;
         }
@@ -81,25 +66,24 @@ namespace Game.Script.Map
             int retY = -1;
 
             Vector3 o = transform.position;
-            var cellSize = MyGrid.cellSize;
 
             var offset = (worldPos - o);
 
-            offset.x /= cellSize.x;
-            offset.y /= cellSize.y;
+            offset.x /= xGridSize;
+            offset.z /= zGridSize;
 
             if (offset.x >= 0 && offset.x < xGridNum)
             {
                 retX = Mathf.FloorToInt(offset.x);
             }
 
-            if (offset.y >= 0 && offset.y < yGridNum)
+            if (offset.y >= 0 && offset.y < zGridNum)
             {
                 retY = Mathf.FloorToInt(offset.y);
             }
 
             retX = Mathf.Clamp(retX, 0, xGridNum - 1);
-            retY = Mathf.Clamp(retY, 0, yGridNum - 1);
+            retY = Mathf.Clamp(retY, 0, zGridNum - 1);
 
             return (retX, retY);
         }

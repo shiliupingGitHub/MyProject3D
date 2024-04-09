@@ -104,9 +104,8 @@ namespace Game.Script.Subsystem
 
             int num = Mathf.Min(PathNumPerFrame, _pathRequestList.Count);
             var offset = mapSubsystem.MapBk.Offset;
-            var cellSize = mapSubsystem.MapBk.MyGrid.cellSize;
-            var cellX = cellSize.x;
-            var cellY = cellSize.y;
+            var cellX =  mapSubsystem.MapBk.xGridSize;
+            var cellY =  mapSubsystem.MapBk.zGridSize;
             if (num > 0)
             {
                 Parallel.For(0, num, (i, _) =>
@@ -192,7 +191,7 @@ namespace Game.Script.Subsystem
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             List<(bool, (int, int))> neighbourCells = new List<(bool, (int, int))>();
 
-            int heigth = mapSubsystem.MapBk.yGridNum;
+            int heigth = mapSubsystem.MapBk.zGridNum;
             int width = mapSubsystem.MapBk.xGridNum;
 
             int range = 1;
@@ -250,7 +249,7 @@ namespace Game.Script.Subsystem
             Func<int, int, int, int, float> heuristic = manhattanHeuristic ? CalcHeuristicManhattan : CalcHeuristicEuclidean;
 
             // Get the dimensions of the map
-            int mapHeight = mapSubsystem.MapBk.yGridNum;
+            int mapHeight = mapSubsystem.MapBk.zGridNum;
             int mapWidth = mapSubsystem.MapBk.xGridNum;
 
             // Define constants and arrays needed for the algorithm

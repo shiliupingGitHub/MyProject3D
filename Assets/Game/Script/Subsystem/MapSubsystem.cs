@@ -68,12 +68,12 @@ namespace Game.Script.Subsystem
         public Vector3 GetRandomBornPosition()
         {
             int chooseX = _mapBk.xGridNum / 2;
-            int chooseY = _mapBk.yGridNum / 2;
+            int chooseY = _mapBk.zGridNum / 2;
 
             for (int i = 0; i < 2; i++)
             {
                 int x = Random.Range(0, _mapBk.xGridNum - 1);
-                int y = Random.Range(0, _mapBk.yGridNum - 1);
+                int y = Random.Range(0, _mapBk.zGridNum - 1);
 
                 var area = GetArea(x, y);
 
@@ -86,10 +86,9 @@ namespace Game.Script.Subsystem
             }
 
             Vector3 ret = _mapBk.Offset;
-
-            var cellSize = _mapBk.MyGrid.cellSize;
-            ret.x += chooseX * cellSize.x + cellSize.x * 0.5f;
-            ret.y += chooseY * cellSize.y + cellSize.y * 0.5f;
+            
+            ret.x += chooseX * _mapBk.xGridSize + _mapBk.xGridSize * 0.5f;
+            ret.y += chooseY * _mapBk.zGridSize + _mapBk.zGridSize * 0.5f;
             return ret;
         }
 
@@ -167,22 +166,20 @@ namespace Game.Script.Subsystem
 
             Vector3 relative = position - _mapBk.transform.position;
 
-            int x = Mathf.FloorToInt(relative.x / _mapBk.MyGrid.cellSize.x);
-            int y = Mathf.FloorToInt(relative.y / _mapBk.MyGrid.cellSize.y);
+            int x = Mathf.FloorToInt(relative.x / _mapBk.xGridSize);
+            int z = Mathf.FloorToInt(relative.z / _mapBk.zGridSize);
 
             if (x < 0)
             {
                 return (-1, -1, -1);
-                ;
             }
 
-            if (y < 0)
+            if (z < 0)
             {
                 return (-1, -1, -1);
-                ;
             }
 
-            return ((int)CreateAreaIndex((uint)x, (uint)y), x, y);
+            return ((int)CreateAreaIndex((uint)x, (uint)z), x, z);
         }
 
         void AddAreaMapBlock(uint x, uint y)
@@ -206,31 +203,28 @@ namespace Game.Script.Subsystem
                 return;
             }
 
-            if (_mapBk.blockTilesRoot == null)
-                return;
+         
 
-            var tileMaps = _mapBk.blockTilesRoot.GetComponentsInChildren<Tilemap>();
-
-            foreach (var tilemap in tileMaps)
-            {
-                var bound = tilemap.cellBounds;
-                foreach (var pos in bound.allPositionsWithin)
-                {
-                    var sp = tilemap.GetSprite(pos);
-
-                    if (null != sp)
-                    {
-                        if (pos.x >= 0
-                            && pos.x < _mapBk.xGridNum
-                            && pos.y >= 0
-                            && pos.y < _mapBk.yGridNum
-                           )
-                        {
-                            AddAreaMapBlock((uint)pos.x, (uint)pos.y);
-                        }
-                    }
-                }
-            }
+            // foreach (var tilemap in tileMaps)
+            // {
+            //     var bound = tilemap.cellBounds;
+            //     foreach (var pos in bound.allPositionsWithin)
+            //     {
+            //         var sp = tilemap.GetSprite(pos);
+            //
+            //         if (null != sp)
+            //         {
+            //             if (pos.x >= 0
+            //                 && pos.x < _mapBk.xGridNum
+            //                 && pos.y >= 0
+            //                 && pos.y < _mapBk.zGridNum
+            //                )
+            //             {
+            //                 AddAreaMapBlock((uint)pos.x, (uint)pos.y);
+            //             }
+            //         }
+            //     }
+            // }
         }
 
 
