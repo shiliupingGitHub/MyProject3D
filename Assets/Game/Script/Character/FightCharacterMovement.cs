@@ -33,10 +33,16 @@ namespace Game.Script.Character
         {
             var virtualCameraTemplate = GameResMgr.Instance.LoadAssetSync<GameObject>("Assets/Game/Res/Player/CameraSetting.prefab");
             var virtualCameraGo = Object.Instantiate(virtualCameraTemplate);
-            _cinemachineBrain = virtualCameraGo.transform.Find("CinemachineBrain").GetComponent<CinemachineBrain>();
+            var brainTransform = virtualCameraGo.transform.Find("CinemachineBrain");
+            _cinemachineBrain = virtualCameraGo.GetComponent<CinemachineBrain>();
+            var cinemachineConfiner = virtualCameraGo.GetComponent<CinemachineConfiner>();
             _cinemachineVirtualCamera = virtualCameraGo.transform.Find("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
             _cinemachineVirtualCamera.Follow = transform;
             _cinemachineVirtualCamera.LookAt = transform;
+            var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+            var CameraBounds = mapSubsystem.MapBk.transform.Find("CameraBounds").GetComponent<Collider>();
+            cinemachineConfiner.m_BoundingVolume = CameraBounds;
+            
             SetUpInput();
             bCheckCamera = true;
             GameLoop.Add(OnUpdate);
@@ -82,10 +88,6 @@ namespace Game.Script.Character
             }
 
             _characterController.Move(dir * MoveSpeed * deltaTime);
-            // if (null != _cinemachineBrain)
-            // {
-            //     _cinemachineBrain.ManualUpdate();
-            // }
             
         }
     }
