@@ -291,7 +291,7 @@ namespace Game.Script.Subsystem
                 {
                     (bool, (int, int)) neighbour = neighbours[i];
 
-                    // Get the x and y coordinates of the neighbour
+                    // Get the x and z coordinates of the neighbour
                     int neighbourX = neighbour.Item2.Item1;
                     int neighbourY = neighbour.Item2.Item2;
 

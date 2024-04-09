@@ -87,14 +87,19 @@ namespace Game.Script.UI.Frames
             {
                 if (Camera.main != null)
                 {
-                    var worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-                    MapBk mapBk = Object.FindObjectOfType<MapBk>();
-
-                    if (null != mapBk)
+                    var layer = LayerMask.NameToLayer("LandScape");
+                    var ray= Camera.main.ScreenPointToRay(Input.mousePosition);
+                    if (Physics.Raycast(ray, out var hitInfo, float.MaxValue, 1 << layer))
                     {
-                        _curSelectShadow.transform.position = mapBk.ConvertToGridPosition(worldPosition);
+                        MapBk mapBk = Object.FindObjectOfType<MapBk>();
+
+                        if (null != mapBk)
+                        {
+                            _curSelectShadow.transform.position = mapBk.ConvertToGridPosition(hitInfo.point);
+                        }
                     }
+
+                  
                 }
             }
         }

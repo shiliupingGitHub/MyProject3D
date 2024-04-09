@@ -1,10 +1,12 @@
 ﻿using System;
 using Cinemachine;
 using Game.Script.Common;
+using Game.Script.Res;
 using Game.Script.Subsystem;
 using Mirror;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Object = UnityEngine.Object;
 
 namespace Game.Script.Character
 {
@@ -41,6 +43,7 @@ namespace Game.Script.Character
             base.OnStartAuthority();
 
             Common.Game.Instance.MyController = this;
+            
         }
         
         public override void OnStartLocalPlayer()
@@ -49,7 +52,10 @@ namespace Game.Script.Character
             var moveComponent = GetComponent<FightCharacterMovement>();
             
             moveComponent.StartControl();
+            
         }
+        
+       
 
         public override void OnStopLocalPlayer()
         {

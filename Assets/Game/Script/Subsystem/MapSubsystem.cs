@@ -61,6 +61,10 @@ namespace Game.Script.Subsystem
                 var bornPosition = GetRandomBornPosition();
                 var playerPrefab = GameResMgr.Instance.LoadAssetSync<GameObject>(playerAssetPath);
                 GameObject player = Object.Instantiate(playerPrefab, bornPosition, quaternion.identity);
+               var characterController = player.GetComponent<CharacterController>();
+               var position = player.transform.position;
+               position.y += characterController.height * 0.5f;
+               player.transform.position = position;
                 return player;
             };
         }
@@ -73,14 +77,14 @@ namespace Game.Script.Subsystem
             for (int i = 0; i < 2; i++)
             {
                 int x = Random.Range(0, _mapBk.xGridNum - 1);
-                int y = Random.Range(0, _mapBk.zGridNum - 1);
+                int z = Random.Range(0, _mapBk.zGridNum - 1);
 
-                var area = GetArea(x, y);
+                var area = GetArea(x, z);
 
                 if (null == area || !area.Blocked)
                 {
                     chooseX = x;
-                    chooseY = y;
+                    chooseY = z;
                     break;
                 }
             }
@@ -88,7 +92,7 @@ namespace Game.Script.Subsystem
             Vector3 ret = _mapBk.Offset;
             
             ret.x += chooseX * _mapBk.xGridSize + _mapBk.xGridSize * 0.5f;
-            ret.y += chooseY * _mapBk.zGridSize + _mapBk.zGridSize * 0.5f;
+            ret.z += chooseY * _mapBk.zGridSize + _mapBk.zGridSize * 0.5f;
             return ret;
         }
 
@@ -114,12 +118,6 @@ namespace Game.Script.Subsystem
             {
                 if (MapBk != null && Common.Game.Instance.MyController != null)
                 {
-                    var tr = Common.Game.Instance.MyController.transform;
-                    MapBk.virtualCamera.Follow = tr;
-                    MapBk.virtualCamera.LookAt = tr;
-                    MapBk.virtualCamera.gameObject.SetActive(true);
-
-
                     StartGame();
                 }
             }
@@ -216,11 +214,11 @@ namespace Game.Script.Subsystem
             //         {
             //             if (pos.x >= 0
             //                 && pos.x < _mapBk.xGridNum
-            //                 && pos.y >= 0
-            //                 && pos.y < _mapBk.zGridNum
+            //                 && pos.z >= 0
+            //                 && pos.z < _mapBk.zGridNum
             //                )
             //             {
-            //                 AddAreaMapBlock((uint)pos.x, (uint)pos.y);
+            //                 AddAreaMapBlock((uint)pos.x, (uint)pos.z);
             //             }
             //         }
             //     }

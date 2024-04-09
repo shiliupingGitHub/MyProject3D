@@ -10,6 +10,7 @@ using Game.Script.Res;
 using Game.Script.Subsystem;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 
 namespace Game.Script.Map
@@ -25,7 +26,7 @@ namespace Game.Script.Map
     public class ActorData
     {
         [SerializeField] public int x;
-        [SerializeField] public int y;
+        [SerializeField] public int z;
         [SerializeField] public int id;
         [SerializeField] public List<ActorFieldData> fieldData = new();
         [NonSerialized] public GameObject go;
@@ -145,7 +146,7 @@ namespace Game.Script.Map
             List<ActorData> removes = new();
             foreach (var actor in actors)
             {
-                if (actor.x == x && actor.y == y)
+                if (actor.x == x && actor.z == y)
                 {
                     removes.Add(actor);
                 }
@@ -170,7 +171,7 @@ namespace Game.Script.Map
             List<ActorData> removes = new();
             foreach (var actor in actors)
             {
-                if (actor.x == x && actor.y == y)
+                if (actor.x == x && actor.z == y)
                 {
                     return actor;
                 }
@@ -209,7 +210,7 @@ namespace Game.Script.Map
                 actorData.go = go;
                 (int x, int y) = mapBk.GetGridIndex(position);
                 actorData.x = x;
-                actorData.y = y;
+                actorData.z = y;
                 actorData.id = actorConfig.id;
                 actors.Add(actorData);
                 go.transform.position = position;
@@ -230,15 +231,6 @@ namespace Game.Script.Map
                 if (net)
                 {
                     NetworkServer.Spawn(_bkMapGo);
-                }
-
-                if (Preview)
-                {
-                    var mapScript = _bkMapGo.GetComponent<MapBk>();
-
-                    mapScript.virtualCamera.gameObject.SetActive(false);
-                    var brain = mapScript.brain;
-                    brain.gameObject.SetActive(false);
                 }
             }
         }
@@ -312,7 +304,7 @@ namespace Game.Script.Map
                     DeserializeActorField(actor, actorData);
                 }
 
-                go.transform.position = mapBk.GetPosition(actorData.x, actorData.y);
+                go.transform.position = mapBk.GetPosition(actorData.x, actorData.z);
                 actorData.go = go;
 
                 if (net && actor.isNet)

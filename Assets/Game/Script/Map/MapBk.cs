@@ -13,9 +13,6 @@ namespace Game.Script.Map
         [Label("Z方向数量")] public int zGridNum = 35;
         [Label("x方向格子大小")] public float xGridSize = 1;
         [Label("Z方向格子大小")] public float zGridSize = 1;
-
-        public CinemachineVirtualCamera virtualCamera;
-        public CinemachineBrain brain;
         
         (int, int) GetGrid(Vector3 worldPosition)
         {
@@ -38,7 +35,7 @@ namespace Game.Script.Map
 
         public Vector3 ConvertToGridPosition(Vector3 worldPosition)
         {
-            if (worldPosition.x < 0 || worldPosition.y <= 0)
+            if (worldPosition.x < 0 || worldPosition.z <= 0)
             {
                 return Vector3.zero;
             }
@@ -63,7 +60,7 @@ namespace Game.Script.Map
         public (int, int) GetGridIndex(Vector3 worldPos)
         {
             int retX = -1;
-            int retY = -1;
+            int retZ = -1;
 
             Vector3 o = transform.position;
 
@@ -77,15 +74,15 @@ namespace Game.Script.Map
                 retX = Mathf.FloorToInt(offset.x);
             }
 
-            if (offset.y >= 0 && offset.y < zGridNum)
+            if (offset.z >= 0 && offset.z < zGridNum)
             {
-                retY = Mathf.FloorToInt(offset.y);
+                retZ = Mathf.FloorToInt(offset.z);
             }
 
             retX = Mathf.Clamp(retX, 0, xGridNum - 1);
-            retY = Mathf.Clamp(retY, 0, zGridNum - 1);
+            retZ = Mathf.Clamp(retZ, 0, zGridNum - 1);
 
-            return (retX, retY);
+            return (retX, retZ);
         }
     }
 }
