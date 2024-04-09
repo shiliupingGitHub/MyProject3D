@@ -135,11 +135,8 @@ namespace Game.Script.UI.Frames
             var delta = callbackContext.ReadValue<Vector2>();
             if (Camera.main != null)
             {
-                var orthographicSize = Camera.main.orthographicSize;
-
-                orthographicSize -= delta.y / ZoomFactor;
-                orthographicSize = Mathf.Clamp(orthographicSize, OrthographicSizeMin, OrthographicSizeMax);
-                Camera.main.orthographicSize = orthographicSize;
+                var transform = Camera.main.transform;
+                transform.position += transform.forward * delta.y / ZoomFactor;
             }
         }
 
