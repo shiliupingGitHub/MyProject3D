@@ -61,8 +61,9 @@ namespace Game.Script.Character
                 _lineRenderer.endColor = drawColor;
                 _lineRenderer.startWidth = 0.1f;
                 _lineRenderer.endWidth = 0.1f;
-                
+                _lineRenderer.material = new Material(GameSetting.Instance.Config.pathMat);
                 _lineRenderer.useWorldSpace = true;
+                _lineRenderer.material.SetColor("_BaseColor", drawColor);
                 
             }
             _lineRenderer.enabled = true;
