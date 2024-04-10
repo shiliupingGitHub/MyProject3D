@@ -24,6 +24,7 @@ namespace Game.Script.Subsystem
         public MapData CurMapData { get; private set; }
 
         private readonly Dictionary<uint, MapArea> _areas = new();
+        public Dictionary<uint, MapArea> Areas => _areas;
         public bool MapLoaded { get; private set; }
 
         public MapBk MapBk
@@ -148,13 +149,20 @@ namespace Game.Script.Subsystem
             return mapData;
         }
 
-        uint CreateAreaIndex(uint x, uint y)
+        uint CreateAreaIndex(uint x, uint z)
         {
             x = x << 16;
 
-            uint ret = x | y;
+            uint ret = x | z;
 
             return ret;
+        }
+
+       public (int , int ) AreaIndexToGrid(uint areaIndex)
+        {
+            uint x = areaIndex >> 16;
+            uint z = areaIndex & 0xffff;
+            return ((int)x, (int)z);
         }
 
         public (int, int, int) CreateAreaIndex(Vector3 position)

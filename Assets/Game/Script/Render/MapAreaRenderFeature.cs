@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Game.Script.Common;
 using Game.Script.Map;
 using Game.Script.Setting;
+using Game.Script.Subsystem;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -127,6 +128,77 @@ namespace Game.Script.Render
             }
 
             void CreatBlockMesh(MapBk bk)
+            {
+                bool useBk = true;
+                if (Application.isPlaying)
+                {
+                    if (Common.Game.Instance.Mode == GameMode.Hall
+                        || Common.Game.Instance.Mode == GameMode.Client
+                        || Common.Game.Instance.Mode == GameMode.Host
+                       )
+                    {
+                        useBk = false;
+                    }
+                }
+
+                if (useBk)
+                {
+                    CreateMapBkBlockMesh(bk);
+                }
+                else
+                {
+                    CreateMapAreaBlockMesh(bk);
+                }
+            }
+
+            void CreateMapAreaBlockMesh(MapBk bk)
+            {
+                if (null == _blockMesh)
+                {
+                    _blockMesh = new Mesh();
+                }
+
+                var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+                _blockMesh.Clear();
+                int index = 0;
+                List<int> indices = new();
+                List<Vector3> vertices = new();
+                foreach (var areaMap in mapSubsystem.Areas)
+                {
+                    var area = areaMap.Value;
+
+                    if (!area.Blocked)
+                    {
+                        continue;
+                    }
+                    var p = mapSubsystem.AreaIndexToGrid(areaMap.Key);
+                    var position = GameUtil.ConvertPointToWorldPosition(p, bk.Offset, bk.xGridSize, bk.zGridSize);
+                    var v0 = position - new Vector3( bk.xGridSize * 0.5f, 0, bk.zGridSize * 0.5f);
+                    vertices.Add(v0);
+                    indices.Add(index);
+                    index++;
+                    
+                    var v1 = position + new Vector3( bk.xGridSize * 0.5f, 0, -bk.zGridSize * 0.5f);
+                    vertices.Add(v1);
+                    indices.Add(index);
+                    index++;
+                    
+                    var v2 = position + new Vector3(bk.xGridSize * 0.5f, 0,  bk.zGridSize * 0.5f);
+                    vertices.Add(v2);
+                    indices.Add(index);
+                    index++;
+                
+                    var v3 = position + new Vector3(-bk.xGridSize * 0.5f , 0, bk.zGridSize * 0.5f);
+                    vertices.Add(v3);
+                    indices.Add(index);
+                    index++;
+                }
+                _blockMesh.SetVertices(vertices);
+               
+                _blockMesh.SetIndices(indices, MeshTopology.Quads, 0);
+            }
+
+            void CreateMapBkBlockMesh(MapBk bk)
             {
                 if (null == _blockMesh)
                 {
