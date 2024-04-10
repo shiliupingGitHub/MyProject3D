@@ -17,10 +17,11 @@ namespace Game.Script.Subsystem
             var languageGo =GameResMgr.Instance.LoadAssetSync<GameObject>("Assets/Game/Res/Localization/LocalizationConfig.prefab");
             var localizationConfig = languageGo.GetComponent<LocalizationConfig>();
 
-            for (int i = 0; i < localizationConfig._keys.Count; i++)
+         
+            foreach (var table in localizationConfig.tables)
             {
-                var key = localizationConfig._keys[i];
-                var value = localizationConfig._values[i];
+                var key = table.Key;
+                var value = table.Value;
                 var content = System.Text.Encoding.GetEncoding("GBK").GetString(value.bytes);
                 LanguageData data = new LanguageData();
                 data.Load(content);

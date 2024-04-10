@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Game.Script.UI.Extern
 {
-    public class LocalizationConfig : MonoBehaviour
+    public class LocalizationConfig : SerializedMonoBehaviour
     {
-        public List<SystemLanguage> _keys = new();
-        public List<TextAsset> _values = new();
+  
+        [SerializeField]
+        public Dictionary<SystemLanguage, TextAsset> tables = new();
+  
+        
     }
+    
 }
