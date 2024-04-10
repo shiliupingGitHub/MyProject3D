@@ -101,6 +101,9 @@ namespace Game.Script.Map
                 if (collider.gameObject.layer != LayerMask.NameToLayer("Default"))
                     continue;
                 
+                if(collider.isTrigger)
+                    continue;
+                
                 var min = collider.bounds.min;
                 var max = collider.bounds.max;
           
