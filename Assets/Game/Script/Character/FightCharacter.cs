@@ -27,7 +27,9 @@ namespace Game.Script.Character
             var fightSubsystem = Common.Game.Instance.GetSubsystem<FightSubsystem>();
             TargetRpc_SetStartFightLeftTime(fightSubsystem.StartLeftTime);
         }
-        
+
+        protected override bool IsBlock { get; } = false;
+
         protected override void Start()
         {
             base.Start();
