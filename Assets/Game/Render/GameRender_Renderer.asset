@@ -75,5 +75,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   gridMaterial: {fileID: 2100000, guid: 5001ae67dbf0d1c48b7f1c22093b18ce, type: 2}
-  blockMaterial: {fileID: 0}
+  blockMaterial: {fileID: 2100000, guid: 55534d1dd4d27f740b1935005ab00fc7, type: 2}
   lineSize: 0.1

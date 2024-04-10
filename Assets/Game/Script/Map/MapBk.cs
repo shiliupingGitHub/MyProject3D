@@ -59,6 +59,14 @@ namespace Game.Script.Map
 
         void AddBlock(ushort x, ushort z)
         {
+            if (x >= xGridNum)
+            {
+                return;
+            }
+            if(z >= zGridNum)
+            {
+                return;
+            }
             int data = x << 16;
             data |= z;
 
@@ -95,6 +103,8 @@ namespace Game.Script.Map
                 
                 var min = collider.bounds.min;
                 var max = collider.bounds.max;
+          
+                
 
                 int xStep = Mathf.CeilToInt((max.x - min.x) / xGridSize);
                 int zStep = Mathf.CeilToInt((max.z - min.z) / zGridSize);
@@ -106,7 +116,6 @@ namespace Game.Script.Map
                         AddBlock((ushort)(x + i), (ushort)(z + j));
                     }
                 }
-
                 AddBlock((ushort)x, (ushort)z);
             }
         }
