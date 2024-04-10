@@ -1,4 +1,4 @@
-int,string,Vector2Int[],int,string
-id,path,area,isBlock,name
-id±àºÅ,Â·¾¶,ÇøÓò,ÊÇ·ñ×èµ²,Ãû×Ö
-1,Assets/Game/Res/Actor/Actor_1.prefab,,,²âÊÔactor1
+int,string,string
+id,path,name
+id±àºÅ,Â·¾¶,Ãû×Ö
+1,Assets/Game/Res/Actor/Actor_1.prefab,²âÊÔactor1

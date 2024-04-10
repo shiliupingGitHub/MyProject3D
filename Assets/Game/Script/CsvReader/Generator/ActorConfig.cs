@@ -6,8 +6,6 @@ using CSVHelper;
 public class ActorConfig {
 	public 	int	id;
 	public 	string	path;
-	public 	Vector2Int[]	area;
-	public 	int	isBlock;
 	public 	string	name;
 	static Dictionary<int,ActorConfig> mDic = null;
  	 public static Dictionary<int,ActorConfig>  dic {
@@ -34,13 +32,7 @@ public class ActorConfig {
 			e.path= CsvHelper.Tostring(r[1]);
 
 		 if(r.Count >2)
-			e.area= CsvHelper.ToVector2Int_array(r[2]);
-
-		 if(r.Count >3)
-			e.isBlock= CsvHelper.Toint(r[3]);
-
-		 if(r.Count >4)
-			e.name= CsvHelper.Tostring(r[4]);
+			e.name= CsvHelper.Tostring(r[2]);
 
 			dic[e.id] = e;
 		}
