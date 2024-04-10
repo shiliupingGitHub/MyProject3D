@@ -3,14 +3,16 @@ using Cinemachine;
 using Game.Script.Common;
 using Game.Script.Res;
 using Game.Script.Subsystem;
+using Mirror;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Object = UnityEngine.Object;
 
 namespace Game.Script.Character
 {
-    public class FightCharacterMovement : MonoBehaviour
+    public class FightCharacterMovement : NetworkBehaviour
     {
+        public System.Action movingChanged;
         public InputActionReference MoveUpAction;
         public InputActionReference MoveDownAction;
         public InputActionReference MoveLeftAction;
@@ -21,10 +23,24 @@ namespace Game.Script.Character
         private Camera _camera;
         CinemachineBrain  _cinemachineBrain;
         private CinemachineVirtualCamera _cinemachineVirtualCamera;
-        private void Start()
+
+        [SyncVar(hook = nameof(OnMovingChanged))] private bool _bMoving = false;
+        public bool  IsMoving => _bMoving;
+        
+        private void Awake()
         {
             _characterController = GetComponent<CharacterController>();
-            
+        }
+
+        [Command]
+        void SetMoving(bool moving)
+        {
+            _bMoving = moving;
+        }
+
+        void OnMovingChanged(bool oldValue, bool newValue)
+        {
+            movingChanged?.Invoke();
         }
 
         public void StartControl()
@@ -52,8 +68,10 @@ namespace Game.Script.Character
         }
         private void OnUpdate(float deltaTime)
         {
-            
-            DoMove(deltaTime);
+            if (isLocalPlayer)
+            {
+                DoMove(deltaTime);
+            }
         }
         void SetUpInput()
         {
@@ -78,6 +96,15 @@ namespace Game.Script.Character
         {
             var dir = moveDir;
             dir.Normalize();
+
+            bool moving = dir != Vector3.zero;
+
+            if (moving != _bMoving)
+            {
+                SetMoving(moving);
+                _bMoving = moving;
+                movingChanged?.Invoke();
+            }
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
 
             if (mapSubsystem.MapBk == null)
