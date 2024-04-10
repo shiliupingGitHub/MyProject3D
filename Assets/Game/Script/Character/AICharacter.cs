@@ -45,8 +45,6 @@ namespace Game.Script.Character
         }
 
         protected override bool IsBlock => true;
-        protected override Vector2Int[] Areas => new[] { Vector2Int.zero };
-        
         protected override void Start()
         {
             base.Start();

@@ -18,7 +18,6 @@ namespace Game.Script.Common
     public class Actor : NetworkBehaviour
     {
         public Transform CacheTransform { get; set; }
-        protected virtual Vector2Int[] Areas => null;
         protected virtual bool IsBlock => false;
         private int _areaIndex = -1;
         private readonly List<(int, int)> _nowArea = new();
@@ -28,12 +27,33 @@ namespace Game.Script.Common
         public virtual Vector3 CenterOffset => centerOffset;
 
         public ActorType ActorType { get; set; } = ActorType.Normal;
+        private int xStep = 0;
+        private int zStep = 0;
+        private Collider _collider;
 
         protected virtual void Start()
         {
-            
+            CacualateStep();
             UpdateArea();
             positionChanged += UpdateArea;
+        }
+
+        void CacualateStep()
+        {
+            _collider = GetComponent<Collider>();
+            if (null != _collider)
+            {
+                var bounds = _collider.bounds;
+                var min = bounds.min;
+                var max = bounds.max;
+                var mapSubsystem = Game.Instance.GetSubsystem<MapSubsystem>();
+                float xGridSize = mapSubsystem.MapBk.xGridSize;
+                float zGridSize = mapSubsystem.MapBk.zGridSize;
+            
+                xStep = Mathf.CeilToInt((max.x - min.x) / xGridSize);
+                zStep = Mathf.CeilToInt((max.z - min.z) / zGridSize);
+            }
+         
         }
 
         protected virtual void Awake()
@@ -75,18 +95,32 @@ namespace Game.Script.Common
                 if (_areaIndex >= 0)
                 {
                     _tempArea.Clear();
-                    if (Areas != null)
+                    
+                    if (_collider != null)
                     {
-                        foreach (var block in Areas)
+                      
+                        for (int i = 0; i < xStep; i++)
                         {
-                            int gridX = x + block.x;
-                            int gridY = y + block.y;
-                            _tempArea.Add((gridX, gridY));
+                            for (int j = 0; j < zStep; j++)
+                            {
+                                int gridX = x + i;
+                                int gridY = y + j;
+                                
+                                if(!_tempArea.Contains(((gridX, gridY))))
+                                {
+                                    _tempArea.Add((gridX, gridY));
+                                }
+                                
+                            }
                         }
                     }
                     else
                     {
-                        _tempArea.Add((x, y));
+                        if (!_tempArea.Contains(((x, y))))
+                        {
+                            _tempArea.Add((x, y));
+                        }
+                       
                     }
 
                     foreach (var area in _tempArea)
