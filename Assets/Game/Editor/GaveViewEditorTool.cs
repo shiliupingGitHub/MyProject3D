@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game.Editor
 {
-    [EditorTool("游戏数据查看")]
+    [EditorTool("游戏工具")]
     class GaveViewEditorTool : EditorTool
     {
         public override void OnToolGUI(EditorWindow window)

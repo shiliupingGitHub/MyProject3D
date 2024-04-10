@@ -1,5 +1,6 @@
 ﻿
 
+using Game.Script.Map;
 using Game.Script.Res;
 using Game.Script.Setting;
 using UnityEditor;
@@ -19,7 +20,22 @@ namespace Game.Editor
             PrefabUtility.UnpackPrefabInstance(go, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             GameSetting.Instance.ShowGrid = true;
         }
+     
+        [MenuItem("GameObject/对齐到网格 &F1")]
+        static void SnapToMapGrid()
+        {
+            var mapBK = GameObject.FindObjectOfType<MapBk>();
 
+            if (null == mapBK)
+            {
+                return;
+            }
+            foreach(var go in Selection.gameObjects)
+            {
+                go.transform.position = mapBK.ConvertToGridPosition(go.transform.position);
+            }
+            
+        }
         [MenuItem("GameObject/复制Hierarchy路径")]
         static void CopyHierarchyPath()
         {
