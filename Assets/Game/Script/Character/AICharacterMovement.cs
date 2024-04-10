@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using Game.Script.Async;
 using Game.Script.Common;
+using Game.Script.Setting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Game.Script.Character
 {
@@ -26,6 +28,7 @@ namespace Game.Script.Character
         private GameTaskCompletionSource<PathState> _pathTcl;
         private Vector3 _lasChangePosition;
         private float _lastChangePositionTime;
+        private LineRenderer _lineRenderer;
         public GameTask<PathState> Move(List<Vector3> path, float acceptRadius = 1.2f, GameObject targetGo = null)
         {
             _pathTcl = new GameTaskCompletionSource<PathState>();
@@ -36,8 +39,42 @@ namespace Game.Script.Character
             _targetGo = targetGo;
             _lasChangePosition = transform.position;
             _lastChangePositionTime = Time.unscaledTime;
+            DisplayPath(path);
             
             return _pathTcl.Task;
+        }
+
+        void DisplayPath(List<Vector3> path)
+        {
+            if (!GameSetting.Instance.ShowPath)
+            {
+                EndDrawPath();
+                return;
+            }
+
+            if(_lineRenderer == null)
+            {
+                _lineRenderer = gameObject.AddComponent<LineRenderer>();
+                _lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+                Color drawColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 0.8f);
+                _lineRenderer.startColor = drawColor;
+                _lineRenderer.endColor = drawColor;
+                _lineRenderer.startWidth = 0.1f;
+                _lineRenderer.endWidth = 0.1f;
+                
+                _lineRenderer.useWorldSpace = true;
+                
+            }
+            _lineRenderer.enabled = true;
+            _lineRenderer.positionCount = _path.Count;
+            _lineRenderer.SetPositions(path.ToArray());
+        }
+         void EndDrawPath()
+        {
+            if (_lineRenderer != null)
+            {
+                _lineRenderer.enabled = false;
+            }
         }
 
         private void Awake()
@@ -80,6 +117,7 @@ namespace Game.Script.Character
                 {
                     _pathTcl.SetResult(CurPathState);
                     _pathTcl = null;
+                    EndDrawPath();
                 }
 
                 return;
@@ -110,6 +148,7 @@ namespace Game.Script.Character
                     {
                         _pathTcl.SetResult(CurPathState);
                         _pathTcl = null;
+                        EndDrawPath();
                     }
                 }
                 else
@@ -131,6 +170,8 @@ namespace Game.Script.Character
                            _pathTcl.SetResult(CurPathState);
                            _pathTcl = null;
                        }
+
+                       EndDrawPath();
                    }
                 }
             }

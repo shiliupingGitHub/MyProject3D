@@ -16,6 +16,7 @@ namespace Game.Editor
             GameSetting.Instance.ShowGrid = GUILayout.Toggle(GameSetting.Instance.ShowGrid, "地图网格");
             GameSetting.Instance.ShowBlock = GUILayout.Toggle(GameSetting.Instance.ShowBlock, "地图阻挡");
             GameSetting.Instance.ShowFps = GUILayout.Toggle(GameSetting.Instance.ShowFps, "显示FPS");
+            GameSetting.Instance.ShowPath = GUILayout.Toggle(GameSetting.Instance.ShowPath, "显示路径");
             Handles.EndGUI();
         }
     }

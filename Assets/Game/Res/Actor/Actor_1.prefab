@@ -155,4 +155,5 @@ MonoBehaviour:
   PreviewGo: {fileID: 1965439166731268665}
   GameGo: {fileID: 0}
   isNet: 0
-  Monster: {fileID: 5248929476824234659, guid: 9d5e343a5f497f04c8df735174e2786e, type: 3}
+  TestMonster: {fileID: 5248929476824234659, guid: 9d5e343a5f497f04c8df735174e2786e,
+    type: 3}
