@@ -29,22 +29,13 @@ namespace Game.Script.Character
         }
 
         protected override bool IsBlock { get; } = false;
-
-        protected override void Start()
-        {
-            base.Start();
-            
-            if (isClientOnly)
-            {
-                Cmd_RequestEnterInfo();
-            }
-        }
         
         public override void OnStartAuthority()
         {
             base.OnStartAuthority();
 
             Common.Game.Instance.MyController = this;
+            Cmd_RequestEnterInfo();
             
         }
         
