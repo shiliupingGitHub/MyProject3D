@@ -138,6 +138,7 @@ namespace Game.Script.UI.Frames
                 var transform = Camera.main.transform;
                 transform.position += transform.forward * delta.y / ZoomFactor;
             }
+            
         }
 
         void InitInput()
