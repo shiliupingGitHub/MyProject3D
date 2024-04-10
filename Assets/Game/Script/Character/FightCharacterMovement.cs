@@ -18,8 +18,6 @@ namespace Game.Script.Character
         public float MoveSpeed = 1;
         private CharacterController _characterController;
         private Vector3 moveDir = Vector3.zero;
-        private bool bInitCamera = false;
-        private bool bCheckCamera = false;
         private Camera _camera;
         CinemachineBrain  _cinemachineBrain;
         private CinemachineVirtualCamera _cinemachineVirtualCamera;
@@ -45,7 +43,6 @@ namespace Game.Script.Character
             cinemachineConfiner.m_BoundingVolume = CameraBounds;
             
             SetUpInput();
-            bCheckCamera = true;
             GameLoop.Add(OnUpdate);
         }
 
