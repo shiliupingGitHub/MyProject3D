@@ -176,6 +176,10 @@ namespace Game.Script.UI.Frames
             {
                 inputAddActor.action.started += delegate
                 {
+                    if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
+                    {
+                        return;
+                    }
                     if (null != _curSelectShadow && null != _curSelectActorConfig && null != _curMapData)
                     {
                         _curMapData.AddActor(_curSelectShadow.transform.position, _curSelectActorConfig);
@@ -220,7 +224,15 @@ namespace Game.Script.UI.Frames
 
             if (_inputActionReferences.TryGetValue("CancelEditActor", out var inputCancelEditActor))
             {
-                inputCancelEditActor.action.started += delegate { SetSelectActor(null); };
+               
+                inputCancelEditActor.action.started += delegate
+                {
+                    if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
+                    {
+                        return;
+                    }
+                    SetSelectActor(null);
+                };
             }
         }
 
