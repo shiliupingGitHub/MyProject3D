@@ -23,7 +23,7 @@ namespace Game.Script.Character
         public PathState CurPathState { get; set; } = PathState.None;
         private List<Vector3> _path;
         private int _curPathIndex = -1;
-        private float _curAcceptRadius = 1f;
+        private float _curAcceptRadius = 0.5f;
 
         private GameObject _targetGo;
         private GameTaskCompletionSource<PathState> _pathTcl;

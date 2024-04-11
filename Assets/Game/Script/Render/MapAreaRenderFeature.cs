@@ -331,7 +331,7 @@ namespace Game.Script.Render
                 gridMaterial = gridMaterial,
                 blockMaterial = blockMaterial,
                 lineSize = lineSize,
-                renderPassEvent = RenderPassEvent.AfterRenderingTransparents
+                renderPassEvent = RenderPassEvent.AfterRenderingOpaques
             };
         }
 

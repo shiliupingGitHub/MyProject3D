@@ -19,7 +19,7 @@ namespace Game.Script.AI.Action
         }
 
         public SharedGameObject target;
-        public float acceptRadius = 1.0f;
+        public float acceptRadius = 0.5f;
         public float rePathDistance = 2;
         private MoveStatus _moveStatus = MoveStatus.None;
         private ulong _pathId;

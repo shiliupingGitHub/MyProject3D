@@ -17,7 +17,7 @@ Shader "Universal Render Pipeline/MyGrid"
          _SrcBlendAlpha("__srcA", Float) = 1.0
         _DstBlendAlpha("__dstA", Float) = 0.0
          _ZWrite("zw", Float) = 1.0
-        _ZTest("zw", Float) = 1.0
+        _ZTest("zt", Float) = 1.0
         _AlphaToMask("__alphaToMask", Float) = 0.0
 
         // Editmode props
@@ -45,7 +45,7 @@ Shader "Universal Render Pipeline/MyGrid"
         Blend [_SrcBlend][_DstBlend], [_SrcBlendAlpha][_DstBlendAlpha]
         ZWrite [_ZWrite]
         Cull [_Cull]
-        ZTest Always
+        ZTest [_ZTest]
 
         Pass
         {
