@@ -1,24 +1,25 @@
 Shader "Universal Render Pipeline/MyGrid"
 {
-    Properties
+   Properties
     {
         [MainTexture] _BaseMap("Texture", 2D) = "white" {}
         [MainColor] _BaseColor("Color", Color) = (1, 1, 1, 1)
         _Cutoff("AlphaCutout", Range(0.0, 1.0)) = 0.5
-
+        _OffsetFactor("OffsetFactor", Float) = 0.0
+        _OffsetUnits("OffsetUnits", Float) = 0.0
+        _ZTest("ZTest", Float) = 4
         // BlendMode
         _Surface("__surface", Float) = 0.0
         _Blend("__mode", Float) = 0.0
         _Cull("__cull", Float) = 2.0
         [ToggleUI] _AlphaClip("__clip", Float) = 0.0
-        _BlendOp("__blendop", Float) = 0.0
-         _SrcBlend("__src", Float) = 1.0
-        _DstBlend("__dst", Float) = 0.0
-         _SrcBlendAlpha("__srcA", Float) = 1.0
-        _DstBlendAlpha("__dstA", Float) = 0.0
-         _ZWrite("zw", Float) = 1.0
-        _ZTest("zt", Float) = 1.0
-        _AlphaToMask("__alphaToMask", Float) = 0.0
+        [HideInInspector] _BlendOp("__blendop", Float) = 0.0
+        [HideInInspector] _SrcBlend("__src", Float) = 1.0
+        [HideInInspector] _DstBlend("__dst", Float) = 0.0
+        [HideInInspector] _SrcBlendAlpha("__srcA", Float) = 1.0
+        [HideInInspector] _DstBlendAlpha("__dstA", Float) = 0.0
+        [HideInInspector] _ZWrite("__zw", Float) = 1.0
+        [HideInInspector] _AlphaToMask("__alphaToMask", Float) = 0.0
 
         // Editmode props
         _QueueOffset("Queue offset", Float) = 0.0
@@ -45,8 +46,8 @@ Shader "Universal Render Pipeline/MyGrid"
         Blend [_SrcBlend][_DstBlend], [_SrcBlendAlpha][_DstBlendAlpha]
         ZWrite [_ZWrite]
         Cull [_Cull]
+        Offset [_OffsetFactor], [_OffsetUnits]
         ZTest [_ZTest]
-
         Pass
         {
             Name "Unlit"
