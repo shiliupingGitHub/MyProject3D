@@ -88,7 +88,11 @@ namespace Game.Script.Common
             if (GameSetting.Instance.ShowFps)
             {
                 string msg = string.Format("Fps:{0}  FpsDeltaTime:{1}", _Fps, _frameDeltaTime);
-                GUI.Label(new Rect(0, 0, 300, 50), msg);
+                GUIStyle style = GUIStyle.none;
+                style.fontSize = 30;
+                style.fontStyle = FontStyle.Normal;
+                style.normal.textColor = Color.white;
+                GUI.Label(new Rect(0, 0, 300, 500), msg,style);
               
             }
         }
