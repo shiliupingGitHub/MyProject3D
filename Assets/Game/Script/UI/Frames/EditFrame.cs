@@ -6,6 +6,7 @@ using Game.Script.Map;
 using Game.Script.Res;
 using Game.Script.Setting;
 using Game.Script.Subsystem;
+using OneP.InfinityScrollView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -33,12 +34,12 @@ namespace Game.Script.UI.Frames
         private bool _bTicking;
         private readonly List<int> _bkIds = new();
         [UIPath("InputSaveName")] private InputField _inputSaveName;
-        [UIPath("Load/ddSaveMaps")] private Dropdown _ddSaveMaps;
+        [UIPath("ddSaveMaps")] private Dropdown _ddSaveMaps;
         [UIPath("btnNew")] private Button _btnNew;
-        [UIPath("Load/btnLoad")] private Button _btnLoad;
+        [UIPath("btnLoad")] private Button _btnLoad;
         [UIPath("btnSave")] private Button _btnSave;
         [UIPath("ActorTemplate")] private GameObject _actorTemplate;
-        [UIPath("svActors/Viewport/Content")] private Transform _contentRoot;
+        [UIPath("svActors")] private InfinityScrollView _ScrollViewActors;
         [UIPath("btnReturnHall")] private Button _btnReturnHall;
         [UIPath("btnEventEdit")] private Button _btnEventEdit;
         [UIPath("btnSetting")] private Button _btnSetting;
@@ -257,22 +258,25 @@ namespace Game.Script.UI.Frames
 
         void InitActors()
         {
-            var actorConfigs = ActorConfig.dic;
-            foreach (var actorConfig in actorConfigs)
+            List<ActorConfig> actorConfigs = new();
+            foreach (var actorConfig in ActorConfig.dic)
             {
-                var actorGo = Object.Instantiate(_actorTemplate, _contentRoot);
-                actorGo.transform.localScale = Vector3.one;
-                actorGo.name = actorConfig.Value.id.ToString();
-                var text = actorGo.transform.Find("Name").GetComponent<Text>();
-                text.text = actorConfig.Value.name;
-                actorGo.SetActive(true);
-                var btn = actorGo.GetComponent<Button>();
-
-                if (btn != null)
-                {
-                    btn.onClick.AddListener(() => { SetSelectActor(actorConfig.Value); });
-                }
+                actorConfigs.Add(actorConfig.Value);
             }
+            _ScrollViewActors.onItemReload += (go, i) =>
+            {
+                var btn = go.transform.Find("btn").GetComponent<Button>();
+                var text = go.transform.Find("btn/txt").GetComponent<Text>();
+                var actorConfig =actorConfigs[i];
+                text.text = actorConfig.name;
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() =>
+                {
+                    SetSelectActor(actorConfig);
+                });
+            };
+            _ScrollViewActors.Setup(actorConfigs.Count);
+         
         }
 
         void SetSelectActor(ActorConfig actorConfig)
