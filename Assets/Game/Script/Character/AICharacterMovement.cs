@@ -15,6 +15,7 @@ namespace Game.Script.Character
         Success,
         Fail,
     }
+
     public class AICharacterMovement : MonoBehaviour
     {
         public float moveSpeed = 0.5f;
@@ -24,11 +25,13 @@ namespace Game.Script.Character
         private int _curPathIndex = -1;
         private float _curAcceptRadius = 1f;
 
-        private GameObject _targetGo ;
+        private GameObject _targetGo;
         private GameTaskCompletionSource<PathState> _pathTcl;
         private Vector3 _lasChangePosition;
         private float _lastChangePositionTime;
         private LineRenderer _lineRenderer;
+        private GameObject CurtHitGo { get; set; }
+
         public GameTask<PathState> Move(List<Vector3> path, float acceptRadius = 1.2f, GameObject targetGo = null)
         {
             _pathTcl = new GameTaskCompletionSource<PathState>();
@@ -40,7 +43,7 @@ namespace Game.Script.Character
             _lasChangePosition = transform.position;
             _lastChangePositionTime = Time.unscaledTime;
             DisplayPath(path);
-            
+
             return _pathTcl.Task;
         }
 
@@ -52,7 +55,7 @@ namespace Game.Script.Character
                 return;
             }
 
-            if(_lineRenderer == null)
+            if (_lineRenderer == null)
             {
                 _lineRenderer = gameObject.AddComponent<LineRenderer>();
                 Color drawColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 0.8f);
@@ -63,13 +66,14 @@ namespace Game.Script.Character
                 _lineRenderer.material = new Material(GameSetting.Instance.Config.pathMat);
                 _lineRenderer.useWorldSpace = true;
                 _lineRenderer.material.SetColor("_BaseColor", drawColor);
-                
             }
+
             _lineRenderer.enabled = true;
             _lineRenderer.positionCount = _path.Count;
             _lineRenderer.SetPositions(path.ToArray());
         }
-         void EndDrawPath()
+
+        void EndDrawPath()
         {
             if (_lineRenderer != null)
             {
@@ -93,17 +97,28 @@ namespace Game.Script.Character
             DoMove(deltaTime);
             DoCheckMove();
         }
+        
+        void CleatPathInfo()
+        {
+            _curPathIndex = -1;
+            _path = null;
+            if (null != _pathTcl)
+            {
+                _pathTcl.SetResult(CurPathState);
+                _pathTcl = null;
+                EndDrawPath();
+            }
+        }
+
         void DoMove(float deltaTime)
         {
             if (null == _path)
             {
-               
                 return;
             }
 
             if (_curPathIndex < 0)
             {
-             
                 return;
             }
 
@@ -111,27 +126,19 @@ namespace Game.Script.Character
             {
                 CurPathState = PathState.Success;
 
-                _curPathIndex = -1;
-                _path = null;
-                if (null != _pathTcl)
-                {
-                    _pathTcl.SetResult(CurPathState);
-                    _pathTcl = null;
-                    EndDrawPath();
-                }
+                CleatPathInfo();
 
                 return;
             }
 
             var targetPosition = _path[_curPathIndex];
-            
+
             var curPosition = transform.position;
             targetPosition.y = curPosition.y;
             var dir = targetPosition - curPosition;
 
             if (dir.sqrMagnitude < 0.1)
             {
-                
                 _curPathIndex++;
             }
             else
@@ -141,61 +148,45 @@ namespace Game.Script.Character
                 if (_curAcceptRadius >= Vector3.Distance(curPosition, endPosition))
                 {
                     CurPathState = PathState.Success;
-                   
-                    _path = null;
-                    _curPathIndex = -1;
-                    if (null != _pathTcl)
-                    {
-                        _pathTcl.SetResult(CurPathState);
-                        _pathTcl = null;
-                        EndDrawPath();
-                    }
+
+                    CleatPathInfo();
+                    EndDrawPath();
                 }
                 else
                 {
                     var dis = Vector3.Distance(targetPosition, curPosition);
                     float pathSpeed = dis / deltaTime;
                     float speed = Mathf.Min(pathSpeed, moveSpeed);
-                    
-                   var flag = _characterController.Move(dir.normalized * speed * deltaTime);
 
-                   if (flag != CollisionFlags.None)
-                   {
-                       CurPathState = PathState.Fail;
-                   
-                       _path = null;
-                       _curPathIndex = -1;
-                       if (null != _pathTcl)
-                       {
-                           _pathTcl.SetResult(CurPathState);
-                           _pathTcl = null;
-                       }
+                    var flag = _characterController.Move(dir.normalized * speed * deltaTime);
 
-                       EndDrawPath();
-                   }
+                    if (flag != CollisionFlags.None)
+                    {
+                        CurPathState = CurtHitGo == _targetGo? PathState.Success: PathState.Fail;
+                        CleatPathInfo();
+                        EndDrawPath();
+                    }
+                    else
+                    {
+                        CurtHitGo = null;
+                    }
                 }
             }
         }
-        
+
         void DoCheckMove()
         {
             if (CurPathState != PathState.Moving)
             {
                 return;
             }
+
             if (transform.position == _lasChangePosition)
             {
                 if (Time.unscaledTime - _lastChangePositionTime > 0.5f)
                 {
-                    
-                    if (null != _pathTcl)
-                    {
-                        _pathTcl.SetResult(CurPathState);
-                    }
-
-                    _curPathIndex = -1;
-                    _path = null;
-                    _pathTcl = null;
+                    CurPathState = PathState.Fail;
+                    CleatPathInfo();
                 }
             }
             else
@@ -205,52 +196,15 @@ namespace Game.Script.Character
             }
         }
         
-        private void OnCollisionEnter(Collision other)
-        {
-            if (CurPathState == PathState.Moving)
-            {
-                CurPathState = other.gameObject == _targetGo ? PathState.Success : PathState.Fail;
-            }
-            
-            if (null != _pathTcl)
-            {
-                _pathTcl.SetResult(CurPathState);
-            }
-
-            _curPathIndex = -1;
-            _path = null;
-            _pathTcl = null;
-        }
-        
         public void CancelMove()
         {
-       
             CurPathState = PathState.None;
-            if (null != _pathTcl)
-            {
-                _pathTcl.SetResult(CurPathState);
-            }
-
-            _curPathIndex = -1;
-            _path = null;
-            _pathTcl = null;
+            CleatPathInfo();
         }
-
-        private void OnCollisionStay(Collision other)
+        
+        private void OnControllerColliderHit(ControllerColliderHit hit)
         {
-            if (CurPathState == PathState.Moving)
-            {
-                CurPathState = other.gameObject == _targetGo ? PathState.Success : PathState.Fail;
-                
-                if (null != _pathTcl)
-                {
-                    _pathTcl.SetResult(CurPathState);
-                }
-
-                _curPathIndex = -1;
-                _path = null;
-                _pathTcl = null;
-            }
+            CurtHitGo = hit.gameObject;
         }
     }
 }
