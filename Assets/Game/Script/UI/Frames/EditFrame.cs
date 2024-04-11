@@ -17,13 +17,7 @@ namespace Game.Script.UI.Frames
     public class EditFrame : Frame
     {
         protected override string ResPath => "Assets/Game/Res/UI/EditFrame.prefab";
-        [UIPath("ddBk")] private Dropdown _ddBk;
-
         private MapData _curMapData;
-        private const float ZoomFactor = 400;
-        private const float OrthographicSizeMin = 0.5f;
-        private const float OrthographicSizeMax = 20;
-        private const float MoveFactor = 0.01f;
         private bool _bEnabledInput;
         private readonly Dictionary<string, InputActionReference> _inputActionReferences = new();
         private bool _bDrag;
@@ -33,6 +27,7 @@ namespace Game.Script.UI.Frames
         private GameObject _curSelectShadow;
         private bool _bTicking;
         private readonly List<int> _bkIds = new();
+        [UIPath("ddBk")] private Dropdown _ddBk;
         [UIPath("InputSaveName")] private InputField _inputSaveName;
         [UIPath("ddSaveMaps")] private Dropdown _ddSaveMaps;
         [UIPath("btnNew")] private Button _btnNew;
@@ -43,6 +38,8 @@ namespace Game.Script.UI.Frames
         [UIPath("btnReturnHall")] private Button _btnReturnHall;
         [UIPath("btnEventEdit")] private Button _btnEventEdit;
         [UIPath("btnSetting")] private Button _btnSetting;
+        [UIPath("sdZoomFactor")] private Slider _sdZoomFactor;
+        [UIPath("sdMoveFactor")] private Slider _sdMoveFactor;
 
         void AddToTick()
         {
@@ -122,7 +119,11 @@ namespace Game.Script.UI.Frames
                         var transform = Camera.main.transform;
                         var cameraPosition = transform.position;
 
-                        cameraPosition -= delta * MoveFactor;
+                        if (!UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
+                        {
+                            cameraPosition -= delta * GameSetting.Instance.EditMoveFactor;;
+                        }
+                        
                         transform.position = cameraPosition;
                     }
 
@@ -137,7 +138,7 @@ namespace Game.Script.UI.Frames
             if (Camera.main != null)
             {
                 var transform = Camera.main.transform;
-                transform.position += transform.forward * delta.y / ZoomFactor;
+                transform.position += transform.forward * delta.y * GameSetting.Instance.EditZoomFactor;
             }
             
         }
@@ -382,6 +383,20 @@ namespace Game.Script.UI.Frames
             }
         }
 
+        void InitFactor()
+        {
+           _sdMoveFactor.value = GameSetting.Instance.EditMoveFactor;
+           _sdZoomFactor.value = GameSetting.Instance.EditZoomFactor;
+           _sdMoveFactor.onValueChanged.AddListener(value =>
+           {
+               GameSetting.Instance.EditMoveFactor = value;
+           });
+           _sdZoomFactor.onValueChanged.AddListener(value =>
+           {
+               GameSetting.Instance.EditZoomFactor = value;
+           });
+        }
+
         public override void Init(Transform parent)
         {
             base.Init(parent);
@@ -460,7 +475,7 @@ namespace Game.Script.UI.Frames
                 }
             });
 
-            _btnSave.GetComponent<Button>().onClick.AddListener(() =>
+            _btnSave.onClick.AddListener(() =>
             {
                 if (_curMapData != null && null != _inputSaveName)
                 {
@@ -485,6 +500,7 @@ namespace Game.Script.UI.Frames
             InitActors();
             InitInput();
             AddToTick();
+            InitFactor();
         }
     }
 }

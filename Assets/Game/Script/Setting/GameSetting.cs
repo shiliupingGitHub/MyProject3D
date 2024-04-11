@@ -24,11 +24,24 @@ namespace Game.Script.Setting
        GameSetting.Instance.Init();
 }
 #endif
-        const string gameSettingAssetPath = "Assets/Game/Res/Misc/GameSettingConfig.prefab";
+        const string GameSettingAssetPath = "Assets/Game/Res/Misc/GameSettingConfig.prefab";
         public bool ShowGrid { get; set; }
         public bool ShowBlock { get; set; }
         public bool ShowFps { get; set; }
         public bool ShowPath { get; set; }
+
+        public float EditMoveFactor
+        {
+            get => PlayerPrefs.GetFloat("EditMoveFactor", 0.01f);
+            set => PlayerPrefs.SetFloat("EditMoveFactor", value);
+        }
+        
+        public float EditZoomFactor
+        {
+            get => PlayerPrefs.GetFloat("EditZoomFactor", 0.0025f);
+            set => PlayerPrefs.SetFloat("EditZoomFactor", value);
+        }
+        
         private GameSettingConfig _gameSettingConfig;
 
         public GameSettingConfig Config
@@ -37,7 +50,7 @@ namespace Game.Script.Setting
             {
                 if (_gameSettingConfig == null)
                 {
-                    var template = GameResMgr.Instance.LoadAssetSync<GameObject>(gameSettingAssetPath);
+                    var template = GameResMgr.Instance.LoadAssetSync<GameObject>(GameSettingAssetPath);
                     var go = Object.Instantiate(template);
                     Object.DontDestroyOnLoad(go);
                     _gameSettingConfig = go.GetComponent<GameSettingConfig>();
