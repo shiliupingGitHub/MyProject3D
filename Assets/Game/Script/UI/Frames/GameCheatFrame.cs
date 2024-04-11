@@ -16,7 +16,16 @@ namespace Game.Script.UI.Frames
             {
                 var cheatSubsystem = Common.Game.Instance.GetSubsystem<GameCheatSubsystem>();
                 cheatSubsystem.Execute(str);
+                UIManager.Instance.UIEventSystem.SetSelectedGameObject(null);
+                Hide();
             });
         }
+
+        protected override void OnShow()
+        {
+            base.OnShow();
+            UIManager.Instance.UIEventSystem.SetSelectedGameObject(_inputCheat.gameObject);
+        }
+        
     }
 }

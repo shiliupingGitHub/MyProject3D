@@ -3,6 +3,7 @@ using Cinemachine;
 using Game.Script.Common;
 using Game.Script.Res;
 using Game.Script.Subsystem;
+using Game.Script.UI;
 using Mirror;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -21,12 +22,14 @@ namespace Game.Script.Character
         private CharacterController _characterController;
         private Vector3 moveDir = Vector3.zero;
         private Camera _camera;
-        CinemachineBrain  _cinemachineBrain;
+        CinemachineBrain _cinemachineBrain;
         private CinemachineVirtualCamera _cinemachineVirtualCamera;
 
-        [SyncVar(hook = nameof(OnMovingChanged))] private bool _bMoving = false;
-        public bool  IsMoving => _bMoving;
-        
+        [SyncVar(hook = nameof(OnMovingChanged))]
+        private bool _bMoving = false;
+
+        public bool IsMoving => _bMoving;
+
         private void Awake()
         {
             _characterController = GetComponent<CharacterController>();
@@ -57,7 +60,7 @@ namespace Game.Script.Character
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             var CameraBounds = mapSubsystem.MapBk.transform.Find("CameraBounds").GetComponent<Collider>();
             cinemachineConfiner.m_BoundingVolume = CameraBounds;
-            
+
             SetUpInput();
             GameLoop.Add(OnUpdate);
         }
@@ -66,6 +69,7 @@ namespace Game.Script.Character
         {
             GameLoop.Remove(OnUpdate);
         }
+
         private void OnUpdate(float deltaTime)
         {
             if (isLocalPlayer)
@@ -73,6 +77,7 @@ namespace Game.Script.Character
                 DoMove(deltaTime);
             }
         }
+
         void SetUpInput()
         {
             MoveUpAction.action.Enable();
@@ -80,20 +85,55 @@ namespace Game.Script.Character
             MoveLeftAction.action.Enable();
             MoveRightAction.action.Enable();
 
-            MoveUpAction.action.started += context => { moveDir.z += 1; };
-            MoveUpAction.action.canceled += context => { moveDir.z -= 1; };
+            MoveUpAction.action.started += context =>
+            {
+                if (!UIManager.Instance.UIEventSystem.currentSelectedGameObject)
+                    moveDir.z = 1;
+            };
+            MoveUpAction.action.canceled += context =>
+            {
+                if (!UIManager.Instance.UIEventSystem.currentSelectedGameObject)
+                    moveDir.z = 0;
+            };
 
-            MoveDownAction.action.started += context => { moveDir.z -= 1; };
-            MoveDownAction.action.canceled += context => { moveDir.z += 1; };
+            MoveDownAction.action.started += context =>
+            {
+                if (!UIManager.Instance.UIEventSystem.currentSelectedGameObject)
+                    moveDir.z = -1;
+            };
+            MoveDownAction.action.canceled += context =>
+            {
+                if (!UIManager.Instance.UIEventSystem.currentSelectedGameObject) moveDir.z = 0;
+            };
 
-            MoveLeftAction.action.started += context => { moveDir.x -= 1; };
-            MoveLeftAction.action.canceled += context => { moveDir.x += 1; };
+            MoveLeftAction.action.started += context =>
+            {
+                if (!UIManager.Instance.UIEventSystem.currentSelectedGameObject) moveDir.x = -1;
+            };
+            MoveLeftAction.action.canceled += context =>
+            {
+                if (!UIManager.Instance.UIEventSystem.currentSelectedGameObject) moveDir.x = 0;
+            };
 
-            MoveRightAction.action.started += context => { moveDir.x += 1; };
-            MoveRightAction.action.canceled += context => { moveDir.x -= 1; };
+            MoveRightAction.action.started += context =>
+            {
+                if (!UIManager.Instance.UIEventSystem.currentSelectedGameObject) moveDir.x = 1;
+            };
+            MoveRightAction.action.canceled += context =>
+            {
+                if (!UIManager.Instance.UIEventSystem.currentSelectedGameObject) moveDir.x = 0;
+            };
         }
+
         void DoMove(float deltaTime)
         {
+            if(!UIManager.Instance.IsInit)
+                return;
+            if (UIManager.Instance.UIEventSystem.currentSelectedGameObject != null)
+            {
+                moveDir = Vector3.zero;
+                return;
+            }
             var dir = moveDir;
             dir.Normalize();
 
@@ -105,6 +145,7 @@ namespace Game.Script.Character
                 _bMoving = moving;
                 movingChanged?.Invoke();
             }
+
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
 
             if (mapSubsystem.MapBk == null)
@@ -113,7 +154,6 @@ namespace Game.Script.Character
             }
 
             _characterController.Move(dir * MoveSpeed * deltaTime);
-            
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Game.Script.Cheat
         [CheatServerOnly]
         public void TestHost(float k)
         {
+            int a = 0;
             
         }
     }
