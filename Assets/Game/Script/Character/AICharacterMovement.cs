@@ -55,12 +55,11 @@ namespace Game.Script.Character
             if(_lineRenderer == null)
             {
                 _lineRenderer = gameObject.AddComponent<LineRenderer>();
-                _lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
                 Color drawColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 0.8f);
                 _lineRenderer.startColor = drawColor;
                 _lineRenderer.endColor = drawColor;
-                _lineRenderer.startWidth = 0.1f;
-                _lineRenderer.endWidth = 0.1f;
+                _lineRenderer.startWidth = 0.01f;
+                _lineRenderer.endWidth = 0.01f;
                 _lineRenderer.material = new Material(GameSetting.Instance.Config.pathMat);
                 _lineRenderer.useWorldSpace = true;
                 _lineRenderer.material.SetColor("_BaseColor", drawColor);
