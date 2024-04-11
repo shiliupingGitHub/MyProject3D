@@ -28,6 +28,14 @@ namespace Game.Script.Character
             TargetRpc_SetStartFightLeftTime(fightSubsystem.StartLeftTime);
         }
 
+        [Command]
+        public void Cmd_ExecuteCheat(string str)
+        {
+            var gameCheatSubsystem = Common.Game.Instance.GetSubsystem<GameCheatSubsystem>();
+            
+            gameCheatSubsystem.Execute(str);
+        }
+
         protected override bool IsBlock { get; } = false;
         
         public override void OnStartAuthority()

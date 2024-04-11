@@ -22,8 +22,18 @@ namespace Game.Script.UI
                 InitField(_gameObject, this);
             }
         }
-        
-        
+
+        public bool IsVisible
+        {
+            get
+            {
+                if(null != FrameGo)
+                {
+                    return FrameGo.activeSelf;
+                }
+                return false;
+            }
+        }
 
         public static void InitField(GameObject go, System.Object o)
         {

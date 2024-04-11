@@ -2,6 +2,7 @@
 using Game.Script.Common;
 using Game.Script.Res;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Game.Script.UI
 {
@@ -12,6 +13,8 @@ namespace Game.Script.UI
         private readonly List<Frame> _queueFrames = new List<Frame>();
         private Transform _baseRoot;
         private Transform _topRoot;
+        public bool IsInit => _bInit;
+        public EventSystem UIEventSystem { get; private set; }
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void RuntimeLoad()
@@ -27,6 +30,7 @@ namespace Game.Script.UI
                 Object.DontDestroyOnLoad(_uiRoot);
                 _baseRoot = _uiRoot.transform.Find("Canvas/base");
                 _topRoot = _uiRoot.transform.Find("Canvas/top");
+                UIEventSystem = _uiRoot.GetComponentInChildren<EventSystem>();
                 _bInit = true;
             }
         }
@@ -57,6 +61,21 @@ namespace Game.Script.UI
             {
                 curFrame.Hide();
             }
+        }
+
+        public T Get<T>() where T : Frame
+        {
+            T ret = null;
+            foreach (var frame in _queueFrames)
+            {
+                if (frame.GetType() == typeof(T))
+                {
+                    ret = frame as T;
+                    break;
+                }
+            }
+
+            return ret;
         }
         
         public T Show<T>(bool bUseQueue = true, bool top = false) where  T : Frame
