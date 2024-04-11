@@ -61,8 +61,8 @@ namespace Game.Script.Character
                 Color drawColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 0.8f);
                 _lineRenderer.startColor = drawColor;
                 _lineRenderer.endColor = drawColor;
-                _lineRenderer.startWidth = 0.01f;
-                _lineRenderer.endWidth = 0.01f;
+                _lineRenderer.startWidth = 0.02f;
+                _lineRenderer.endWidth = 0.02f;
                 _lineRenderer.material = new Material(GameSetting.Instance.Config.pathMat);
                 _lineRenderer.useWorldSpace = true;
                 _lineRenderer.material.SetColor("_BaseColor", drawColor);
