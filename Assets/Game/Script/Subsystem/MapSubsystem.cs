@@ -62,10 +62,6 @@ namespace Game.Script.Subsystem
                 var bornPosition = GetRandomBornPosition();
                 var playerPrefab = GameResMgr.Instance.LoadAssetSync<GameObject>(playerAssetPath);
                 GameObject player = Object.Instantiate(playerPrefab, bornPosition, quaternion.identity);
-               var characterController = player.GetComponent<CharacterController>();
-               var position = player.transform.position;
-               position.y += characterController.height * 0.5f;
-               player.transform.position = position;
                 return player;
             };
         }
