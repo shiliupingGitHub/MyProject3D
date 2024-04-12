@@ -45,14 +45,8 @@ namespace Game.Script.Character
             return _pathTcl.Task;
         }
 
-        void DisplayPath(List<Vector3> path)
+        void CheckLineRenderValid()
         {
-            if (!GameSetting.Instance.ShowPath)
-            {
-                EndDrawPath();
-                return;
-            }
-
             if (_lineRenderer == null)
             {
                 _lineRenderer = gameObject.AddComponent<LineRenderer>();
@@ -65,7 +59,17 @@ namespace Game.Script.Character
                 _lineRenderer.useWorldSpace = true;
                 _lineRenderer.material.SetColor("_BaseColor", drawColor);
             }
+        }
 
+        void DisplayPath(List<Vector3> path)
+        {
+            if (!GameSetting.Instance.ShowPath)
+            {
+                EndDrawPath();
+                return;
+            }
+
+            CheckLineRenderValid();
             _lineRenderer.enabled = true;
             _lineRenderer.positionCount = _path.Count;
             _lineRenderer.SetPositions(path.ToArray());
@@ -81,8 +85,8 @@ namespace Game.Script.Character
 
         protected override void Awake()
         {
+            base.Awake();
             GameLoop.Add(OnUpdate);
-            CharacterController = GetComponent<CharacterController>();
         }
 
         private void OnDestroy()
@@ -95,7 +99,7 @@ namespace Game.Script.Character
             DoMove(deltaTime);
             DoCheckMove();
         }
-        
+
         void CleatPathInfo()
         {
             _curPathIndex = -1;
@@ -108,29 +112,35 @@ namespace Game.Script.Character
             }
         }
 
-        void DoMove(float deltaTime)
+        private bool NeedPath => _path != null && _curPathIndex >= 0;
+
+        bool CheckPathValid()
         {
-            if (null == _path)
+            if (!NeedPath)
             {
-                return;
+                return false;
             }
-
-            if (_curPathIndex < 0)
-            {
-                return;
-            }
-
             if (_curPathIndex >= _path.Count)
             {
                 CurPathState = PathState.Success;
 
                 CleatPathInfo();
 
-                return;
+                return false;
             }
 
-            var targetPosition = _path[_curPathIndex];
+            return true;
+        }
 
+        void DoMove(float deltaTime)
+        {
+
+            if (!CheckPathValid())
+            {
+                return;
+            }
+            
+            var targetPosition = _path[_curPathIndex];
             var curPosition = transform.position;
             targetPosition.y = curPosition.y;
             var dir = targetPosition - curPosition;
@@ -155,12 +165,11 @@ namespace Game.Script.Character
                     var dis = Vector3.Distance(targetPosition, curPosition);
                     float pathSpeed = dis / deltaTime;
                     float speed = Mathf.Min(pathSpeed, moveSpeed);
-
                     var flag = CharacterController.Move(dir.normalized * speed * deltaTime);
 
                     if (flag != CollisionFlags.None)
                     {
-                        CurPathState = CurtHitGo == _targetGo? PathState.Success: PathState.Fail;
+                        CurPathState = CurtHitGo == _targetGo ? PathState.Success : PathState.Fail;
                         CleatPathInfo();
                         EndDrawPath();
                     }
@@ -193,13 +202,13 @@ namespace Game.Script.Character
                 _lastChangePositionTime = Time.unscaledTime;
             }
         }
-        
+
         public void CancelMove()
         {
             CurPathState = PathState.None;
             CleatPathInfo();
         }
-        
+
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
             CurtHitGo = hit.gameObject;
