@@ -11,6 +11,11 @@ namespace Game.Editor
     
     public class SceneEditor : UnityEditor.Editor
     {
+        [MenuItem("Tools/ClearPlayerPrefs")]
+        static void ClearPlayerPrefs()
+        {
+            PlayerPrefs.DeleteAll();
+        }
         [MenuItem("GameObject/CreateMapBk")]
         static void CreateMapBk()
         {

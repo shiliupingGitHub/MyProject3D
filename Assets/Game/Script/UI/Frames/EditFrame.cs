@@ -7,6 +7,7 @@ using Game.Script.Res;
 using Game.Script.Setting;
 using Game.Script.Subsystem;
 using OneP.InfinityScrollView;
+using Rewired;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -18,11 +19,7 @@ namespace Game.Script.UI.Frames
     {
         protected override string ResPath => "Assets/Game/Res/UI/EditFrame.prefab";
         private MapData _curMapData;
-        private bool _bEnabledInput;
-        private readonly Dictionary<string, InputActionReference> _inputActionReferences = new();
-        private bool _bDrag;
         private bool _bAddTick;
-        private Vector3 _lastDragPosition = Vector3.zero;
         private ActorConfig _curSelectActorConfig;
         private GameObject _curSelectShadow;
         private bool _bTicking;
@@ -34,7 +31,7 @@ namespace Game.Script.UI.Frames
         [UIPath("btnLoad")] private Button _btnLoad;
         [UIPath("btnSave")] private Button _btnSave;
         [UIPath("ActorTemplate")] private GameObject _actorTemplate;
-        [UIPath("svActors")] private InfinityScrollView _ScrollViewActors;
+        [UIPath("svActors")] private InfinityScrollView _scrollViewActors;
         [UIPath("btnReturnHall")] private Button _btnReturnHall;
         [UIPath("btnEventEdit")] private Button _btnEventEdit;
         [UIPath("btnSetting")] private Button _btnSetting;
@@ -71,12 +68,11 @@ namespace Game.Script.UI.Frames
 
         void Tick()
         {
-            if (_bDrag)
-            {
-                TickDrag();
-            }
-
+            TickDrag();
             TickShadow();
+            TickZoom();
+            TickPutActor();
+            TickCancelPutActor();
         }
 
         void TickShadow()
@@ -86,7 +82,7 @@ namespace Game.Script.UI.Frames
                 if (Camera.main != null)
                 {
                     var layer = LayerMask.NameToLayer("LandScape");
-                    var ray= Camera.main.ScreenPointToRay(Input.mousePosition);
+                    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(ray, out var hitInfo, float.MaxValue, 1 << layer))
                     {
                         MapBk mapBk = Object.FindObjectOfType<MapBk>();
@@ -96,175 +92,14 @@ namespace Game.Script.UI.Frames
                             _curSelectShadow.transform.position = mapBk.ConvertToGridPosition(hitInfo.point);
                         }
                     }
-
-                  
                 }
             }
         }
 
-        void TickDrag()
-        {
-            if (_inputActionReferences.TryGetValue("EditDrag", out var inputDrag))
-            {
-                if (inputDrag.action.IsPressed())
-                {
-                    var newPosition = Input.mousePosition;
-                    var delta = newPosition - _lastDragPosition;
-
-                    delta.z = delta.y;
-                    delta.y = 0;
-
-                    if (Camera.main != null)
-                    {
-                        var transform = Camera.main.transform;
-                        var cameraPosition = transform.position;
-
-                        if (!UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
-                        {
-                            cameraPosition -= delta * GameSetting.Instance.EditMoveFactor;;
-                        }
-                        
-                        transform.position = cameraPosition;
-                    }
-
-                    _lastDragPosition = newPosition;
-                }
-            }
-        }
-
-        void OnZoom(InputAction.CallbackContext callbackContext)
-        {
-            var delta = callbackContext.ReadValue<Vector2>();
-            if (Camera.main != null)
-            {
-                var transform = Camera.main.transform;
-                transform.position += transform.forward * delta.y * GameSetting.Instance.EditZoomFactor;
-            }
-            
-        }
-
-        void InitInput()
-        {
-            // hookActions.Add("Zoom", OnZoom);
-            // hookActions.Add("EditMove", OnMove);
-            var hooks = FrameGo.GetComponents<InputActionHook>();
-            foreach (var hook in hooks)
-            {
-                if (hook.inputAction != null)
-                {
-                    _inputActionReferences.Add(hook.inputAction.action.name, hook.inputAction);
-                }
-            }
-
-            if (_inputActionReferences.TryGetValue("Zoom", out var inputZoom))
-            {
-                inputZoom.action.performed += OnZoom;
-            }
-
-            if (_inputActionReferences.TryGetValue("EditDrag", out var inputDrag))
-            {
-                inputDrag.action.started += delegate
-                {
-                    _bDrag = true;
-                    _lastDragPosition = Input.mousePosition;
-                };
-
-                inputDrag.action.canceled += delegate { _bDrag = false; };
-            }
-
-            if (_inputActionReferences.TryGetValue("EditAddActor", out var inputAddActor))
-            {
-                inputAddActor.action.started += delegate
-                {
-                    if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
-                    {
-                        return;
-                    }
-                    if (null != _curSelectShadow && null != _curSelectActorConfig && null != _curMapData)
-                    {
-                        _curMapData.AddActor(_curSelectShadow.transform.position, _curSelectActorConfig);
-                    }
-                    else
-                    {
-                        if (Input.GetKey(KeyCode.LeftShift))
-                        {
-                            if (null != _curMapData && null != Camera.main)
-                            {
-                                var layer = LayerMask.NameToLayer("LandScape");
-                                var ray= Camera.main.ScreenPointToRay(Input.mousePosition);
-                                if (Physics.Raycast(ray, out var hitInfo, float.MaxValue, 1 << layer))
-                                {
-                                    _curMapData.RemoveActor(hitInfo.point);
-                                }
-                               
-                            }
-                        }
-                        else if (Input.GetKey(KeyCode.LeftAlt))
-                        {
-                            if (null != _curMapData && null != Camera.main)
-                            {
-                                var layer = LayerMask.NameToLayer("LandScape");
-                                var ray= Camera.main.ScreenPointToRay(Input.mousePosition);
-                                if (Physics.Raycast(ray, out var hitInfo, float.MaxValue, 1 << layer))
-                                {
-                                    var actorData = _curMapData.GetActorData(hitInfo.point);
-                                    if (null != actorData)
-                                    {
-                                        var frame = UIManager.Instance.Show<ActorDataEditFrame>();
-                                        frame.CurActorData = actorData;
-                                    }
-                                    
-                                }
-                               
-                            }
-                        }
-                    }
-                };
-            }
-
-            if (_inputActionReferences.TryGetValue("CancelEditActor", out var inputCancelEditActor))
-            {
-               
-                inputCancelEditActor.action.started += delegate
-                {
-                    if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
-                    {
-                        return;
-                    }
-                    SetSelectActor(null);
-                };
-            }
-        }
-
-        void EnableInput()
-        {
-            if (!_bEnabledInput)
-            {
-                foreach (var input in _inputActionReferences)
-                {
-                    input.Value.action.Enable();
-                }
-
-                _bEnabledInput = true;
-            }
-        }
-
-        void DisableInput()
-        {
-            if (_bEnabledInput)
-            {
-                foreach (var input in _inputActionReferences)
-                {
-                    input.Value.action.Disable();
-                }
-
-                _bEnabledInput = false;
-            }
-        }
 
         protected override void OnDestroy()
         {
-            DisableInput();
+            //DisableInput();
             base.OnDestroy();
             RemoveTick();
         }
@@ -276,20 +111,17 @@ namespace Game.Script.UI.Frames
             {
                 actorConfigs.Add(actorConfig.Value);
             }
-            _ScrollViewActors.onItemReload += (go, i) =>
+
+            _scrollViewActors.onItemReload += (go, i) =>
             {
                 var btn = go.transform.Find("btn").GetComponent<Button>();
                 var text = go.transform.Find("btn/txt").GetComponent<Text>();
-                var actorConfig =actorConfigs[i];
+                var actorConfig = actorConfigs[i];
                 text.text = actorConfig.name;
                 btn.onClick.RemoveAllListeners();
-                btn.onClick.AddListener(() =>
-                {
-                    SetSelectActor(actorConfig);
-                });
+                btn.onClick.AddListener(() => { SetSelectActor(actorConfig); });
             };
-            _ScrollViewActors.Setup(actorConfigs.Count);
-         
+            _scrollViewActors.Setup(actorConfigs.Count);
         }
 
         void SetSelectActor(ActorConfig actorConfig)
@@ -321,7 +153,6 @@ namespace Game.Script.UI.Frames
             }
         }
 
-       
 
         void InitBks()
         {
@@ -383,7 +214,7 @@ namespace Game.Script.UI.Frames
         void SetCameraCenter(MapBk mapBk)
         {
             Vector3 center = mapBk.transform.position;
-            center += new Vector3(mapBk.xGridSize * mapBk.xGridNum * 0.5f,0, 0);
+            center += new Vector3(mapBk.xGridSize * mapBk.xGridNum * 0.5f, 0, 0);
 
             if (Camera.main != null)
             {
@@ -397,16 +228,83 @@ namespace Game.Script.UI.Frames
 
         void InitFactor()
         {
-           _sdMoveFactor.value = GameSetting.Instance.EditMoveFactor;
-           _sdZoomFactor.value = GameSetting.Instance.EditZoomFactor;
-           _sdMoveFactor.onValueChanged.AddListener(value =>
-           {
-               GameSetting.Instance.EditMoveFactor = value;
-           });
-           _sdZoomFactor.onValueChanged.AddListener(value =>
-           {
-               GameSetting.Instance.EditZoomFactor = value;
-           });
+            _sdMoveFactor.value = GameSetting.Instance.EditMoveFactor;
+            _sdZoomFactor.value = GameSetting.Instance.EditZoomFactor;
+            _sdMoveFactor.onValueChanged.AddListener(value => { GameSetting.Instance.EditMoveFactor = value; });
+            _sdZoomFactor.onValueChanged.AddListener(value => { GameSetting.Instance.EditZoomFactor = value; });
+        }
+
+        void NewMap()
+        {
+            if (_curMapData != null)
+            {
+                _curMapData.UnLoadSync();
+            }
+
+            var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+            _curMapData = mapSubsystem.New(_bkIds[_ddBk.value]);
+            _curMapData.LoadSync();
+            //EnableInput();
+            MapBk mapBk = Object.FindObjectOfType<MapBk>();
+            if (mapBk != null)
+            {
+                SetCameraCenter(mapBk);
+                GameSetting.Instance.ShowGrid = true;
+            }
+        }
+
+        void LoadMap()
+        {
+            if (_curMapData != null)
+            {
+                _curMapData.UnLoadSync();
+                _curMapData = null;
+            }
+
+            var fileName = _ddSaveMaps.captionText.text;
+
+            var path = Path.Combine(SavePath, fileName + MapExtension);
+
+            if (File.Exists(path))
+            {
+                var data = File.ReadAllText(path);
+                var mapData = MapData.DeSerialize(data);
+
+                if (MapBKConfig.dic.ContainsKey(mapData.bkId))
+                {
+                    _curMapData = mapData;
+                    _curMapData.LoadSync();
+                    MapBk mapBk = Object.FindObjectOfType<MapBk>();
+
+                    if (mapBk != null)
+                    {
+                        //EnableInput();
+                        SetCameraCenter(mapBk);
+                        GameSetting.Instance.ShowGrid = true;
+                        _inputSaveName.text = fileName;
+                    }
+                }
+            }
+        }
+
+        void SaveMap()
+        {
+            if (_curMapData != null && null != _inputSaveName)
+            {
+                if (!string.IsNullOrEmpty(_inputSaveName.text))
+                {
+                    var data = _curMapData.Serialize();
+                    string path = SavePath;
+
+                    path = Path.Combine(path, _inputSaveName.text + MapExtension);
+
+                    File.WriteAllText(path, data);
+#if UNITY_EDITOR
+                    UnityEditor.AssetDatabase.Refresh();
+#endif
+                    RefreshSaveMaps();
+                }
+            }
         }
 
         public override void Init(Transform parent)
@@ -425,24 +323,7 @@ namespace Game.Script.UI.Frames
                     frame.CurMapData = _curMapData;
                 }
             });
-            _btnNew.onClick.AddListener(() =>
-            {
-                if (_curMapData != null)
-                {
-                    _curMapData.UnLoadSync();
-                }
-
-                var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
-                _curMapData = mapSubsystem.New(_bkIds[_ddBk.value]);
-                _curMapData.LoadSync();
-                EnableInput();
-                MapBk mapBk = Object.FindObjectOfType<MapBk>();
-                if (mapBk != null)
-                {
-                    SetCameraCenter(mapBk);
-                    GameSetting.Instance.ShowGrid = true;
-                }
-            });
+            _btnNew.onClick.AddListener(NewMap);
 
             _btnEventEdit.onClick.AddListener(() =>
             {
@@ -453,66 +334,122 @@ namespace Game.Script.UI.Frames
                 }
             });
 
-            _btnLoad.onClick.AddListener(() =>
-            {
-                if (_curMapData != null)
-                {
-                    _curMapData.UnLoadSync();
-                    _curMapData = null;
-                }
-
-                var fileName = _ddSaveMaps.captionText.text;
-
-                var path = Path.Combine(SavePath, fileName + MapExtension);
-
-                if (File.Exists(path))
-                {
-                    var data = File.ReadAllText(path);
-                    var mapData = MapData.DeSerialize(data);
-
-                    if (MapBKConfig.dic.ContainsKey(mapData.bkId))
-                    {
-                        _curMapData = mapData;
-                        _curMapData.LoadSync();
-                        MapBk mapBk = Object.FindObjectOfType<MapBk>();
-
-                        if (mapBk != null)
-                        {
-                            EnableInput();
-                            SetCameraCenter(mapBk);
-                            GameSetting.Instance.ShowGrid = true;
-                            _inputSaveName.text = fileName;
-                        }
-                    }
-                }
-            });
-
-            _btnSave.onClick.AddListener(() =>
-            {
-                if (_curMapData != null && null != _inputSaveName)
-                {
-                    if (!string.IsNullOrEmpty(_inputSaveName.text))
-                    {
-                        var data = _curMapData.Serialize();
-                        string path = SavePath;
-
-                        path = Path.Combine(path, _inputSaveName.text + MapExtension);
-
-                        File.WriteAllText(path, data);
-#if UNITY_EDITOR
-                        UnityEditor.AssetDatabase.Refresh();
-#endif
-                        RefreshSaveMaps();
-                    }
-                }
-            });
+            _btnLoad.onClick.AddListener(LoadMap);
+            _btnSave.onClick.AddListener(SaveMap);
 
             InitBks();
             InitSavedMaps();
             InitActors();
-            InitInput();
+            //InitInput();
             AddToTick();
             InitFactor();
+        }
+
+        void TickDrag()
+        {
+            if (_curSelectShadow)
+                return;
+            var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
+            float x = gameInputSubsystem.MouseDelta.x;
+            float z = gameInputSubsystem.MouseDelta.y;
+            if (Camera.main != null)
+            {
+                if (!UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
+                {
+                    if (gameInputSubsystem.GetMouseButton(0))
+                    {
+                        var transform = Camera.main.transform;
+                        var cameraPosition = transform.position;
+                        cameraPosition.x -= x * 0.01f;
+                        cameraPosition.z -= z * 0.01f;
+                        transform.position = cameraPosition;
+                    }
+                }
+            }
+        }
+
+        void TickZoom()
+        {
+            var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
+            var delta = gameInputSubsystem.WheelFactor;
+            if (Camera.main != null && delta != 0 && _curMapData != null)
+            {
+                var transform = Camera.main.transform;
+                transform.position += transform.forward * delta * GameSetting.Instance.EditZoomFactor;
+            }
+        }
+
+        void TickCancelPutActor()
+        {
+            if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
+            {
+                return;
+            }
+
+            var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
+
+            if (gameInputSubsystem.GetMouseButtonUp(1))
+            {
+                SetSelectActor(null);
+            }
+        }
+
+        void RemoveActor()
+        {
+            if (null != _curMapData && null != Camera.main)
+            {
+                var layer = LayerMask.NameToLayer("LandScape");
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out var hitInfo, float.MaxValue, 1 << layer))
+                {
+                    _curMapData.RemoveActor(hitInfo.point);
+                }
+            }
+        }
+
+        void EditActor()
+        {
+            if (null != _curMapData && null != Camera.main)
+            {
+                var layer = LayerMask.NameToLayer("LandScape");
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out var hitInfo, float.MaxValue, 1 << layer))
+                {
+                    var actorData = _curMapData.GetActorData(hitInfo.point);
+                    if (null != actorData)
+                    {
+                        var frame = UIManager.Instance.Show<ActorDataEditFrame>();
+                        frame.CurActorData = actorData;
+                    }
+                }
+            }
+        }
+
+        void TickPutActor()
+        {
+            if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
+                return;
+
+            var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
+
+            if (gameInputSubsystem.GetMouseButtonUp(0))
+            {
+                if (null != _curSelectShadow && null != _curSelectActorConfig && null != _curMapData)
+                {
+                    _curMapData.AddActor(_curSelectShadow.transform.position, _curSelectActorConfig);
+                }
+                else
+                {
+                    if (gameInputSubsystem.GetKey(KeyCode.LeftShift))
+                    {
+                        RemoveActor();
+                    }
+                    else if (gameInputSubsystem.GetKey(KeyCode.LeftAlt))
+                    {
+                        EditActor();
+                    }
+                }
+            }
         }
     }
 }

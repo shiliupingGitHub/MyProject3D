@@ -32,13 +32,13 @@ namespace Game.Script.Setting
 
         public float EditMoveFactor
         {
-            get => PlayerPrefs.GetFloat("EditMoveFactor", 0.01f);
+            get => PlayerPrefs.GetFloat("EditMoveFactor", 1f);
             set => PlayerPrefs.SetFloat("EditMoveFactor", value);
         }
         
         public float EditZoomFactor
         {
-            get => PlayerPrefs.GetFloat("EditZoomFactor", 0.0025f);
+            get => PlayerPrefs.GetFloat("EditZoomFactor", 1f);
             set => PlayerPrefs.SetFloat("EditZoomFactor", value);
         }
         

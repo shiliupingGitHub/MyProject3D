@@ -19,7 +19,7 @@ namespace Game.Script.Character
             var skeletonGo = Instantiate(go, transform);
             _skeletonAnimation = skeletonGo.GetComponent<SkeletonAnimation>();
             _movement = GetComponent<FightCharacterMovement>();
-            _movement.movingChanged += OnMovingChanged;
+            _movement.MovingChanged += OnMovingChanged;
         }
 
         void OnMovingChanged()
