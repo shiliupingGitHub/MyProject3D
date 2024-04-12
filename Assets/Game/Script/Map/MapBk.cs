@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
 using Game.Script.Attribute;
+using Game.Script.Common;
 using Game.Script.Subsystem;
 using Mirror;
+using Sirenix.OdinInspector;
 using UnityEngine.Serialization;
 
 namespace Game.Script.Map
@@ -17,7 +19,7 @@ namespace Game.Script.Map
         [Label("Z方向格子大小")] public float zGridSize = 1;
         public List<int> blocks = new();
 
-        (int, int) GetGrid(Vector3 worldPosition)
+        public (int, int) GetGrid(Vector3 worldPosition)
         {
             Vector3 relative = worldPosition - Offset;
 
@@ -90,28 +92,21 @@ namespace Game.Script.Map
         }
 
 
-        [ContextMenu("生成阻挡")]
+        [Button("生成阻挡")]
         public void GenerateObstacle()
         {
             blocks.Clear();
 
             var colliders = GetComponentsInChildren<Collider>();
-            foreach (var collider in colliders)
+            foreach (var childCollider in colliders)
             {
-                if (collider.gameObject.layer != LayerMask.NameToLayer("Default"))
+                if (childCollider.gameObject.layer != LayerMask.NameToLayer("Default"))
                     continue;
                 
-                if(collider.isTrigger)
+                if(childCollider.isTrigger)
                     continue;
-                
-                var min = collider.bounds.min;
-                var max = collider.bounds.max;
-          
-                
-
-                int xStep = Mathf.CeilToInt((max.x - min.x) / xGridSize);
-                int zStep = Mathf.CeilToInt((max.z - min.z) / zGridSize);
-                var (x, z) = GetGrid(min);
+                var (x, z, xStep, zStep) = GameUtil.CalculateGridStep(childCollider, this);
+               
                 for (int i = 0; i < xStep; i++)
                 {
                     for (int j = 0; j < zStep; j++)

@@ -1,10 +1,26 @@
 ﻿using System;
+using Game.Script.Map;
 using UnityEngine;
 
 namespace Game.Script.Common
 {
     public static class GameUtil
     {
+        public static (int x,  int z, int xStep, int zStep) CalculateGridStep(Collider collider, MapBk bk)
+        {
+            var min = collider.bounds.min;
+            var max = collider.bounds.max;
+
+            min -= bk.Offset;
+            max -= bk.Offset;
+
+
+            int xStep = Mathf.CeilToInt((max.x - min.x) / bk.xGridSize);
+            int zStep = Mathf.CeilToInt((max.z - min.z) / bk.zGridSize);
+            var (x, z) = bk.GetGrid(min);
+
+            return (x, z, xStep, zStep);
+        }
         public static Vector3 ConvertPointToWorldPosition((int, int) p, Vector3 offset, float cellX, float cellZ)
         {
             Vector3 ret = offset;

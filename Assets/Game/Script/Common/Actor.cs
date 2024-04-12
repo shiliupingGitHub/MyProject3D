@@ -33,27 +33,28 @@ namespace Game.Script.Common
 
         protected virtual void Start()
         {
-            CacualateStep();
+            CalculateStep();
             UpdateArea();
             positionChanged += UpdateArea;
         }
 
-        void CacualateStep()
+        void CalculateStep()
         {
             _collider = GetComponent<Collider>();
-            if (null != _collider)
-            {
-                var bounds = _collider.bounds;
-                var min = bounds.min;
-                var max = bounds.max;
-                var mapSubsystem = Game.Instance.GetSubsystem<MapSubsystem>();
-                float xGridSize = mapSubsystem.MapBk.xGridSize;
-                float zGridSize = mapSubsystem.MapBk.zGridSize;
-            
-                xStep = Mathf.CeilToInt((max.x - min.x) / xGridSize);
-                zStep = Mathf.CeilToInt((max.z - min.z) / zGridSize);
-            }
-         
+            var mapSubsystem = Game.Instance.GetSubsystem<MapSubsystem>();
+            var mapBk = mapSubsystem.MapBk;
+
+            if (null == mapBk)
+                return;
+
+            if (null == _collider)
+                return;
+
+
+            var gridStepInfo = GameUtil.CalculateGridStep(_collider, mapBk);
+
+            xStep = gridStepInfo.xStep;
+            zStep = gridStepInfo.zStep;
         }
 
         protected virtual void Awake()
@@ -95,22 +96,20 @@ namespace Game.Script.Common
                 if (_areaIndex >= 0)
                 {
                     _tempArea.Clear();
-                    
+
                     if (_collider != null)
                     {
-                      
                         for (int i = 0; i < xStep; i++)
                         {
                             for (int j = 0; j < zStep; j++)
                             {
                                 int gridX = x + i;
                                 int gridY = y + j;
-                                
-                                if(!_tempArea.Contains(((gridX, gridY))))
+
+                                if (!_tempArea.Contains(((gridX, gridY))))
                                 {
                                     _tempArea.Add((gridX, gridY));
                                 }
-                                
                             }
                         }
                     }
@@ -120,7 +119,6 @@ namespace Game.Script.Common
                         {
                             _tempArea.Add((x, y));
                         }
-                       
                     }
 
                     foreach (var area in _tempArea)

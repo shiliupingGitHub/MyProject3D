@@ -380,7 +380,7 @@ MonoBehaviour:
   zGridNum: 35
   xGridSize: 1
   zGridSize: 1
-  blocks: 0c000a000c000b000c000c00
+  blocks: 0c000b00
 --- !u!114 &5281505634500781809
 MonoBehaviour:
   m_ObjectHideFlags: 0
