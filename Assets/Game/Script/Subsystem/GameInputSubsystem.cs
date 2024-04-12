@@ -14,6 +14,7 @@ namespace Game.Script.Subsystem
         private Vector2 _mouseDelta = Vector2.zero;
         private Vector3 _lastMousePosition;
         public Vector2 MouseDelta => _mouseDelta;
+        private InputManager _inputManager;
         public override void OnInitialize()
         {
             base.OnInitialize();
@@ -43,7 +44,7 @@ namespace Game.Script.Subsystem
             
         }
 
-        private InputManager _inputManager;
+        
 
         public float GetAxis(string name)
         {
