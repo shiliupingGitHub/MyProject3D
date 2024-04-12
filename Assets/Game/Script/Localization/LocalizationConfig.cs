@@ -7,11 +7,8 @@ namespace Game.Script.UI.Extern
 {
     public class LocalizationConfig : SerializedMonoBehaviour
     {
-  
         [SerializeField]
         public Dictionary<SystemLanguage, TextAsset> tables = new();
-  
-        
     }
     
 }
