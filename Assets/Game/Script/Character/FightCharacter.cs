@@ -11,6 +11,8 @@ using Object = UnityEngine.Object;
 namespace Game.Script.Character
 {
     [RequireComponent(typeof(FightCharacterMovement))]
+    [RequireComponent(typeof(FightCharacterAnimation))]
+    [RequireComponent(typeof(CharacterController))]
     public class FightCharacter : Character
     {
         

@@ -10,6 +10,9 @@ using UnityEngine;
 
 namespace Game.Script.Character
 {
+    [RequireComponent(typeof(AICharacterMovement))]
+    [RequireComponent(typeof(AICharacterAnimation))]
+    [RequireComponent(typeof(CharacterController))]
     public class AICharacter : Character
     {
         
