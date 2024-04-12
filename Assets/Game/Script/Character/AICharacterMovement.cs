@@ -16,10 +16,8 @@ namespace Game.Script.Character
         Fail,
     }
 
-    public class AICharacterMovement : MonoBehaviour
+    public class AICharacterMovement : CharacterMovement
     {
-        public float moveSpeed = 0.5f;
-        private CharacterController _characterController;
         public PathState CurPathState { get; set; } = PathState.None;
         private List<Vector3> _path;
         private int _curPathIndex = -1;
@@ -81,10 +79,10 @@ namespace Game.Script.Character
             }
         }
 
-        private void Awake()
+        protected override void Awake()
         {
             GameLoop.Add(OnUpdate);
-            _characterController = GetComponent<CharacterController>();
+            CharacterController = GetComponent<CharacterController>();
         }
 
         private void OnDestroy()
@@ -158,7 +156,7 @@ namespace Game.Script.Character
                     float pathSpeed = dis / deltaTime;
                     float speed = Mathf.Min(pathSpeed, moveSpeed);
 
-                    var flag = _characterController.Move(dir.normalized * speed * deltaTime);
+                    var flag = CharacterController.Move(dir.normalized * speed * deltaTime);
 
                     if (flag != CollisionFlags.None)
                     {

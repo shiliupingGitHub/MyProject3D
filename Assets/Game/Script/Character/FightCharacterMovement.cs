@@ -10,36 +10,23 @@ using Object = UnityEngine.Object;
 
 namespace Game.Script.Character
 {
-    public class FightCharacterMovement : NetworkBehaviour
+    public class FightCharacterMovement : CharacterMovement
     {
-        public Action MovingChanged;
-        public float moveSpeed = 1;
-        private CharacterController _characterController;
-        private Vector3 moveDir = Vector3.zero;
+        
         private Camera _camera;
         private CinemachineVirtualCamera _virtualCamera;
-
-        [SyncVar(hook = nameof(OnMovingChanged))]
-        private bool _bMoving;
-
-        public bool IsMoving => _bMoving;
-
-        private void Awake()
+        
+        [Command]
+        void Cmd_SetMoving(bool moving)
         {
-            _characterController = GetComponent<CharacterController>();
+            BMoving = moving;
         }
 
         [Command]
-        void SetMoving(bool moving)
+        void Cmd_SetMoveDir(Vector3 moveDir)
         {
-            _bMoving = moving;
+            _moveDir = moveDir;
         }
-
-        void OnMovingChanged(bool oldValue, bool newValue)
-        {
-            MovingChanged?.Invoke();
-        }
-
         public void StartControl()
         {
             var virtualCameraTemplate = GameResMgr.Instance.LoadAssetSync<GameObject>("Assets/Game/Res/Player/CameraSetting.prefab");
@@ -52,8 +39,6 @@ namespace Game.Script.Character
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             var cameraBounds = mapSubsystem.MapBk.transform.Find("CameraBounds").GetComponent<Collider>() ?? throw new ArgumentNullException("mapSubsystem.MapBk.transform.Find(\"CameraBounds\").GetComponent<Collider>()");
             confiner.m_BoundingVolume = cameraBounds;
-
-            SetUpInput();
             GameLoop.Add(OnUpdate);
         }
 
@@ -69,33 +54,33 @@ namespace Game.Script.Character
                 DoMove(deltaTime);
             }
         }
-
-        void SetUpInput()
-        {
-        }
-
         void DoMove(float deltaTime)
         {
             if (!UIManager.Instance.IsInit)
                 return;
             if (UIManager.Instance.UIEventSystem.currentSelectedGameObject != null)
             {
-                moveDir = Vector3.zero;
                 return;
             }
-
             var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
-            moveDir.x = gameInputSubsystem.GetAxis("MoveHorizontal");
-            moveDir.z = gameInputSubsystem.GetAxis("MoveVertical");
-            var dir = moveDir;
+            var dir = Vector3.zero;
+            dir.x = gameInputSubsystem.GetAxis("MoveHorizontal");
+            dir.z = gameInputSubsystem.GetAxis("MoveVertical");
+            if (dir != base.MoveDir)
+            {
+                Cmd_SetMoveDir(dir);
+                _moveDir = dir;
+                MovingChanged?.Invoke();
+            }
+
             dir.Normalize();
 
             bool moving = dir != Vector3.zero;
 
-            if (moving != _bMoving)
+            if (moving != BMoving)
             {
-                SetMoving(moving);
-                _bMoving = moving;
+                Cmd_SetMoving(moving);
+                BMoving = moving;
                 MovingChanged?.Invoke();
             }
 
@@ -106,7 +91,7 @@ namespace Game.Script.Character
                 return;
             }
 
-            _characterController.Move(dir * moveSpeed * deltaTime);
+            CharacterController.Move(dir * moveSpeed * deltaTime);
         }
     }
 }

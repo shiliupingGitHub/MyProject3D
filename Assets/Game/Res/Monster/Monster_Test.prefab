@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 8541539398798180198}
   - component: {fileID: -3277198635055497020}
   - component: {fileID: 8185087281091078231}
+  - component: {fileID: 3039102168389616578}
   m_Layer: 9
   m_Name: Monster_Test
   m_TagString: Untagged
@@ -206,6 +207,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157406c4634342efb0e32ca365c1782c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   moveSpeed: 0.5
 --- !u!143 &8185087281091078231
 CharacterController:
@@ -233,3 +237,17 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &3039102168389616578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5248929476824234659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f45829212b5b41798d0dc94a0c4dbca7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleAnimation: idle
+  walkAnimation: walk
