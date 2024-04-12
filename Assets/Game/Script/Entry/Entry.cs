@@ -13,8 +13,6 @@ namespace Game.Script.Entry
         {
             Common.Game.Instance.Mode = entryMode;
             var levelSubsystem = Common.Game.Instance.GetSubsystem<LevelSubsystem>();
-            var homeSubsystem = Common.Game.Instance.GetSubsystem<HomeSubsystem>();
-            homeSubsystem.LoadAchieve();
             switch (entryMode)
             {
                 case GameMode.Hall:
