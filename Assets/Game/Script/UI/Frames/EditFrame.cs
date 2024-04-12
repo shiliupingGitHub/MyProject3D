@@ -19,7 +19,6 @@ namespace Game.Script.UI.Frames
     {
         protected override string ResPath => "Assets/Game/Res/UI/EditFrame.prefab";
         private MapData _curMapData;
-        private bool _bAddTick;
         private ActorConfig _curSelectActorConfig;
         private GameObject _curSelectShadow;
         private bool _bTicking;
@@ -37,36 +36,22 @@ namespace Game.Script.UI.Frames
         [UIPath("btnSetting")] private Button _btnSetting;
         [UIPath("sdZoomFactor")] private Slider _sdZoomFactor;
         [UIPath("sdMoveFactor")] private Slider _sdMoveFactor;
-
-        void AddToTick()
+        private string SavePath
         {
-            if (!_bAddTick)
+            get
             {
-                _bTicking = true;
-                _bAddTick = true;
-                DoTick();
+                string path = Path.Combine(Application.persistentDataPath, "Map");
+                if (Application.isEditor)
+                {
+                    path = Path.Combine(Application.dataPath, "Game/Res/Map/Data");
+                }
+
+                return path;
             }
         }
 
-        void RemoveTick()
-        {
-            if (_bAddTick)
-            {
-                _bTicking = false;
-                _bAddTick = false;
-            }
-        }
-
-        async void DoTick()
-        {
-            while (_bTicking)
-            {
-                Tick();
-                await TimerSubsystem.Delay(1);
-            }
-        }
-
-        void Tick()
+        private string MapExtension => ".txt";
+        void OnUpdate(float delta)
         {
             TickDrag();
             TickShadow();
@@ -101,7 +86,7 @@ namespace Game.Script.UI.Frames
         {
             //DisableInput();
             base.OnDestroy();
-            RemoveTick();
+            GameLoop.Remove(OnUpdate);
         }
 
         void InitActors()
@@ -194,22 +179,6 @@ namespace Game.Script.UI.Frames
 
             _ddSaveMaps.AddOptions(allMaps);
         }
-
-        private string SavePath
-        {
-            get
-            {
-                string path = Path.Combine(Application.persistentDataPath, "Map");
-                if (Application.isEditor)
-                {
-                    path = Path.Combine(Application.dataPath, "Game/Res/Map/Data");
-                }
-
-                return path;
-            }
-        }
-
-        private string MapExtension => ".txt";
 
         void SetCameraCenter(MapBk mapBk)
         {
@@ -340,8 +309,7 @@ namespace Game.Script.UI.Frames
             InitBks();
             InitSavedMaps();
             InitActors();
-            //InitInput();
-            AddToTick();
+            GameLoop.Add(OnUpdate);
             InitFactor();
         }
 
