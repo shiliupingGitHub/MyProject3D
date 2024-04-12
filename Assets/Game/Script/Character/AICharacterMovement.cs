@@ -18,11 +18,10 @@ namespace Game.Script.Character
 
     public class AICharacterMovement : CharacterMovement
     {
-        public PathState CurPathState { get; set; } = PathState.None;
+        private PathState CurPathState { get; set; } = PathState.None;
         private List<Vector3> _path;
         private int _curPathIndex = -1;
         private float _curAcceptRadius = 0.5f;
-
         private GameObject _targetGo;
         private GameTaskCompletionSource<PathState> _pathTcl;
         private Vector3 _lasChangePosition;
