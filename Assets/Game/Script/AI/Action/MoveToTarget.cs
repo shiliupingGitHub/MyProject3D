@@ -49,7 +49,7 @@ namespace Game.Script.AI.Action
             }
         }
 
-        async UniTaskVoid FindPath(Vector3 start, Vector3 end)
+        async  UniTaskVoid FindPath(Vector3 start, Vector3 end)
         {
             var pathSystem = Common.Game.Instance.GetSubsystem<PathSubsystem>();
             var path = await pathSystem.AddPath(start, end, ref _pathId);

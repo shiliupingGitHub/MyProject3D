@@ -61,8 +61,6 @@ namespace Game.Script.UI.Frames
             TickDrag();
             TickShadow();
             TickZoom();
-            TickOp();
-            TickCancelPutActor();
         }
 
         void TickShadow()
@@ -92,6 +90,9 @@ namespace Game.Script.UI.Frames
             //DisableInput();
             base.OnDestroy();
             GameLoop.Remove(OnUpdate);
+            var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
+            gameInputSubsystem.UnRegisterButtonDown(OnEditOperate, "EditOperate");
+            gameInputSubsystem.UnRegisterButtonDown(OnEditCancel, "EditCancel");
         }
 
         void InitActors()
@@ -112,7 +113,8 @@ namespace Game.Script.UI.Frames
                 btn.onClick.AddListener(() =>
                 {
                     if (!_togglePut.isOn) return;
-                    SetSelectActor(actorConfig); });
+                    SetSelectActor(actorConfig);
+                });
             };
             _scrollViewActors.Setup(actorConfigs.Count);
         }
@@ -319,7 +321,12 @@ namespace Game.Script.UI.Frames
             InitActors();
             GameLoop.Add(OnUpdate);
             InitFactor();
+            var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
+            gameInputSubsystem.RegisterButtonDown(OnEditOperate, "EditOperate");
+            gameInputSubsystem.RegisterButtonDown(OnEditCancel, "EditCancel");
         }
+        
+        
 
         void TickDrag()
         {
@@ -354,22 +361,7 @@ namespace Game.Script.UI.Frames
                 transform.position += transform.forward * delta * GameSetting.Instance.EditZoomFactor;
             }
         }
-
-        void TickCancelPutActor()
-        {
-            if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
-            {
-                return;
-            }
-
-            var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
-
-            if (gameInputSubsystem.GetMouseButtonUp(1))
-            {
-                SetSelectActor(null);
-            }
-        }
-
+        
         void RemoveActor()
         {
             if (null != _curMapData && null != Camera.main)
@@ -401,36 +393,42 @@ namespace Game.Script.UI.Frames
             }
         }
 
-        void TickOp()
+        void OnEditCancel(InputActionEventData _)
+        {
+            if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
+            {
+                return;
+            }
+            
+            SetSelectActor(null);
+            
+        }
+
+        void OnEditOperate(InputActionEventData _)
         {
             if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
                 return;
-
-            var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
+            
             if (!_togglePut.isOn)
             {
                 SetSelectActor(null);
             }
-
-            if (gameInputSubsystem.GetMouseButtonUp(0))
+            if (null != _curSelectShadow && null != _curSelectActorConfig && null != _curMapData)
             {
-                if (null != _curSelectShadow && null != _curSelectActorConfig && null != _curMapData)
+                if (_togglePut.isOn)
                 {
-                    if (_togglePut.isOn)
-                    {
-                        _curMapData.AddActor(_curSelectShadow.transform.position, _curSelectActorConfig);
-                    }
+                    _curMapData.AddActor(_curSelectShadow.transform.position, _curSelectActorConfig);
                 }
+            }
 
-                if (_toggleEdit.isOn)
-                {
-                    EditActor();
-                }
+            if (_toggleEdit.isOn)
+            {
+                EditActor();
+            }
 
-                if (_toggleErase.isOn)
-                {
-                    RemoveActor();
-                }
+            if (_toggleErase.isOn)
+            {
+                RemoveActor();
             }
         }
     }

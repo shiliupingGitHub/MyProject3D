@@ -8,7 +8,7 @@ namespace Game.Script.Subsystem
     public class GameInputSubsystem : GameSubsystem
     {
         private const string InputManagerPath = "Assets/Game/Res/Misc/InputManager.prefab";
-        Player Player => ReInput.players.GetPlayer("System");
+        Player Player => ReInput.players?.GetPlayer("System");
         private bool _bSetTouchPosition = false;
         private Vector2 _touchDelta = Vector2.zero;
         private Vector3 _lastTouchPosition;
@@ -42,9 +42,7 @@ namespace Game.Script.Subsystem
             }
             
         }
-
         
-
         public float GetAxis(string name)
         {
             if (Player != null)
@@ -53,56 +51,11 @@ namespace Game.Script.Subsystem
             }
             return 0;
         }
-        public float GetAxisDelta(string name)
-        {
-            if(Player != null)
-                 return Player.GetAxisDelta(name);
-            return 0;
-        }
-        public Vector2 GetAxis2D(string xName, string yName)
-        {
-            if (Player == null)
-                return Vector2.zero;
-            return Player.GetAxis2D(xName, yName);
-        }
-
-        public bool GetButtonDown(string name)
-        {
-            if (Player == null)
-                return false;
-            return Player.GetButtonDown(name);
-        }
-
-        public bool GetButton(string name)
-        {
-            if (Player == null)
-                return false;
-            return Player.GetButtonDown(name);
-        }
-        
-        public bool GetButtonSinglePressHold(string name)
-        {
-            if (Player == null)
-                return false;
-            return Player.GetButtonSinglePressHold(name);
-        }
-
         public bool GetMouseButton(int index)
         {
            
             return Input.GetMouseButton(index);
         }
-
-        public bool GetKey(KeyCode keyCode)
-        {
-            return Input.GetKey(keyCode);
-        }
-        
-        public bool GetMouseButtonUp(int index)
-        {
-            return Input.GetMouseButtonUp(index);
-        }
-
         public float WheelFactor => GetAxis("Wheel");
         
         public void RegisterButtonDown(System.Action<InputActionEventData> callback, string actionName)
