@@ -12,6 +12,7 @@ namespace Game.Script.UI
         public GameObject FrameGo => _gameObject;
 
         protected virtual string ResPath => string.Empty;
+        protected CanvasGroup _canvasGroup;
 
         public virtual void Init(Transform parent)
         {
@@ -19,6 +20,7 @@ namespace Game.Script.UI
             {
                 var asset = GameResMgr.Instance.LoadAssetSync<GameObject>(ResPath);
                 _gameObject = Object.Instantiate(asset,parent);
+                _canvasGroup = _gameObject.AddComponent<CanvasGroup>();
                 InitField(_gameObject, this);
             }
         }
@@ -94,19 +96,19 @@ namespace Game.Script.UI
 
         public void Show()
         {
-            if (null != FrameGo)
-            {
-                FrameGo.SetActive(true);
-            }
+           
+            _canvasGroup.alpha = 1.0f;
+            _canvasGroup.interactable = true;
+            _canvasGroup.blocksRaycasts = true;
+            
             OnShow();
         }
 
         public void Hide()
         {
-            if (null != FrameGo)
-            {
-                FrameGo.SetActive(false);
-            }
+            _canvasGroup.alpha = 0f;
+            _canvasGroup.interactable = false;
+            _canvasGroup.blocksRaycasts = false;
             OnHide();
         }
 
