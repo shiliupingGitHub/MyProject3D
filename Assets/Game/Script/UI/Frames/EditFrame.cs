@@ -109,7 +109,10 @@ namespace Game.Script.UI.Frames
                 var actorConfig = actorConfigs[i];
                 text.text = actorConfig.name;
                 btn.onClick.RemoveAllListeners();
-                btn.onClick.AddListener(() => { SetSelectActor(actorConfig); });
+                btn.onClick.AddListener(() =>
+                {
+                    if (!_togglePut.isOn) return;
+                    SetSelectActor(actorConfig); });
             };
             _scrollViewActors.Setup(actorConfigs.Count);
         }
