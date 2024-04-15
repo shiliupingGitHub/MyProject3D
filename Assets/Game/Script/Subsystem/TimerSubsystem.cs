@@ -1,4 +1,4 @@
-﻿using Game.Script.Async;
+﻿using Cysharp.Threading.Tasks;
 using Game.Script.Common;
 using Priority_Queue;
 using UnityEngine;
@@ -8,7 +8,7 @@ namespace Game.Script.Subsystem
     public class TimerSubsystem : GameSubsystem
     {
 
-        public static GameTask Delay(float time)
+        public static UniTask Delay(float time)
         {
             var timerSubsystem = Common.Game.Instance.GetSubsystem<TimerSubsystem>();
             return timerSubsystem.WaitTime(time);
@@ -16,15 +16,15 @@ namespace Game.Script.Subsystem
         struct TimerData
         {
             public float time;
-            public GameTaskCompletionSource tcs;
+            public UniTaskCompletionSource tcs;
         }
 
         private readonly SimplePriorityQueue<TimerData> _queue = new();
 
-        GameTask WaitTime(float time)
+        UniTask WaitTime(float time)
         {
             TimerData data = new TimerData();
-            data.tcs = new GameTaskCompletionSource();
+            data.tcs = new UniTaskCompletionSource();
             data.time = Time.unscaledTime + time / 1000;
             
             _queue.Enqueue(data, data.time);
@@ -49,7 +49,7 @@ namespace Game.Script.Subsystem
                     if (data.time <= Time.unscaledTime)
                     {
                         _queue.Remove(data);
-                        data.tcs.SetResult();
+                        data.tcs.TrySetResult();
                     }
                     else
                     {

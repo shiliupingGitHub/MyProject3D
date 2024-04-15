@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Game.Script.Async;
+using Cysharp.Threading.Tasks;
 using Game.Script.Common;
 using Game.Script.Map;
 using Priority_Queue;
@@ -18,7 +18,7 @@ namespace Game.Script.Subsystem
         public int endX;
         public int endY;
         public ulong pathId;
-        public  GameTaskCompletionSource<List<Vector3>>  tls;
+        public  UniTaskCompletionSource<List<Vector3>>  tls;
     }
 
     public class PathSubsystem : GameSubsystem
@@ -37,7 +37,7 @@ namespace Game.Script.Subsystem
                 {
                     if (request.tls != null)
                     {
-                        request.tls.SetResult(null);
+                        request.tls.TrySetResult(null);
                     }
                 }
                 _pathRequestList.Clear();
@@ -55,12 +55,12 @@ namespace Game.Script.Subsystem
             }
         }
 
-        public GameTask<List<Vector3>> AddPath(Vector3 start, Vector3 end,  ref ulong pathId)
+        public UniTask<List<Vector3>> AddPath(Vector3 start, Vector3 end,  ref ulong pathId)
         {
              pathId = _pathId;
             _pathId++;
 
-            GameTaskCompletionSource<List<Vector3>> curtls = new();
+            UniTaskCompletionSource<List<Vector3>> curtls = new();
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             (int sX, int sY) = mapSubsystem.MapBk.GetGridIndex(start);
             (int eX, int eY) = mapSubsystem.MapBk.GetGridIndex(end);
@@ -75,7 +75,7 @@ namespace Game.Script.Subsystem
 
             if (request.tls != null)
             {
-                request.tls.SetResult(null);
+                request.tls.TrySetResult(null);
                 _pathRequestList.Remove(request);
             }
             
@@ -115,7 +115,7 @@ namespace Game.Script.Subsystem
                     
                     GameLoop.RunGameThead(() =>
                     {
-                        request.tls.SetResult(finalPath);
+                        request.tls.TrySetResult(finalPath);
                     });
                     
                     

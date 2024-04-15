@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Cinemachine;
-using Game.Script.Async;
 using Game.Script.Attribute;
 using Game.Script.Common;
 using Game.Script.Map.Actor;
@@ -10,7 +8,6 @@ using Game.Script.Res;
 using Game.Script.Subsystem;
 using Mirror;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 
 namespace Game.Script.Map

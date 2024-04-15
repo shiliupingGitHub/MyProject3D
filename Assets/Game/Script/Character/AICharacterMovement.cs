@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Game.Script.Async;
+﻿using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Game.Script.Common;
 using Game.Script.Setting;
 using UnityEngine;
@@ -23,15 +22,15 @@ namespace Game.Script.Character
         private int _curPathIndex = -1;
         private float _curAcceptRadius = 0.5f;
         private GameObject _targetGo;
-        private GameTaskCompletionSource<PathState> _pathTcl;
+        private UniTaskCompletionSource<PathState> _pathTcl;
         private Vector3 _lasChangePosition;
         private float _lastChangePositionTime;
         private LineRenderer _lineRenderer;
         private GameObject CurtHitGo { get; set; }
 
-        public GameTask<PathState> Move(List<Vector3> path, float acceptRadius = 1.2f, GameObject targetGo = null)
+        public UniTask<PathState> Move(List<Vector3> path, float acceptRadius = 1.2f, GameObject targetGo = null)
         {
-            _pathTcl = new GameTaskCompletionSource<PathState>();
+            _pathTcl = new UniTaskCompletionSource<PathState>();
             _curPathIndex = 2;
             _path = path;
             CurPathState = PathState.Moving;
@@ -105,7 +104,7 @@ namespace Game.Script.Character
             _path = null;
             if (null != _pathTcl)
             {
-                _pathTcl.SetResult(CurPathState);
+                _pathTcl.TrySetResult(CurPathState);
                 _pathTcl = null;
                 EndDrawPath();
             }
@@ -119,6 +118,7 @@ namespace Game.Script.Character
             {
                 return false;
             }
+
             if (_curPathIndex >= _path.Count)
             {
                 CurPathState = PathState.Success;
@@ -133,12 +133,11 @@ namespace Game.Script.Character
 
         void DoMove(float deltaTime)
         {
-
             if (!CheckPathValid())
             {
                 return;
             }
-            
+
             var targetPosition = _path[_curPathIndex];
             var curPosition = transform.position;
             targetPosition.y = curPosition.y;
