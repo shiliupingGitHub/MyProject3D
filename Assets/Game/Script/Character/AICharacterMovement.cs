@@ -39,7 +39,7 @@ namespace Game.Script.Character
             _lasChangePosition = transform.position;
             _lastChangePositionTime = Time.unscaledTime;
             DisplayPath(path);
-
+            
             return _pathTcl.Task;
         }
 

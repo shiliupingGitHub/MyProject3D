@@ -1,5 +1,4 @@
-﻿using BehaviorDesigner.Runtime.Tasks.Unity.UnityInput;
-using Game.Script.Common;
+﻿using Game.Script.Common;
 using Game.Script.Res;
 using Rewired;
 using UnityEngine;
@@ -90,22 +89,16 @@ namespace Game.Script.Subsystem
             return Input.GetMouseButtonUp(index);
         }
 
-        public float WheelFactor
+        public float WheelFactor => GetAxis("Wheel");
+
+        public void AddActionCallback(System.Action<InputActionEventData> callback, string actionName, InputActionEventType inputActionEventType)
         {
-            get
-            {
-                return GetAxis("Wheel");
-            }
+            Player.AddInputEventDelegate(callback, UpdateLoopType.Update, inputActionEventType,actionName);
         }
 
-        public void AddActionCallback(System.Action<InputActionEventData> callback, string actionName)
+        public void RemoveActionCallback(System.Action<InputActionEventData> callback, string actionName,  InputActionEventType inputActionEventType)
         {
-            Player.AddInputEventDelegate(callback, UpdateLoopType.Update, actionName);
-        }
-
-        public void RemoveActionCallback(System.Action<InputActionEventData> callback, string actionName)
-        {
-            Player.RemoveInputEventDelegate(callback, UpdateLoopType.Update, actionName);
+            Player.RemoveInputEventDelegate(callback, UpdateLoopType.Update,  inputActionEventType,actionName);
         }
     }
 }
