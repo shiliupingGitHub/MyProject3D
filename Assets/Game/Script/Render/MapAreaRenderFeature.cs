@@ -38,41 +38,13 @@ namespace Game.Script.Render
             // Use <c>ScriptableRenderContext</c> to issue drawing commands or execute command buffers
             // https://docs.unity3d.com/ScriptReference/Rendering.ScriptableRenderContext.html
             // You don't have to call ScriptableRenderContext.submit, the render pipeline will call it at specific points in the pipeline.
-
-            private MapBk _curBk = null;
+            
             MapBk GetMapBk(Scene scene, CameraType cameraType)
             {
-         
-                if (null != _curBk)
-                {
-                    return _curBk;
-                }
 
-                if (cameraType == CameraType.Game || !scene.IsValid())
-                {
-                    _curBk = Object.FindObjectOfType<MapBk>();
-                }
-                else
-                {
-                    if (!scene.IsValid())
-                    {
-                        return null;
-                    }
-                    var roots = scene.GetRootGameObjects();
-
-                    foreach (var root in roots)
-                    {
-                        var bk = root.GetComponent<MapBk>();
-
-                        if (null != bk)
-                        {
-                            _curBk = bk;
-                            break;
-                        }
-                    }
-                }
+                var bk = MapBkManager.Instance.FindMapBk(scene);
                 
-                return _curBk;
+                return bk;
             }
             public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
             {

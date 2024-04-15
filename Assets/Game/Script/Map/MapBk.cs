@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
@@ -10,6 +11,7 @@ using UnityEngine.Serialization;
 
 namespace Game.Script.Map
 {
+    [ExecuteAlways]
     [RequireComponent(typeof(NetworkIdentity))]
     public class MapBk : MonoBehaviour
     {
@@ -55,8 +57,18 @@ namespace Game.Script.Map
 
         private void Awake()
         {
-            var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
-            mapSubsystem.MapBk = this;
+            MapBkManager.Instance.Add(this);
+            if (Application.isPlaying)
+            {
+                var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+                mapSubsystem.MapBk = this;
+            }
+         
+        }
+        
+        private void OnDestroy()
+        {
+            MapBkManager.Instance.Remove(this);
         }
 
         void AddBlock(ushort x, ushort z)
