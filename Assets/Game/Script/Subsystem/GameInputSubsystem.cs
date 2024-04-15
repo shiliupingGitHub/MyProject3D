@@ -51,10 +51,12 @@ namespace Game.Script.Subsystem
             }
             return 0;
         }
-        public bool GetMouseButton(int index)
+        
+        public bool GetButton(string actionName)
         {
-           
-            return Input.GetMouseButton(index);
+            if (Player == null)
+                return false;
+            return Player.GetButton(actionName);
         }
         public float WheelFactor => GetAxis("Wheel");
         

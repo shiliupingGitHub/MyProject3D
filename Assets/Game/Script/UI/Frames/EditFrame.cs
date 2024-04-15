@@ -339,7 +339,7 @@ namespace Game.Script.UI.Frames
             {
                 if (!UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
                 {
-                    if (gameInputSubsystem.GetMouseButton(0))
+                    if (gameInputSubsystem.GetButton("DragButton"))
                     {
                         var transform = Camera.main.transform;
                         var cameraPosition = transform.position;
