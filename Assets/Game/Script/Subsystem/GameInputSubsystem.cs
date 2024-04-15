@@ -9,10 +9,10 @@ namespace Game.Script.Subsystem
     {
         private const string InputManagerPath = "Assets/Game/Res/Misc/InputManager.prefab";
         Player Player => ReInput.players.GetPlayer("System");
-        private bool _bSetMousePosition = false;
-        private Vector2 _mouseDelta = Vector2.zero;
-        private Vector3 _lastMousePosition;
-        public Vector2 MouseDelta => _mouseDelta;
+        private bool _bSetTouchPosition = false;
+        private Vector2 _touchDelta = Vector2.zero;
+        private Vector3 _lastTouchPosition;
+        public Vector2 TouchDelta => _touchDelta;
         private InputManager _inputManager;
         public override void OnInitialize()
         {
@@ -30,15 +30,15 @@ namespace Game.Script.Subsystem
 
         void OnUpdate(float deltaTime)
         {
-            if (!_bSetMousePosition)
+            if (!_bSetTouchPosition)
             {
-                _lastMousePosition = Input.mousePosition;
-                _bSetMousePosition = true;
+                _lastTouchPosition = Input.mousePosition;
+                _bSetTouchPosition = true;
             }
             else
             {
-                _mouseDelta = Input.mousePosition - _lastMousePosition;
-                _lastMousePosition = Input.mousePosition;
+                _touchDelta = Input.mousePosition - _lastTouchPosition;
+                _lastTouchPosition = Input.mousePosition;
             }
             
         }
@@ -47,35 +47,49 @@ namespace Game.Script.Subsystem
 
         public float GetAxis(string name)
         {
-            return Player.GetAxis(name);
+            if (Player != null)
+            {
+                return  Player.GetAxis(name);
+            }
+            return 0;
         }
         public float GetAxisDelta(string name)
         {
-            return Player.GetAxisDelta(name);
+            if(Player != null)
+                 return Player.GetAxisDelta(name);
+            return 0;
         }
         public Vector2 GetAxis2D(string xName, string yName)
         {
+            if (Player == null)
+                return Vector2.zero;
             return Player.GetAxis2D(xName, yName);
         }
 
         public bool GetButtonDown(string name)
         {
-            
+            if (Player == null)
+                return false;
             return Player.GetButtonDown(name);
         }
 
         public bool GetButton(string name)
         {
+            if (Player == null)
+                return false;
             return Player.GetButtonDown(name);
         }
         
         public bool GetButtonSinglePressHold(string name)
         {
+            if (Player == null)
+                return false;
             return Player.GetButtonSinglePressHold(name);
         }
 
         public bool GetMouseButton(int index)
         {
+           
             return Input.GetMouseButton(index);
         }
 
@@ -90,15 +104,33 @@ namespace Game.Script.Subsystem
         }
 
         public float WheelFactor => GetAxis("Wheel");
-
-        public void AddActionCallback(System.Action<InputActionEventData> callback, string actionName, InputActionEventType inputActionEventType)
+        
+        public void RegisterButtonDown(System.Action<InputActionEventData> callback, string actionName)
         {
-            Player.AddInputEventDelegate(callback, UpdateLoopType.Update, inputActionEventType,actionName);
+            if(Player == null)
+                return;
+            Player.AddInputEventDelegate(callback, UpdateLoopType.Update, InputActionEventType.ButtonJustPressed, actionName);
+        }
+        
+        public void RegisterButtonUp(System.Action<InputActionEventData> callback, string actionName)
+        {
+            if(Player == null)
+                return;
+            Player.AddInputEventDelegate(callback, UpdateLoopType.Update, InputActionEventType.ButtonJustReleased, actionName);
         }
 
-        public void RemoveActionCallback(System.Action<InputActionEventData> callback, string actionName,  InputActionEventType inputActionEventType)
+        public void UnRegisterButtonDown(System.Action<InputActionEventData> callback, string actionName)
         {
-            Player.RemoveInputEventDelegate(callback, UpdateLoopType.Update,  inputActionEventType,actionName);
+            if(Player == null)
+                return;
+            Player.RemoveInputEventDelegate(callback, UpdateLoopType.Update, InputActionEventType.ButtonJustPressed, actionName);
+        }
+        
+        public void UnRegisterButtonUp(System.Action<InputActionEventData> callback, string actionName)
+        {
+            if(Player == null)
+                return;
+            Player.RemoveInputEventDelegate(callback, UpdateLoopType.Update, InputActionEventType.ButtonJustReleased, actionName);
         }
     }
 }

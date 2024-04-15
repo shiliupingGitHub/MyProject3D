@@ -326,8 +326,8 @@ namespace Game.Script.UI.Frames
             if (_curSelectShadow)
                 return;
             var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
-            float x = gameInputSubsystem.MouseDelta.x;
-            float z = gameInputSubsystem.MouseDelta.y;
+            float x = gameInputSubsystem.TouchDelta.x;
+            float z = gameInputSubsystem.TouchDelta.y;
             if (Camera.main != null)
             {
                 if (!UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
