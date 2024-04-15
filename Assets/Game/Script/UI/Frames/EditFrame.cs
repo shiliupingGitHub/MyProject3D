@@ -36,6 +36,10 @@ namespace Game.Script.UI.Frames
         [UIPath("btnSetting")] private Button _btnSetting;
         [UIPath("sdZoomFactor")] private Slider _sdZoomFactor;
         [UIPath("sdMoveFactor")] private Slider _sdMoveFactor;
+        [UIPath("Op/TogglePut")] private Toggle _togglePut;
+        [UIPath("Op/ToggleErase")] private Toggle _toggleErase;
+        [UIPath("Op/ToggleEdit")] private Toggle _toggleEdit;
+
         private string SavePath
         {
             get
@@ -51,12 +55,13 @@ namespace Game.Script.UI.Frames
         }
 
         private string MapExtension => ".txt";
+
         void OnUpdate(float delta)
         {
             TickDrag();
             TickShadow();
             TickZoom();
-            TickPutActor();
+            TickOp();
             TickCancelPutActor();
         }
 
@@ -393,29 +398,35 @@ namespace Game.Script.UI.Frames
             }
         }
 
-        void TickPutActor()
+        void TickOp()
         {
             if (UIManager.Instance.UIEventSystem.IsPointerOverGameObject())
                 return;
 
             var gameInputSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
+            if (!_togglePut.isOn)
+            {
+                SetSelectActor(null);
+            }
 
             if (gameInputSubsystem.GetMouseButtonUp(0))
             {
                 if (null != _curSelectShadow && null != _curSelectActorConfig && null != _curMapData)
                 {
-                    _curMapData.AddActor(_curSelectShadow.transform.position, _curSelectActorConfig);
+                    if (_togglePut.isOn)
+                    {
+                        _curMapData.AddActor(_curSelectShadow.transform.position, _curSelectActorConfig);
+                    }
                 }
-                else
+
+                if (_toggleEdit.isOn)
                 {
-                    if (gameInputSubsystem.GetKey(KeyCode.LeftShift))
-                    {
-                        RemoveActor();
-                    }
-                    else if (gameInputSubsystem.GetKey(KeyCode.LeftAlt))
-                    {
-                        EditActor();
-                    }
+                    EditActor();
+                }
+
+                if (_toggleErase.isOn)
+                {
+                    RemoveActor();
                 }
             }
         }
