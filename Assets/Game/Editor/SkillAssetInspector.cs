@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Skill.Editor
 {
     [CustomEditor(typeof(Skill))]
-    public class SkillAssetEditor : UnityEditor.Editor
+    public class SkillAssetInspector : UnityEditor.Editor
     {
         private Skill _skill = null;
         private float curTime = 0;
