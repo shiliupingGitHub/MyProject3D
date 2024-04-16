@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Game.Script.Attribute;
-using Game.Script.Character.Skill;
 using Game.Script.Common;
 using Game.Script.Map;
 using Priority_Queue;
@@ -13,27 +12,52 @@ namespace Game.Script.Subsystem
         class ExecuteEvent
         {
             public string Name { get; set; }
-            public List<MapAction> actions = new();
+            public readonly List<MapAction> Actions = new();
         }
 
         class TimeExecuteEvent : ExecuteEvent
         {
-            public float Time { get; set; }
+            public float Delay { get; set; }
+            public float WorkDelay { get; set; }
         }
+
         public Dictionary<MapActionType, MapAction> DefaultActions { get; } = new();
         public Dictionary<MapActionType, System.Type> ActionTypes { get; } = new();
-       
+
         SimplePriorityQueue<TimeExecuteEvent> _timeEvents = new();
         Dictionary<string, List<ExecuteEvent>> _executeEvents = new();
         Queue<string> _eventQueue = new();
+        private SimplePriorityQueue<TimeExecuteEvent> _workTimeExecuteEvents = new();
+        private float _curEventTime = 0;
+        private bool _bResetTimeEvent = false;
+        private float _eventPeriod = 0;
+        private bool _bWork = false;
 
         void OnAllMapLoaded(System.Object o)
         {
             MapData mapData = o as MapData;
-           
+
             LoadTimeEvent(mapData);
             LoadCustomEvent(mapData);
+            PutWorkTimeExecuteEvents();
+            _curEventTime = 0;
+            _bResetTimeEvent = mapData.BaseSetting.reSetTimeAfterEnd;
+            _eventPeriod = mapData.BaseSetting.eventPeriod;
+            _bWork = true;
+        }
 
+        void PutWorkTimeExecuteEvents()
+        {
+            _workTimeExecuteEvents.Clear();
+
+            foreach (var timeEvent in _timeEvents)
+            {
+                if (timeEvent.Delay < 0)
+                {
+                    timeEvent.WorkDelay = Random.Range(0, _eventPeriod);
+                }
+                _workTimeExecuteEvents.Enqueue(timeEvent, timeEvent.Delay);
+            }
         }
 
         public void Raise(string eventName)
@@ -45,40 +69,57 @@ namespace Game.Script.Subsystem
         {
             if (_executeEvents.TryGetValue(eventName, out var events))
             {
-                events.ForEach(eventData =>
-                {
-                    eventData.actions.ForEach(action =>
-                    {
-                        action.Execute();
-                    });
-                });
+                events.ForEach(eventData => { eventData.Actions.ForEach(action => { action.Execute(); }); });
             }
         }
 
         void OnLeaveLevel(System.Object o)
         {
             LevelType lt = o is LevelType ? (LevelType)o : LevelType.None;
-            
-            if(lt == LevelType.Fight)
+
+            if (lt == LevelType.Fight || lt == LevelType.Home)
             {
                 _timeEvents.Clear();
                 _executeEvents.Clear();
+                _workTimeExecuteEvents.Clear();
+                _bWork = false;
             }
         }
 
         void OnUpdate(float deltaTime)
         {
-            while (_timeEvents.Count > 0)
+            if (_bWork)
             {
-                if(_timeEvents.TryFirst(out var data))
+                UpdateMapTime(deltaTime);
+                UpdateEvents(deltaTime);
+            }
+           
+        }
+
+        void UpdateMapTime(float deltaTime)
+        {
+            _curEventTime += deltaTime;
+            if (_curEventTime > _eventPeriod)
+            {
+                _curEventTime = 0;
+
+                if (_bResetTimeEvent)
                 {
-                    if (data.Time <= Time.unscaledTime)
+                    PutWorkTimeExecuteEvents();
+                }
+            }
+        }
+
+        void UpdateEvents(float deltaTime)
+        {
+            while (_workTimeExecuteEvents.Count > 0)
+            {
+                if (_workTimeExecuteEvents.TryFirst(out var data))
+                {
+                    if (data.WorkDelay <= _curEventTime)
                     {
-                        _timeEvents.Remove(data);
-                        data.actions.ForEach(action =>
-                        {
-                            action.Execute();
-                        });
+                        _workTimeExecuteEvents.Remove(data);
+                        data.Actions.ForEach(action => { action.Execute(); });
                     }
                     else
                     {
@@ -100,24 +141,22 @@ namespace Game.Script.Subsystem
             foreach (var timeEventData in mapData.timeEvents)
             {
                 var timeEvent = new TimeExecuteEvent();
-                timeEvent.Time = curTime + timeEventData.time;
                 timeEvent.Name = timeEventData.name;
                 foreach (var actionData in timeEventData.actions)
                 {
-                    if(ActionTypes.TryGetValue(actionData.type, out var type))
+                    if (ActionTypes.TryGetValue(actionData.type, out var type))
                     {
-                        
                         var action = JsonUtility.FromJson(actionData.data, type) as MapAction;
                         if (action == null)
                         {
                             action = System.Activator.CreateInstance(type) as MapAction;
                         }
-                        timeEvent.actions.Add(action);
+
+                        timeEvent.Actions.Add(action);
                     }
-                    
                 }
-                
-                if(_executeEvents.TryGetValue(timeEvent.Name, out var events))
+
+                if (_executeEvents.TryGetValue(timeEvent.Name, out var events))
                 {
                     events.Add(timeEvent);
                 }
@@ -135,25 +174,27 @@ namespace Game.Script.Subsystem
             foreach (var timeEventData in mapData.timeEvents)
             {
                 var timeEvent = new TimeExecuteEvent();
-                timeEvent.Time = curTime + timeEventData.time;
                 timeEvent.Name = timeEventData.name;
+                timeEvent.Delay = timeEventData.time;
                 foreach (var actionData in timeEventData.actions)
                 {
-                    if(ActionTypes.TryGetValue(actionData.type, out var type))
+                    if (ActionTypes.TryGetValue(actionData.type, out var type))
                     {
-                        
                         var action = JsonUtility.FromJson(actionData.data, type) as MapAction;
 
                         if (action == null)
                         {
                             action = System.Activator.CreateInstance(type) as MapAction;
                         }
-                        timeEvent.actions.Add(action);
+
+                        timeEvent.Actions.Add(action);
                     }
-                    _timeEvents.Enqueue(timeEvent, timeEvent.Time);
+
+                    _timeEvents.Enqueue(timeEvent, timeEvent.Delay);
                 }
             }
         }
+
         public override void OnInitialize()
         {
             base.OnInitialize();

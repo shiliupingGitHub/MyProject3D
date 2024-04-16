@@ -73,6 +73,8 @@ namespace Game.Script.Map
     public class MapBaseSetting
     {
         [SerializeField] public float fightStartTime = 5f;
+        [SerializeField] public float eventPeriod = 5f;
+        [SerializeField] public bool reSetTimeAfterEnd = false;
     }
 
     public class MapData
