@@ -44,6 +44,7 @@ namespace Game.Script.Subsystem
             _bResetTimeEvent = mapData.BaseSetting.reSetTimeAfterEnd;
             _eventPeriod = mapData.BaseSetting.eventPeriod;
             _bWork = true;
+            GameLoop.Add(OnUpdate);
         }
 
         void PutWorkTimeExecuteEvents()
@@ -83,6 +84,7 @@ namespace Game.Script.Subsystem
                 _executeEvents.Clear();
                 _workTimeExecuteEvents.Clear();
                 _bWork = false;
+                GameLoop.Remove(OnUpdate);
             }
         }
 
@@ -198,7 +200,7 @@ namespace Game.Script.Subsystem
         public override void OnInitialize()
         {
             base.OnInitialize();
-            GameLoop.Add(OnUpdate);
+
             var gameEventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
             gameEventSubsystem.Subscribe("AllMapLoaded", OnAllMapLoaded);
             gameEventSubsystem.Subscribe("LeaveLevel", OnLeaveLevel);
