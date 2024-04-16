@@ -14,6 +14,7 @@ namespace Game.Script.Subsystem
         private Vector3 _lastTouchPosition;
         public Vector2 TouchDelta => _touchDelta;
         private InputManager _inputManager;
+        public  InputManager InputManager => _inputManager;
         public override void OnInitialize()
         {
             base.OnInitialize();

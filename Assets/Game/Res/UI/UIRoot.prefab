@@ -278,7 +278,7 @@ GameObject:
   - component: {fileID: 8870024889400067710}
   - component: {fileID: 6480716592791039177}
   m_Layer: 0
-  m_Name: Rewired Event System
+  m_Name: eventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

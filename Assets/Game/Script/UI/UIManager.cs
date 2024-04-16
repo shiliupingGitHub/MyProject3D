@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Game.Script.Common;
 using Game.Script.Res;
+using Game.Script.Subsystem;
+using Rewired.Integration.UnityUI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,7 +16,7 @@ namespace Game.Script.UI
         private Transform _baseRoot;
         private Transform _topRoot;
         public bool IsInit => _bInit;
-        public EventSystem UIEventSystem { get; private set; }
+        public RewiredEventSystem UIEventSystem { get; private set; }
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void RuntimeLoad()
@@ -25,12 +27,20 @@ namespace Game.Script.UI
         {
             if (!_bInit)
             {
+                var inputMgrSubsystem = Common.Game.Instance.GetSubsystem<GameInputSubsystem>();
                 var rootTemplate = GameResMgr.Instance.LoadAssetSync<GameObject>("Assets/Game/Res/UI/UIRoot.prefab");
                 _uiRoot = Object.Instantiate(rootTemplate);
                 Object.DontDestroyOnLoad(_uiRoot);
                 _baseRoot = _uiRoot.transform.Find("Canvas/base");
                 _topRoot = _uiRoot.transform.Find("Canvas/top");
-                UIEventSystem = _uiRoot.GetComponentInChildren<EventSystem>();
+                UIEventSystem = _uiRoot.GetComponentInChildren<RewiredEventSystem>();
+                
+                var inputModule = _uiRoot.GetComponentInChildren<RewiredStandaloneInputModule>();
+
+                if (inputModule)
+                {
+                    inputModule.RewiredInputManager = inputMgrSubsystem.InputManager;
+                }
                 _bInit = true;
             }
         }
