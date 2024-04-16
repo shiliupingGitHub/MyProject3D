@@ -17,7 +17,7 @@ namespace Game.Editor
         }
         protected override OdinMenuTree BuildMenuTree()
         {
-            var tree = new OdinMenuTree(supportsMultiSelect: false);
+            var tree = new OdinMenuTree(supportsMultiSelect: true);
             tree.AddAllAssetsAtPath("数据", AssetPath, typeof(Skill.Skill));
             return tree;
         }
