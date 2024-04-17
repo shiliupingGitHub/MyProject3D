@@ -1,4 +1,5 @@
-﻿using Game.Script.Attribute;
+﻿using Cysharp.Threading.Tasks;
+using Game.Script.Attribute;
 using Game.Script.Common;
 using Game.Script.Subsystem;
 using Game.Script.UI;
@@ -15,12 +16,19 @@ namespace Game.Script.Level
         {
             base.Enter();
             Common.Game.Instance.Mode = GameMode.Edit;
-            SceneManager.LoadScene(SceneName);
+
+            _ = Start();
+
+        }
+        
+        async UniTaskVoid Start()
+        {
+            await SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
             UIManager.Instance.Show<EditFrame>();
-            LoadComplete();
+            _ = LoadComplete();
         }
 
-        async void LoadComplete()
+        async UniTaskVoid LoadComplete()
         {
             await TimerSubsystem.Delay(1000);
             UIManager.Instance.Hide<LoadingFrame>();

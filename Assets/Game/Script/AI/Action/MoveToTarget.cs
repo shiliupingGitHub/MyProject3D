@@ -32,7 +32,7 @@ namespace Game.Script.AI.Action
             var end = target.Value.transform.position;
             var start = gameObject.transform.position;
             _oldTargetPathPosition = end;
-            FindPath(start, end);
+            _ = FindPath(start, end);
         }
 
         public override void OnStart()
@@ -49,14 +49,14 @@ namespace Game.Script.AI.Action
             }
         }
 
-        async  void FindPath(Vector3 start, Vector3 end)
+        async  UniTaskVoid FindPath(Vector3 start, Vector3 end)
         {
             var pathSystem = Common.Game.Instance.GetSubsystem<PathSubsystem>();
             var path = await pathSystem.AddPath(start, end, ref _pathId);
-            DoPath(path);
+            _ = DoPath(path);
         }
 
-        async void DoPath(List<Vector3> path)
+        async UniTaskVoid DoPath(List<Vector3> path)
         {
             if (_moveStatus != MoveStatus.Path)
             {

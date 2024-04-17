@@ -191,7 +191,8 @@ namespace Game.Script.Map
 
             if (template)
             {
-                var go = GameObject.Instantiate(template) as GameObject;
+                var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+                var go = GameObject.Instantiate(template, mapSubsystem.Root.transform);
                 if (preview)
                 {
                     go.tag = "Preview";
@@ -223,7 +224,8 @@ namespace Game.Script.Map
             if (MapBKConfig.dic.ContainsKey(bkId))
             {
                 var template = GameResMgr.Instance.LoadAssetSync<GameObject>(MapBKConfig.dic[bkId].path);
-                _bkMapGo = Object.Instantiate(template) as GameObject;
+                var mapSubSystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+                _bkMapGo = Object.Instantiate(template, mapSubSystem.Root.transform) as GameObject;
 
                 _bkMapGo.transform.localPosition = Vector3.zero;
 
@@ -288,7 +290,8 @@ namespace Game.Script.Map
 
             if (template)
             {
-                var go = Object.Instantiate(template) as GameObject;
+                var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+                var go = Object.Instantiate(template, mapSubsystem.Root.transform) as GameObject;
                 if (preview)
                 {
                     go.tag = "Preview";
@@ -328,20 +331,7 @@ namespace Game.Script.Map
             }
         }
 
-        public void UnLoadBk()
-        {
-            if (_bkMapGo != null)
-            {
-                if (Application.isPlaying)
-                {
-                    Object.Destroy(_bkMapGo);
-                }
-                else
-                {
-                    Object.DestroyImmediate(_bkMapGo);
-                }
-            }
-        }
+   
 
         public void UnLoadActors()
         {
@@ -353,13 +343,14 @@ namespace Game.Script.Map
                 }
             }
 
-            actors.Clear();
+            
         }
 
         public void UnLoadSync()
         {
-            UnLoadBk();
-            UnLoadActors();
+            var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+            mapSubsystem.ClearGo();
+            actors.Clear();
         }
     }
 }

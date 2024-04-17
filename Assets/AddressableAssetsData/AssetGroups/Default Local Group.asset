@@ -27,11 +27,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7fa997ff02f6329479586271e15a5201
-    m_Address: Assets/Game/Res/Config/HomeActorConfig.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 63c2a3bf6c1b08a48aaed8ac8815c90d
     m_Address: Assets/Game/Res/Net/KcpHomeNetworkManager.prefab
     m_ReadOnly: 0

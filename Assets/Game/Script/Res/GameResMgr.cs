@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CSVHelper;
 using Game.Script.Common;
+using Game.Script.Subsystem;
 using Mirror;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -40,7 +41,8 @@ namespace Game.Script.Res
 
             if (null != template)
             {
-                var go = Object.Instantiate(template);
+                var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+                var go = Object.Instantiate(template, mapSubsystem.Root.transform);
                 return go;
             }
 

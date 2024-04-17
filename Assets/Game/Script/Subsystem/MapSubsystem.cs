@@ -26,6 +26,29 @@ namespace Game.Script.Subsystem
         private readonly Dictionary<uint, MapArea> _areas = new();
         public Dictionary<uint, MapArea> Areas => _areas;
         public bool MapLoaded { get; private set; }
+        private GameObject _root;
+
+        public GameObject Root
+        {
+            get
+            {
+                if (null == _root)
+                {
+                    _root = new GameObject("MapRoot");
+                }
+
+                return _root;
+            }
+        }
+
+        public void ClearGo()
+        {
+            if (null != _root)
+            {
+                Object.Destroy(_root);
+                _root = null;
+            }
+        }
 
         public MapBk MapBk
         {
