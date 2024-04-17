@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DG.DemiEditor;
 using Game.Script.Attribute;
 using Game.Script.Character.Skill;
 using UnityEditor;
@@ -118,17 +119,41 @@ namespace Skill.Editor
             }
             return JsonUtility.ToJson(action);
         }
+        
+        private Texture2D MakeTex(int width, int height, Color col)
+        {
+            Color[] pix = new Color[width*height];
+ 
+            for(int i = 0; i < pix.Length; i++)
+                pix[i] = col;
+ 
+            Texture2D result = new Texture2D(width, height);
+            result.SetPixels(pix);
+            result.Apply();
+ 
+            return result;
+        }
 
+        public Color ContentColor = Color.black;
+        public Color EditContentColor = Color.white;
+        public Color ActionContentColor = Color.gray;
+        public Color SplitColor = Color.red;
+        public Color ParamColor = Color.blue;
+        public Color SingleActionColor = Color.yellow;
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.BeginVertical();
+         
+            GUIStyle style = new GUIStyle();
+            style.normal.background = MakeTex(600, 1, ContentColor);
+            EditorGUILayout.BeginVertical(style);
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("持续时间", GUILayout.Width(100));
             _skill.maxTime = EditorGUILayout.FloatField( _skill.maxTime, GUILayout.Width(100));
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.Space(50);
-            EditorGUILayout.BeginVertical();
+            style.normal.background = MakeTex(600, 1, EditContentColor);
+            EditorGUILayout.BeginVertical(style);
             
             EditorGUILayout.BeginHorizontal();
           
@@ -159,14 +184,14 @@ namespace Skill.Editor
         
     
             EditorGUILayout.Space(50);
-
-            EditorGUILayout.BeginVertical();
+            style.normal.background = MakeTex(600, 1, ActionContentColor);
+            EditorGUILayout.BeginVertical(style);
             bool bRemove = false;
             SkillActonConfig removeActionConfig = null;
-          
             foreach (var action in _skill.actions)
             {
-                EditorGUILayout.BeginHorizontal();
+                style.normal.background = MakeTex(600, 1, ParamColor);
+                EditorGUILayout.BeginHorizontal(style);
                 int skillTypeIndex = (int)action.skillType;
 
                 if (sortDes.Count() > skillTypeIndex)
@@ -177,7 +202,8 @@ namespace Skill.Editor
                     EditorGUILayout.Space(50);
                     var oldColor = GUI.color;
                     GUI.color = Color.green;
-                    EditorGUILayout.BeginVertical();
+                    style.normal.background = MakeTex(600, 1, ParamColor);
+                    EditorGUILayout.BeginVertical(style);
                     action.param = DrawAction(action.skillType, action.param);
                    // action.param = SkillMgr.Instance.DefaultActions[action.skillType].OnGui(action.param);
                     EditorGUILayout.EndVertical();
@@ -189,6 +215,7 @@ namespace Skill.Editor
                     }
                 }
                 EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space(20);
             }
 
             if (bRemove)
@@ -200,6 +227,7 @@ namespace Skill.Editor
           
             
             EditorGUILayout.EndVertical();
+            EditorGUILayout.Space(50);
             //base.OnInspectorGUI();
             // serializedObject.Update();
             // serializedObject.FindProperty("").s
