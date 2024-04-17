@@ -4,12 +4,14 @@ using UnityEditor;
 using CSVHelper;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+
 public class CsvReaderEditor : Editor {
 
     [MenuItem("CsvReader/CreateReadScript")]
     static void CreateScript()
     {
-        string savePath = "Game/Script/CsvReader/Generator";
+        string savePath = "Game/Script/Config";
         foreach (Object o in Selection.GetFiltered(typeof(Object), SelectionMode.DeepAssets | SelectionMode.Assets))
         {
 
@@ -18,7 +20,9 @@ public class CsvReaderEditor : Editor {
 
             string csPath = Application.dataPath + "/"+savePath +"/" + Path.GetFileName(filePath).Replace(".csv", ".cs");
             StreamWriter sc = new StreamWriter(csPath, false);
-            List<CsvRow> rows = CsvHelper.ParseCSV(o as TextAsset);
+            var ta = o as TextAsset;
+            var content = System.Text.Encoding.GetEncoding("GBK").GetString(ta.bytes);
+            List<CsvRow> rows = CsvHelper.ParseText(content);
             if (rows.Count < 3)
             {
 
@@ -32,12 +36,13 @@ public class CsvReaderEditor : Editor {
             sc.Write("public class " + o.name + " {\n");
             CsvRow types = rows[0];
             CsvRow vars = rows[1];
+            CsvRow des = rows[2];
             //            CsvRow des = rows[2];
             for (int i = 0; i < types.Count; i++)
             {
                 if (string.IsNullOrEmpty(types[i]))
                     continue;
-                sc.Write("\tpublic \t" + types[i] + "\t" + vars[i] + ";\n");
+                sc.Write("\tpublic \t" + types[i] + "\t" + vars[i] + ";" + "//"+ des[i] + "\n");
             }
             sc.Write("\tstatic Dictionary<" + types[0] + "," + o.name + "> mDic = null;\n ");
 

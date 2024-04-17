@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using CSVHelper;
 [System.Serializable]
 public class MapBKConfig {
-	public 	int	id;
-	public 	string	path;
-	public 	string	name;
+	public 	int	id;//id编号
+	public 	string	path;//路径
+	public 	string	name;//名字
 	static Dictionary<int,MapBKConfig> mDic = null;
  	 public static Dictionary<int,MapBKConfig>  dic {
 			get 
