@@ -1,13 +1,7 @@
-﻿using System;
-using Cinemachine;
-using Game.Script.Common;
-using Game.Script.Res;
+﻿
 using Game.Script.Subsystem;
 using Mirror;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using Object = UnityEngine.Object;
-
 namespace Game.Script.Character
 {
     [RequireComponent(typeof(FightCharacterMovement))]

@@ -9,7 +9,6 @@ using Game.Script.Subsystem;
 using OneP.InfinityScrollView;
 using Rewired;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
