@@ -7,7 +7,7 @@ using System.IO;
 public class CsvReaderEditor : Editor {
 
     [MenuItem("CsvReader/CreateReadScript")]
-    static void CreateScripte()
+    static void CreateScript()
     {
         string savePath = "Game/Script/CsvReader/Generator";
         foreach (Object o in Selection.GetFiltered(typeof(Object), SelectionMode.DeepAssets | SelectionMode.Assets))
