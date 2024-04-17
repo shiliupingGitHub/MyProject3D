@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 namespace Game.Script.Map
 {
-    public class MapArea
+    public class MapGrid
     {
         public bool MapBlocked { get; set; } = false;
         private List<Common.Actor> _actors= new();

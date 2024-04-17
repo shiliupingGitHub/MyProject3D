@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
+
 
 namespace Game.Script.Render
 {
@@ -16,30 +16,22 @@ namespace Game.Script.Render
     
         class CustomRenderPass : ScriptableRenderPass
         {
-            // This method is called before executing the render pass.
-            // It can be used to configure render targets and their clear state. Also to create temporary render target textures.
-            // When empty this render pass will render to the active camera render target.
-            // You should never call CommandBuffer.SetRenderTarget. Instead call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
-            // The render pipeline will ensure target setup and clearing happens in a performant manner.
+        
         
             private Mesh _gridMesh;
             private Mesh _blockMesh;
-            public Material gridMaterial;
-            public Material blockMaterial;
-            public float lineSize = 0.1f;
-            private int _curGridX = 0;
-            private int _curGridY = 0;
+            public Material GridMaterial;
+            public Material BlockMaterial;
+            public float LineSize = 0.1f;
+            private readonly int _curGridX = 0;
+            private readonly int _curGridY = 0;
             public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
             {
             }
             
-
-            // Here you can implement the rendering logic.
-            // Use <c>ScriptableRenderContext</c> to issue drawing commands or execute command buffers
-            // https://docs.unity3d.com/ScriptReference/Rendering.ScriptableRenderContext.html
-            // You don't have to call ScriptableRenderContext.submit, the render pipeline will call it at specific points in the pipeline.
             
-            MapBk GetMapBk(Scene scene, CameraType cameraType)
+            
+            MapBk GetMapBk(Scene scene)
             {
 
                 var bk = MapBkManager.Instance.FindMapBk(scene);
@@ -48,7 +40,7 @@ namespace Game.Script.Render
             }
             public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
             {
-                MapBk mapBk = GetMapBk(renderingData.cameraData.camera.scene, renderingData.cameraData.cameraType);
+                MapBk mapBk = GetMapBk(renderingData.cameraData.camera.scene);
 
                 if (mapBk == null)
                 {
@@ -67,7 +59,7 @@ namespace Game.Script.Render
                 }
                 
         
-                if (null != gridMaterial && GameSetting.Instance.ShowGrid)
+                if (null != GridMaterial && GameSetting.Instance.ShowGrid)
                 {
                     CreateGridMesh(mapBk);
 
@@ -75,21 +67,21 @@ namespace Game.Script.Render
                     {
                         CommandBuffer cmd = CommandBufferPool.Get();
                 
-                        cmd.DrawMesh(_gridMesh, Matrix4x4.identity, gridMaterial, 0);
+                        cmd.DrawMesh(_gridMesh, Matrix4x4.identity, GridMaterial, 0);
                         context.ExecuteCommandBuffer(cmd);
                         CommandBufferPool.Release(cmd);
                     }
        
                 }
 
-                if (null != blockMaterial && GameSetting.Instance.ShowBlock)
+                if (null != BlockMaterial && GameSetting.Instance.ShowBlock)
                 {
                     CreatBlockMesh(mapBk);
                     if (null != _blockMesh)
                     {
                         CommandBuffer cmd = CommandBufferPool.Get();
                 
-                        cmd.DrawMesh(_blockMesh, Matrix4x4.identity, blockMaterial, 0);
+                        cmd.DrawMesh(_blockMesh, Matrix4x4.identity, BlockMaterial, 0);
                         context.ExecuteCommandBuffer(cmd);
                         CommandBufferPool.Release(cmd);
                     }
@@ -135,7 +127,7 @@ namespace Game.Script.Render
                 int index = 0;
                 List<int> indices = new();
                 List<Vector3> vertices = new();
-                foreach (var areaMap in mapSubsystem.Areas)
+                foreach (var areaMap in mapSubsystem.Grids)
                 {
                     var area = areaMap.Value;
 
@@ -143,7 +135,7 @@ namespace Game.Script.Render
                     {
                         continue;
                     }
-                    var p = mapSubsystem.AreaIndexToGrid(areaMap.Key);
+                    var p = GameUtil.IndexSplit(areaMap.Key);
                     var position = GameUtil.ConvertPointToWorldPosition(p, bk.Offset, bk.xGridSize, bk.zGridSize);
                     var v0 = position - new Vector3( bk.xGridSize * 0.5f, 0, bk.zGridSize * 0.5f);
                     vertices.Add(v0);
@@ -238,12 +230,12 @@ namespace Game.Script.Render
                     indices.Add(index);
                     index++;
                     
-                    var v2 = start + new Vector3(x * bk.xGridSize + lineSize, 0, bk.zGridNum * bk.zGridSize);
+                    var v2 = start + new Vector3(x * bk.xGridSize + LineSize, 0, bk.zGridNum * bk.zGridSize);
                     vertices.Add(v2);
                     indices.Add(index);
                     index++;
                 
-                    var v3 = start + new Vector3(x * bk.xGridSize + lineSize, 0, 0);
+                    var v3 = start + new Vector3(x * bk.xGridSize + LineSize, 0, 0);
                     vertices.Add(v3);
                     indices.Add(index);
                     index++;
@@ -264,12 +256,12 @@ namespace Game.Script.Render
                     index++;
 
                     
-                    var v2 = start + new Vector3(bk.xGridNum * bk.xGridSize , 0, y * bk.zGridSize + lineSize );
+                    var v2 = start + new Vector3(bk.xGridNum * bk.xGridSize , 0, y * bk.zGridSize + LineSize );
                     vertices.Add(v2);
                     indices.Add(index);
                     index++;
                 
-                    var v3 = start + new Vector3(0, 0, y * bk.zGridSize + lineSize);
+                    var v3 = start + new Vector3(0, 0, y * bk.zGridSize + LineSize);
                     vertices.Add(v3);
                     indices.Add(index);
                     index++;
@@ -300,9 +292,9 @@ namespace Game.Script.Render
         {
             _mScriptablePass = new CustomRenderPass
             {
-                gridMaterial = gridMaterial,
-                blockMaterial = blockMaterial,
-                lineSize = lineSize,
+                GridMaterial = gridMaterial,
+                BlockMaterial = blockMaterial,
+                LineSize = lineSize,
                 renderPassEvent = RenderPassEvent.AfterRenderingOpaques
             };
         }

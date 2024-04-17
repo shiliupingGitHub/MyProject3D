@@ -142,7 +142,7 @@ namespace Game.Script.Subsystem
 
             if (null != mapSubsystem)
             {
-                var area = mapSubsystem.GetArea(x, y);
+                var area = mapSubsystem.GetGrid(x, y);
 
                 return area?.Blocked ?? false;
             }

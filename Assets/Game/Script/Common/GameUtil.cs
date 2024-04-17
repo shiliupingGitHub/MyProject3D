@@ -21,6 +21,20 @@ namespace Game.Script.Common
 
             return (x, z, xStep, zStep);
         }
+        public  static (int , int ) IndexSplit(uint areaIndex)
+        {
+            uint x = areaIndex >> 16;
+            uint z = areaIndex & 0xffff;
+            return ((int)x, (int)z);
+        }
+        public static uint CombineToIndex(uint x, uint z)
+        {
+            x = x << 16;
+
+            uint ret = x | z;
+
+            return ret;
+        }
         public static Vector3 ConvertPointToWorldPosition((int, int) p, Vector3 offset, float cellX, float cellZ)
         {
             Vector3 ret = offset;

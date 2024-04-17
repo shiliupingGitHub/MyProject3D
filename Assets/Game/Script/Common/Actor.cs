@@ -19,9 +19,9 @@ namespace Game.Script.Common
     {
         public Transform CacheTransform { get; set; }
         protected virtual bool IsBlock => false;
-        private int _areaIndex = -1;
-        private readonly List<(int, int)> _nowArea = new();
-        private readonly List<(int, int)> _tempArea = new();
+        private int _gridIndex = -1;
+        private readonly List<(int, int)> _nowGrid = new();
+        private readonly List<(int, int)> _tempGrid = new();
         protected System.Action positionChanged;
         public Vector3 centerOffset = new Vector3(0.5f, 0.5f, 0);
         public virtual Vector3 CenterOffset => centerOffset;
@@ -34,8 +34,8 @@ namespace Game.Script.Common
         protected virtual void Start()
         {
             CalculateStep();
-            UpdateArea();
-            positionChanged += UpdateArea;
+            UpdateGrid();
+            positionChanged += UpdateGrid;
         }
 
         void CalculateStep()
@@ -64,38 +64,38 @@ namespace Game.Script.Common
 
         protected virtual void OnDestroy()
         {
-            LeaveAllArea();
+            LeaveAllGrid();
         }
 
-        void LeaveAllArea()
+        void LeaveAllGrid()
         {
             var mapSubsystem = Game.Instance.GetSubsystem<MapSubsystem>();
-            foreach (var area in _nowArea)
+            foreach (var grid in _nowGrid)
             {
-                var mapArea = mapSubsystem.GetArea(area.Item1, area.Item2);
+                var mapGrid = mapSubsystem.GetGrid(grid.Item1, grid.Item2);
 
-                if (mapArea != null)
+                if (mapGrid != null)
                 {
-                    mapArea.Leave(this, IsBlock);
+                    mapGrid.Leave(this, IsBlock);
                 }
             }
 
-            _nowArea.Clear();
+            _nowGrid.Clear();
         }
 
-        protected virtual void UpdateArea()
+        protected virtual void UpdateGrid()
         {
             var mapSubsystem = Game.Instance.GetSubsystem<MapSubsystem>();
             var position = CacheTransform.position;
-            var (nowAreaIndex, x, y) = mapSubsystem.CreateAreaIndex(position);
+            var (gridIndex, x, y) = mapSubsystem.CreateGridIndex(position);
 
-            if (nowAreaIndex != _areaIndex)
+            if (gridIndex != _gridIndex)
             {
-                _areaIndex = nowAreaIndex;
+                _gridIndex = gridIndex;
 
-                if (_areaIndex >= 0)
+                if (_gridIndex >= 0)
                 {
-                    _tempArea.Clear();
+                    _tempGrid.Clear();
 
                     if (_collider != null)
                     {
@@ -106,49 +106,49 @@ namespace Game.Script.Common
                                 int gridX = x + i;
                                 int gridY = y + j;
 
-                                if (!_tempArea.Contains(((gridX, gridY))))
+                                if (!_tempGrid.Contains(((gridX, gridY))))
                                 {
-                                    _tempArea.Add((gridX, gridY));
+                                    _tempGrid.Add((gridX, gridY));
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if (!_tempArea.Contains(((x, y))))
+                        if (!_tempGrid.Contains(((x, y))))
                         {
-                            _tempArea.Add((x, y));
+                            _tempGrid.Add((x, y));
                         }
                     }
 
-                    foreach (var area in _tempArea)
+                    foreach (var grid in _tempGrid)
                     {
-                        if (!_nowArea.Contains(area))
+                        if (!_nowGrid.Contains(grid))
                         {
-                            var mapArea = mapSubsystem.GetArea(area.Item1, area.Item2, true);
-                            mapArea.Enter(this, IsBlock);
+                            var mapGrid = mapSubsystem.GetGrid(grid.Item1, grid.Item2, true);
+                            mapGrid.Enter(this, IsBlock);
                         }
                     }
 
-                    foreach (var area in _nowArea)
+                    foreach (var grid in _nowGrid)
                     {
-                        if (!_tempArea.Contains(area))
+                        if (!_tempGrid.Contains(grid))
                         {
-                            var mapArea = mapSubsystem.GetArea(area.Item1, area.Item2);
+                            var mapGrid = mapSubsystem.GetGrid(grid.Item1, grid.Item2);
 
-                            if (mapArea != null)
+                            if (mapGrid != null)
                             {
-                                mapArea.Leave(this, IsBlock);
+                                mapGrid.Leave(this, IsBlock);
                             }
                         }
                     }
 
-                    _nowArea.Clear();
-                    _tempArea.CopyTo(_nowArea);
+                    _nowGrid.Clear();
+                    _tempGrid.CopyTo(_nowGrid);
                 }
                 else
                 {
-                    LeaveAllArea();
+                    LeaveAllGrid();
                 }
             }
         }

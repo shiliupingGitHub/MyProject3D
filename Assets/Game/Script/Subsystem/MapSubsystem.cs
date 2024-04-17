@@ -1,30 +1,26 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Game.Script.Common;
 using Game.Script.Map;
-using Game.Script.Map.Logic;
 using Game.Script.Res;
 using Game.Script.UI;
 using Game.Script.UI.Frames;
-using Mirror;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
 namespace Game.Script.Subsystem
 {
     public class MapSubsystem : GameSubsystem
     {
-        string AssetMapPath => "Assets/Game/Res/Map/Data/";
-        private string playerAssetPath => "Assets/Game/Res/Player/PlayerPrefab.prefab";
+        const string AssetMapPath = "Assets/Game/Res/Map/Data/";
+        const string PlayerAssetPath = "Assets/Game/Res/Player/PlayerPrefab.prefab";
 
         string MapExtension => ".txt";
         private MapBk _mapBk;
         public MapData CurMapData { get; private set; }
 
-        private readonly Dictionary<uint, MapArea> _areas = new();
-        public Dictionary<uint, MapArea> Areas => _areas;
+        private readonly Dictionary<uint, MapGrid> _grids = new();
+        public Dictionary<uint, MapGrid> Grids => _grids;
         public bool MapLoaded { get; private set; }
         private GameObject _root;
 
@@ -73,7 +69,7 @@ namespace Game.Script.Subsystem
             {
                 _mapBk = script as MapBk;
                 CheckMap();
-                GenerateInitAreas();
+                GenerateInitGrids();
             });
             eventSubsystem.Subscribe("AllMapLoaded", _ =>
             {
@@ -83,13 +79,13 @@ namespace Game.Script.Subsystem
             Common.Game.Instance.serverFightNewPlayer += () =>
             {
                 var bornPosition = GetRandomBornPosition();
-                var playerPrefab = GameResMgr.Instance.LoadAssetSync<GameObject>(playerAssetPath);
+                var playerPrefab = GameResMgr.Instance.LoadAssetSync<GameObject>(PlayerAssetPath);
                 GameObject player = Object.Instantiate(playerPrefab, bornPosition, quaternion.identity);
                 return player;
             };
         }
 
-        public Vector3 GetRandomBornPosition()
+        private Vector3 GetRandomBornPosition()
         {
             int chooseX = _mapBk.xGridNum / 2;
             int chooseY = _mapBk.zGridNum / 2;
@@ -99,9 +95,9 @@ namespace Game.Script.Subsystem
                 int x = Random.Range(0, _mapBk.xGridNum - 1);
                 int z = Random.Range(0, _mapBk.zGridNum - 1);
 
-                var area = GetArea(x, z);
+                var grid = GetGrid(x, z);
 
-                if (null == area || !area.Blocked)
+                if (null == grid || !grid.Blocked)
                 {
                     chooseX = x;
                     chooseY = z;
@@ -117,16 +113,16 @@ namespace Game.Script.Subsystem
         }
 
 
-        public MapArea GetArea(int x, int y, bool create = false)
+        public MapGrid GetGrid(int x, int y, bool create = false)
         {
-            MapArea  ret = null;
-            uint areaKey = CreateAreaIndex((uint)x, (uint)y);
+            MapGrid  ret;
+            uint gridKey = GameUtil.CombineToIndex((uint)x, (uint)y);
             lock (this)
             {
-                if (!_areas.TryGetValue(areaKey, out  ret))
+                if (!_grids.TryGetValue(gridKey, out  ret))
                 {
-                    ret = new MapArea();
-                    _areas.Add(areaKey, ret);
+                    ret = new MapGrid();
+                    _grids.Add(gridKey, ret);
                 }
             }
             
@@ -168,23 +164,9 @@ namespace Game.Script.Subsystem
             return mapData;
         }
 
-        uint CreateAreaIndex(uint x, uint z)
-        {
-            x = x << 16;
 
-            uint ret = x | z;
-
-            return ret;
-        }
-
-       public (int , int ) AreaIndexToGrid(uint areaIndex)
-        {
-            uint x = areaIndex >> 16;
-            uint z = areaIndex & 0xffff;
-            return ((int)x, (int)z);
-        }
-
-        public (int, int, int) CreateAreaIndex(Vector3 position)
+        
+        public (int, int, int) CreateGridIndex(Vector3 position)
         {
             if (_mapBk == null)
             {
@@ -207,24 +189,24 @@ namespace Game.Script.Subsystem
                 return (-1, -1, -1);
             }
 
-            return ((int)CreateAreaIndex((uint)x, (uint)z), x, z);
+            return ((int)GameUtil.CombineToIndex((uint)x, (uint)z), x, z);
         }
 
-        void AddAreaMapBlock(uint x, uint y)
+        void AddGridBlock(uint x, uint y)
         {
-            uint areaIndex = CreateAreaIndex(x, y);
-            if (!_areas.TryGetValue(areaIndex, out var area))
+            uint gridIndex = GameUtil.CombineToIndex(x, y);
+            if (!_grids.TryGetValue(gridIndex, out var grid))
             {
-                area = new MapArea();
-                _areas.Add(areaIndex, area);
+                grid = new MapGrid();
+                _grids.Add(gridIndex, grid);
             }
 
-            area.MapBlocked = true;
+            grid.MapBlocked = true;
         }
 
-        void GenerateInitAreas()
+        void GenerateInitGrids()
         {
-            _areas.Clear();
+            _grids.Clear();
 
             if (_mapBk == null)
             {
@@ -234,13 +216,13 @@ namespace Game.Script.Subsystem
             foreach (var block in _mapBk.blocks)
             {
                 var (x, z) = _mapBk.BlockToGrid(block);
-                AddAreaMapBlock((uint)x, (uint)z);
+                AddGridBlock((uint)x, (uint)z);
             }
             
         }
 
 
-        public void LoadMap(string mapName, bool net, bool inAsset = true)
+        private void LoadMap(string mapName, bool net, bool inAsset = true)
         {
             MapLoaded = false;
             var path = AssetMapPath + mapName + MapExtension;
