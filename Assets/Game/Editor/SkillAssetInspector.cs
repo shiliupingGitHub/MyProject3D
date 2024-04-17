@@ -140,18 +140,18 @@ namespace Skill.Editor
         public Color SplitColor = Color.red;
         public Color ParamColor = Color.blue;
         public Color SingleActionColor = Color.yellow;
-        public override void OnInspectorGUI()
+
+        void DrawTime()
         {
-         
-            GUIStyle style = new GUIStyle();
-            style.normal.background = MakeTex(600, 1, ContentColor);
-            EditorGUILayout.BeginVertical(style);
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("持续时间", GUILayout.Width(100));
             _skill.maxTime = EditorGUILayout.FloatField( _skill.maxTime, GUILayout.Width(100));
             EditorGUILayout.EndHorizontal();
-            
-            EditorGUILayout.Space(50);
+        }
+
+        void DrawOp()
+        {
+            GUIStyle style = new GUIStyle();
             style.normal.background = MakeTex(600, 1, EditContentColor);
             EditorGUILayout.BeginVertical(style);
             
@@ -170,7 +170,7 @@ namespace Skill.Editor
                 var type = (SkillType)selectActionIndex;
                 if (SkillMgr.Instance.DefaultActions.TryGetValue(type, out var defaultAction))
                 {
-                     var param = JsonUtility.ToJson(defaultAction);
+                    var param = JsonUtility.ToJson(defaultAction);
                     _skill.actions.Add(new SkillActonConfig()
                     {
                         param = param, skillType = type, time = curTime,
@@ -181,11 +181,16 @@ namespace Skill.Editor
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.EndVertical();
-        
-    
+        }
+
+        void DrawActions()
+        {
+            var sortDes = SkillMgr.Instance.GetSortDes();
+            GUIStyle style = new GUIStyle();
             EditorGUILayout.Space(50);
             style.normal.background = MakeTex(600, 1, ActionContentColor);
             EditorGUILayout.BeginVertical(style);
+            
             bool bRemove = false;
             SkillActonConfig removeActionConfig = null;
             foreach (var action in _skill.actions)
@@ -223,9 +228,29 @@ namespace Skill.Editor
                 _skill.actions.Remove(removeActionConfig);
             }
             EditorGUILayout.EndVertical();
-         
-          
             
+            
+        }
+
+        void DrawContent()
+        {
+            
+            DrawOp();
+            DrawActions();
+    
+        }
+        public override void OnInspectorGUI()
+        {
+         
+            GUIStyle style = new GUIStyle();
+            style.normal.background = MakeTex(600, 1, ContentColor);
+            
+            EditorGUILayout.BeginVertical(style);
+
+            DrawTime();
+            EditorGUILayout.Space(50);
+            DrawContent();
+            EditorGUILayout.Space(50);
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(50);
             //base.OnInspectorGUI();
