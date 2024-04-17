@@ -17,6 +17,8 @@ namespace Skill.Editor
         private float curTime = 0;
         private int selectActionIndex = 0;
         private Dictionary<System.Type, Action<System.Object, FieldInfo>> _typeDraw = new();
+        private Texture2D _backGround;
+        private GUIStyle _style;
         private void OnEnable()
         {
             _skill = target as Skill;
@@ -24,6 +26,15 @@ namespace Skill.Editor
             _typeDraw.Add(typeof(string), OnDrawStringField);
             _typeDraw.Add(typeof(float), OnDrawFloatField);
             _typeDraw.Add(typeof(int), OnDrawIntField);
+        }
+        
+
+        private void Awake()
+        {
+            _backGround = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Game/Editor/Img/squareBorderCurvedEmptyThick.png");
+            _style = new GUIStyle();
+            _style.normal.background = _backGround;
+            _style.border = new RectOffset(4, 4, 4, 4);
         }
 
         string GetHeaderName(FieldInfo fieldInfo)
@@ -120,27 +131,7 @@ namespace Skill.Editor
             return JsonUtility.ToJson(action);
         }
         
-        private Texture2D MakeTex(int width, int height, Color col)
-        {
-            Color[] pix = new Color[width*height];
- 
-            for(int i = 0; i < pix.Length; i++)
-                pix[i] = col;
- 
-            Texture2D result = new Texture2D(width, height);
-            result.SetPixels(pix);
-            result.Apply();
- 
-            return result;
-        }
-
-        public Color ContentColor = Color.black;
-        public Color EditContentColor = Color.white;
-        public Color ActionContentColor = Color.gray;
-        public Color SplitColor = Color.red;
-        public Color ParamColor = Color.blue;
-        public Color SingleActionColor = Color.yellow;
-
+        
         void DrawTime()
         {
             EditorGUILayout.BeginHorizontal();
@@ -151,9 +142,8 @@ namespace Skill.Editor
 
         void DrawOp()
         {
-            GUIStyle style = new GUIStyle();
-            style.normal.background = MakeTex(600, 1, EditContentColor);
-            EditorGUILayout.BeginVertical(style);
+    
+            EditorGUILayout.BeginVertical();
             
             EditorGUILayout.BeginHorizontal();
           
@@ -186,17 +176,16 @@ namespace Skill.Editor
         void DrawActions()
         {
             var sortDes = SkillMgr.Instance.GetSortDes();
-            GUIStyle style = new GUIStyle();
             EditorGUILayout.Space(50);
-            style.normal.background = MakeTex(600, 1, ActionContentColor);
-            EditorGUILayout.BeginVertical(style);
+            // style.normal.background = _backGround;
+            EditorGUILayout.BeginVertical();
             
             bool bRemove = false;
             SkillActonConfig removeActionConfig = null;
             foreach (var action in _skill.actions)
             {
-                style.normal.background = MakeTex(600, 1, ParamColor);
-                EditorGUILayout.BeginHorizontal(style);
+                // style.normal.background = _backGround;
+                EditorGUILayout.BeginHorizontal();
                 int skillTypeIndex = (int)action.skillType;
 
                 if (sortDes.Count() > skillTypeIndex)
@@ -207,8 +196,8 @@ namespace Skill.Editor
                     EditorGUILayout.Space(50);
                     var oldColor = GUI.color;
                     GUI.color = Color.green;
-                    style.normal.background = MakeTex(600, 1, ParamColor);
-                    EditorGUILayout.BeginVertical(style);
+                    // style.normal.background = _backGround;
+                    EditorGUILayout.BeginVertical(_style);
                     action.param = DrawAction(action.skillType, action.param);
                    // action.param = SkillMgr.Instance.DefaultActions[action.skillType].OnGui(action.param);
                     EditorGUILayout.EndVertical();
@@ -241,11 +230,8 @@ namespace Skill.Editor
         }
         public override void OnInspectorGUI()
         {
-         
-            GUIStyle style = new GUIStyle();
-            style.normal.background = MakeTex(600, 1, ContentColor);
             
-            EditorGUILayout.BeginVertical(style);
+            EditorGUILayout.BeginVertical(_style);
 
             DrawTime();
             EditorGUILayout.Space(50);
@@ -253,10 +239,6 @@ namespace Skill.Editor
             EditorGUILayout.Space(50);
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(50);
-            //base.OnInspectorGUI();
-            // serializedObject.Update();
-            // serializedObject.FindProperty("").s
-            // serializedObject.ApplyModifiedProperties();
         }
     }
 }
