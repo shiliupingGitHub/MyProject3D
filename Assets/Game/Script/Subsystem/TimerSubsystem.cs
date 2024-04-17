@@ -15,21 +15,23 @@ namespace Game.Script.Subsystem
         }
         struct TimerData
         {
-            public float time;
-            public UniTaskCompletionSource tcs;
+            public float Time;
+            public UniTaskCompletionSource Tcs;
         }
 
         private readonly SimplePriorityQueue<TimerData> _queue = new();
 
         UniTask WaitTime(float time)
         {
-            TimerData data = new TimerData();
-            data.tcs = new UniTaskCompletionSource();
-            data.time = Time.unscaledTime + time / 1000;
-            
-            _queue.Enqueue(data, data.time);
+            TimerData data = new TimerData
+            {
+                Tcs = new UniTaskCompletionSource(),
+                Time = Time.unscaledTime + time / 1000
+            };
 
-            return data.tcs.Task;
+            _queue.Enqueue(data, data.Time);
+
+            return data.Tcs.Task;
         }
 
         public override void OnInitialize()
@@ -46,10 +48,10 @@ namespace Game.Script.Subsystem
             {
                 if(_queue.TryFirst(out var data))
                 {
-                    if (data.time <= Time.unscaledTime)
+                    if (data.Time <= Time.unscaledTime)
                     {
                         _queue.Remove(data);
-                        data.tcs.TrySetResult();
+                        data.Tcs.TrySetResult();
                     }
                     else
                     {

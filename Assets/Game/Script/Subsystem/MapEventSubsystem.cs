@@ -20,22 +20,23 @@ namespace Game.Script.Subsystem
             public float Delay { get; set; }
             public float WorkDelay { get; set; }
         }
+        
 
-        public Dictionary<MapActionType, MapAction> DefaultActions { get; } = new();
         public Dictionary<MapActionType, System.Type> ActionTypes { get; } = new();
 
-        SimplePriorityQueue<TimeExecuteEvent> _timeEvents = new();
-        Dictionary<string, List<ExecuteEvent>> _executeEvents = new();
-        Queue<string> _eventQueue = new();
+        readonly SimplePriorityQueue<TimeExecuteEvent> _timeEvents = new();
+        readonly Dictionary<string, List<ExecuteEvent>> _executeEvents = new();
+        readonly Queue<string> _eventQueue = new();
         private SimplePriorityQueue<TimeExecuteEvent> _workTimeExecuteEvents = new();
-        private float _curEventTime = 0;
-        private bool _bResetTimeEvent = false;
-        private float _eventPeriod = 0;
-        private bool _bWork = false;
+        private float _curEventTime ;
+        private bool _bResetTimeEvent;
+        private float _eventPeriod;
+        private bool _bWork;
 
         void OnAllMapLoaded(System.Object o)
         {
             MapData mapData = o as MapData;
+            
 
             LoadTimeEvent(mapData);
             LoadCustomEvent(mapData);
@@ -204,7 +205,6 @@ namespace Game.Script.Subsystem
             var gameEventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
             gameEventSubsystem.Subscribe("AllMapLoaded", OnAllMapLoaded);
             gameEventSubsystem.Subscribe("LeaveLevel", OnLeaveLevel);
-            DefaultActions.Clear();
             ActionTypes.Clear();
             var baseType = typeof(MapAction);
             var types = baseType.Assembly.GetTypes();
@@ -220,7 +220,6 @@ namespace Game.Script.Subsystem
                         if (attr is MapActionDesAttribute desAttribute)
                         {
                             ActionTypes.Add(desAttribute.ActionType, type);
-                            DefaultActions.Add(desAttribute.ActionType, System.Activator.CreateInstance(type) as MapAction);
                         }
                     }
                 }

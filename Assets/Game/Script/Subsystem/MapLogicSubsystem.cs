@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Game.Script.Common;
-using Game.Script.Map.Logic;
 using Game.Script.Map.Logic.Fight;
 using Game.Script.Map.Logic.Home;
 

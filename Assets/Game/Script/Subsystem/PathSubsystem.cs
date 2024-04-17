@@ -11,14 +11,14 @@ namespace Game.Script.Subsystem
 {
     struct PathRequest
     {
-        public Vector3 startPosition;
-        public Vector3 endPosition;
-        public int startX;
-        public int startY;
-        public int endX;
-        public int endY;
-        public ulong pathId;
-        public  UniTaskCompletionSource<List<Vector3>>  tls;
+        public Vector3 StartPosition;
+        public Vector3 EndPosition;
+        public int StartX;
+        public int StartY;
+        public int EndX;
+        public int EndY;
+        public ulong PathId;
+        public  UniTaskCompletionSource<List<Vector3>>  Tcs;
     }
 
     public class PathSubsystem : GameSubsystem
@@ -35,24 +35,25 @@ namespace Game.Script.Subsystem
             {
                 foreach (var request in _pathRequestList)
                 {
-                    if (request.tls != null)
+                    if (request.Tcs != null)
                     {
-                        request.tls.TrySetResult(null);
+                        request.Tcs.TrySetResult(null);
                     }
                 }
                 _pathRequestList.Clear();
                 _pathId = 1;
             };
-            DoTick();
+            _ = DoTick();
         }
 
-        private async void DoTick()
+        private async UniTaskVoid DoTick()
         {
             while (true)
             {
                 OnTick();
                 await TimerSubsystem.Delay(1);
             }
+            
         }
 
         public UniTask<List<Vector3>> AddPath(Vector3 start, Vector3 end,  ref ulong pathId)
@@ -60,22 +61,22 @@ namespace Game.Script.Subsystem
              pathId = _pathId;
             _pathId++;
 
-            UniTaskCompletionSource<List<Vector3>> curtls = new();
+            UniTaskCompletionSource<List<Vector3>> curTcs = new();
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             (int sX, int sY) = mapSubsystem.MapBk.GetGridIndex(start);
             (int eX, int eY) = mapSubsystem.MapBk.GetGridIndex(end);
 
-            _pathRequestList.Add(new PathRequest() { tls = curtls,startPosition = start, endPosition = end, pathId = pathId , startX = sX, startY = sY, endX = eX, endY = eY});
-            return curtls.Task;
+            _pathRequestList.Add(new PathRequest() { Tcs = curTcs,StartPosition = start, EndPosition = end, PathId = pathId , StartX = sX, StartY = sY, EndX = eX, EndY = eY});
+            return curTcs.Task;
         }
 
         public void RemovePath(ulong pathId)
         {
-            var request = _pathRequestList.Find(x => x.pathId == pathId);
+            var request = _pathRequestList.Find(x => x.PathId == pathId);
 
-            if (request.tls != null)
+            if (request.Tcs != null)
             {
-                request.tls.TrySetResult(null);
+                request.Tcs.TrySetResult(null);
                 _pathRequestList.Remove(request);
             }
             
@@ -98,24 +99,24 @@ namespace Game.Script.Subsystem
                 Parallel.For(0, num, (i, _) =>
                 {
                     var request = _pathRequestList[i];
-                    var path = GeneratePath(request.startX, request.startY, request.endX, request.endY);
+                    var path = GeneratePath(request.StartX, request.StartY, request.EndX, request.EndY);
                     
                     List<Vector3> finalPath = new();
 
                     if (null != path && path.Count > 0)
                     {
-                        finalPath.Add(request.startPosition);
+                        finalPath.Add(request.StartPosition);
                         foreach (var p in path)
                         {
                             var position =GameUtil.ConvertPointToWorldPosition(p, offset, cellX, cellZ);
                             finalPath.Add(position);
                         }
-                        finalPath.Add(request.endPosition);
+                        finalPath.Add(request.EndPosition);
                     }
                     
                     GameLoop.RunGameThead(() =>
                     {
-                        request.tls.TrySetResult(finalPath);
+                        request.Tcs.TrySetResult(finalPath);
                     });
                     
                     
@@ -173,26 +174,26 @@ namespace Game.Script.Subsystem
             return path;
         }
 
-        private (bool, (int, int))[] GetNeighbours(int xCordinate, int yCordinate, bool walkableDiagonals = false)
+        private (bool, (int, int))[] GetNeighbours(int xCoordinate, int yCoordinate, bool walkableDiagonals = false)
         {
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             List<(bool, (int, int))> neighbourCells = new List<(bool, (int, int))>();
 
-            int heigth = mapSubsystem.MapBk.zGridNum;
+            int height = mapSubsystem.MapBk.zGridNum;
             int width = mapSubsystem.MapBk.xGridNum;
 
             int range = 1;
-            int yStart = (int)MathF.Max(0, yCordinate - range);
-            int yEnd = (int)MathF.Min(heigth - 1, yCordinate + range);
+            int yStart = (int)MathF.Max(0, yCoordinate - range);
+            int yEnd = (int)MathF.Min(height - 1, yCoordinate + range);
 
-            int xStart = (int)MathF.Max(0, xCordinate - range);
-            int xEnd = (int)MathF.Min(width - 1, xCordinate + range);
+            int xStart = (int)MathF.Max(0, xCoordinate - range);
+            int xEnd = (int)MathF.Min(width - 1, xCoordinate + range);
 
             for (int y = yStart; y <= yEnd; y++)
             {
                 for (int x = xStart; x <= xEnd; x++)
                 {
-                    if (x == xCordinate && y == yCordinate)
+                    if (x == xCoordinate && y == yCoordinate)
                     {
                         continue;
                     }
@@ -204,19 +205,19 @@ namespace Game.Script.Subsystem
 
                     if (!walkableDiagonals)
                     {
-                        if ((x == xCordinate - range) && (y == yCordinate - range || y == yCordinate + range))
+                        if ((x == xCoordinate - range) && (y == yCoordinate - range || y == yCoordinate + range))
                         {
-                            if (IsBlock(xCordinate, y))
+                            if (IsBlock(xCoordinate, y))
                                 continue;
-                            if(IsBlock(x, yCordinate))
+                            if(IsBlock(x, yCoordinate))
                                 continue;
                         }
 
-                        if ((x == xCordinate + range) && (y == yCordinate - range || y == yCordinate + range))
+                        if ((x == xCoordinate + range) && (y == yCoordinate - range || y == yCoordinate + range))
                         {
-                            if (IsBlock(xCordinate, y))
+                            if (IsBlock(xCoordinate, y))
                                 continue;
-                            if(IsBlock(x, yCordinate))
+                            if(IsBlock(x, yCoordinate))
                                 continue;
                         }
                     }
