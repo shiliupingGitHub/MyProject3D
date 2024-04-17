@@ -56,7 +56,7 @@ namespace Game.Script.Subsystem
                 var gameEventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
                 if (null != gameEventSubsystem)
                 {
-                    gameEventSubsystem.Raise("LeaveLevel", levelType);
+                    gameEventSubsystem.Raise("LeaveLevel", _curLevel);
                 }
             }
             UIManager.Instance.Clear();

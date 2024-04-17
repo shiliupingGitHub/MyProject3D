@@ -20,7 +20,7 @@ namespace Game.Script.Subsystem
             public float Delay { get; set; }
             public float WorkDelay { get; set; }
         }
-        
+
 
         public Dictionary<MapActionType, System.Type> ActionTypes { get; } = new();
 
@@ -28,7 +28,7 @@ namespace Game.Script.Subsystem
         readonly Dictionary<string, List<ExecuteEvent>> _executeEvents = new();
         readonly Queue<string> _eventQueue = new();
         private SimplePriorityQueue<TimeExecuteEvent> _workTimeExecuteEvents = new();
-        private float _curEventTime ;
+        private float _curEventTime;
         private bool _bResetTimeEvent;
         private float _eventPeriod;
         private bool _bWork;
@@ -36,7 +36,7 @@ namespace Game.Script.Subsystem
         void OnAllMapLoaded(System.Object o)
         {
             MapData mapData = o as MapData;
-            
+
 
             LoadTimeEvent(mapData);
             LoadCustomEvent(mapData);
@@ -58,6 +58,7 @@ namespace Game.Script.Subsystem
                 {
                     timeEvent.WorkDelay = Random.Range(0, _eventPeriod);
                 }
+
                 _workTimeExecuteEvents.Enqueue(timeEvent, timeEvent.Delay);
             }
         }
@@ -81,12 +82,22 @@ namespace Game.Script.Subsystem
 
             if (lt == LevelType.Fight || lt == LevelType.Home)
             {
-                _timeEvents.Clear();
-                _executeEvents.Clear();
-                _workTimeExecuteEvents.Clear();
-                _bWork = false;
-                GameLoop.Remove(OnUpdate);
+                Clear();
             }
+        }
+
+        void Clear()
+        {
+            _timeEvents.Clear();
+            _executeEvents.Clear();
+            _workTimeExecuteEvents.Clear();
+            _bWork = false;
+            GameLoop.Remove(OnUpdate);
+        }
+
+        void OnAllMapUnload(System.Object o)
+        {
+            Clear();
         }
 
         void OnUpdate(float deltaTime)
@@ -96,7 +107,6 @@ namespace Game.Script.Subsystem
                 UpdateMapTime(deltaTime);
                 UpdateEvents(deltaTime);
             }
-           
         }
 
         void UpdateMapTime(float deltaTime)
@@ -205,6 +215,7 @@ namespace Game.Script.Subsystem
             var gameEventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
             gameEventSubsystem.Subscribe("AllMapLoaded", OnAllMapLoaded);
             gameEventSubsystem.Subscribe("LeaveLevel", OnLeaveLevel);
+            gameEventSubsystem.Subscribe("AllMapUnLoaded", OnAllMapUnload);
             ActionTypes.Clear();
             var baseType = typeof(MapAction);
             var types = baseType.Assembly.GetTypes();

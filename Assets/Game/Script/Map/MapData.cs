@@ -330,27 +330,18 @@ namespace Game.Script.Map
                 LoadActor(mapBk, actorData, preview, net);
             }
         }
-
-   
-
-        public void UnLoadActors()
-        {
-            foreach (var actorData in actors)
-            {
-                if (actorData.go != null)
-                {
-                    Object.Destroy(actorData.go);
-                }
-            }
-
-            
-        }
+        
 
         public void UnLoadSync()
         {
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             mapSubsystem.ClearGo();
             actors.Clear();
+            var gameEventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
+            if (null != gameEventSubsystem)
+            {
+                gameEventSubsystem.Raise("AllMapUnLoaded", this);
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Game.Script.Character
 
         private Vector3 _lastPosition = new Vector3(-1000, -1000, 0);
 
+        public override bool IsAddToSearch => true;
 
         protected override void Awake()
         {
