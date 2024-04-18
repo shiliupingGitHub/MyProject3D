@@ -10,6 +10,7 @@ public enum SearchFilterType
     None,
     FightPlayer,
     Monster,
+    Pet,
 }
 namespace Game.Script.Subsystem
 {

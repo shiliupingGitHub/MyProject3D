@@ -94,11 +94,11 @@ GameObject:
   m_Component:
   - component: {fileID: 8374390686008847019}
   - component: {fileID: 8241550052777230857}
-  - component: {fileID: 7175294596047296493}
   - component: {fileID: 8541539398798180198}
   - component: {fileID: -3277198635055497020}
   - component: {fileID: 8185087281091078231}
   - component: {fileID: 3039102168389616578}
+  - component: {fileID: -5404792935868450373}
   m_Layer: 9
   m_Name: Monster_Test
   m_TagString: Untagged
@@ -156,27 +156,6 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
---- !u!114 &7175294596047296493
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5248929476824234659}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f71e1bac6744f7b8038354d31da5cd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  centerOffset: {x: 0, y: 0, z: 0}
-  LastTickTime: 0
-  skills:
-  - {fileID: 11400000, guid: 84e3ddaaee53bf74493b44a67a3a1da3, type: 2}
-  externalBehaviorTree: {fileID: 11400000, guid: a47db7b25a25d444daf40fc760dab93b,
-    type: 2}
 --- !u!114 &8541539398798180198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,3 +230,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idleAnimation: idle
   walkAnimation: walk
+--- !u!114 &-5404792935868450373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5248929476824234659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ad2a6a8c7c4e1daef0838846e05317, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  centerOffset: {x: 0.5, y: 0.5, z: 0}
+  LastTickTime: 0
+  skills: []
+  externalBehaviorTree: {fileID: 11400000, guid: a47db7b25a25d444daf40fc760dab93b,
+    type: 2}
