@@ -85,6 +85,7 @@ namespace Game.Script.Map
         [SerializeField] public List<MapSystemEventData> systemEvents = new();
         [SerializeField] public List<MapCustomEventData> customEvents = new();
         [SerializeField] public MapBaseSetting BaseSetting = new();
+        [SerializeField] public List<string> logics = new();
         [NonSerialized] private GameObject _bkMapGo;
         public GameObject BkMapGo => _bkMapGo;
 

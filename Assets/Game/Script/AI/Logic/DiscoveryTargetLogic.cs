@@ -5,7 +5,7 @@ using Game.Script.Common;
 
 namespace Game.Script.AI.Logic
 {
-    [LogicDes("DiscoveryTarget")]
+    [AILogicDes("DiscoveryTarget")]
     public class DiscoveryTargetLogic : AILogic
     {
         public override void Tick(AICharacter character, float deltaTime)

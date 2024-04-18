@@ -19,7 +19,7 @@ namespace Game.Script.AI.Logic
             {
                 if (baseType.IsAssignableFrom(type) && baseType != type)
                 {
-                    var attribute = type.GetCustomAttribute<LogicDesAttribute>();
+                    var attribute = type.GetCustomAttribute<AILogicDesAttribute>();
                     if (null != attribute)
                     {
                         list.Add(attribute.Des);

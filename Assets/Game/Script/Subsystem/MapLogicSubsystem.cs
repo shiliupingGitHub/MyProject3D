@@ -1,74 +1,64 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
+using Game.Script.Attribute;
 using Game.Script.Common;
-using Game.Script.Map.Logic.Fight;
-using Game.Script.Map.Logic.Home;
-
+using Game.Script.Map.Logic;
 namespace Game.Script.Subsystem
 {
     public class MapLogicSubsystem : GameSubsystem
     {
-        private readonly List<HomeMapLogic> _homeLogics = new();
-        private readonly List<FightMapLogic> _fightLogics = new();
+        private readonly Dictionary<string, MapLogic> _logics = new();
 
         public override void OnInitialize()
         {
             base.OnInitialize();
             GameLoop.Add(OnUpdate);
-            InitHomeLogic();
-            InitFightLogic();
+            InitLogic();
         }
-
-        void InitHomeLogic()
+        
+        void InitLogic()
         {
-            var baseType = typeof(HomeMapLogic);
+            var baseType = typeof(MapLogic);
             var types = baseType.Assembly.GetTypes();
             foreach (var type in types)
             {
                 if (baseType.IsAssignableFrom(type) && baseType != type)
                 {
-                    var logic = System.Activator.CreateInstance(type) as HomeMapLogic;
-                    _homeLogics.Add(logic);
-                }
-            }
-        }
+                    var attribute = type.GetCustomAttribute<MapLogicDesAttribute>();
 
-        void InitFightLogic()
-        {
-            var baseType = typeof(FightMapLogic);
-            var types = baseType.Assembly.GetTypes();
-            foreach (var type in types)
-            {
-                if (baseType.IsAssignableFrom(type) && baseType != type)
-                {
-                    var logic = System.Activator.CreateInstance(type) as FightMapLogic;
-                    _fightLogics.Add(logic);
+                    if (null != attribute)
+                    {
+                        var logic = System.Activator.CreateInstance(type) as MapLogic;
+                        _logics.Add(attribute.Des, logic);
+                    }
+                    
+                    
                 }
             }
         }
 
         void OnUpdate(float deltaTime)
         {
-            int num = _homeLogics.Count;
-            Parallel.For(0, num, (i, _) =>
-            {
-                var logic = _homeLogics[i];
-                logic.Tick(deltaTime);
-            });
+            if (Common.Game.Instance.Mode != GameMode.Host && Common.Game.Instance.Mode != GameMode.Home)
+                return;
+            var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+            if(mapSubsystem.CurMapData == null)
+                return;
+            
+            int num = mapSubsystem.CurMapData.logics.Count;
 
-            if (Common.Game.Instance.Mode == GameMode.Host)
+            if (num > 0)
             {
-                var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
-                if (mapSubsystem.MapLoaded)
+                Parallel.ForEach(mapSubsystem.CurMapData.logics, loigcName =>
                 {
-                    Parallel.For(0, _fightLogics.Count, (i, _) =>
+                    if (_logics.TryGetValue(loigcName, out var logic))
                     {
-                        var logic = _fightLogics[i];
                         logic.Tick(deltaTime);
-                    });
-                }
-              
+                    }
+                });
             }
+            
         }
     }
 }

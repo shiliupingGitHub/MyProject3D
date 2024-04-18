@@ -25,7 +25,7 @@ namespace Game.Script.Subsystem
             {
                 if (baseType.IsAssignableFrom(type) && baseType != type)
                 {
-                    var attribute = type.GetCustomAttribute<LogicDesAttribute>();
+                    var attribute = type.GetCustomAttribute<AILogicDesAttribute>();
 
                     if (null != attribute)
                     {
