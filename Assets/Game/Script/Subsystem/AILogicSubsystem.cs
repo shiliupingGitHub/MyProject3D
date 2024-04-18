@@ -1,18 +1,21 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
+using Game.Editor;
 using Game.Script.AI.Logic;
 using Game.Script.Character;
 using Game.Script.Common;
 using UnityEngine;
-using Task = System.Threading.Tasks.Task;
+
 
 namespace Game.Script.Subsystem
 {
     public class AILogicSubsystem : GameSubsystem
     {
-        private readonly List<AILogic> _logics = new();
+        private readonly Dictionary<string, AILogic> _logics = new();
         private readonly List<AICharacter> _characters = new();
         private float _lastTickTime;
+
         public override void OnInitialize()
         {
             base.OnInitialize();
@@ -22,22 +25,21 @@ namespace Game.Script.Subsystem
             {
                 if (baseType.IsAssignableFrom(type) && baseType != type)
                 {
-                    var logic = System.Activator.CreateInstance(type) as AILogic;
-                    _logics.Add(logic);
+                    var attribute = type.GetCustomAttribute<LogicDesAttribute>();
+
+                    if (null != attribute)
+                    {
+                        var logic = System.Activator.CreateInstance(type) as AILogic;
+                        _logics.Add(attribute.Des, logic);
+                    }
                 }
             }
-            
+
             var eventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
-            eventSubsystem.Subscribe("addMonster", o =>
-            {
-                _characters.Add(o as AICharacter);
-            });
-            
-            eventSubsystem.Subscribe("removeMonster", o =>
-            {
-                _characters.Remove(o as AICharacter);
-            });
-            
+            eventSubsystem.Subscribe("addMonster", o => { _characters.Add(o as AICharacter); });
+
+            eventSubsystem.Subscribe("removeMonster", o => { _characters.Remove(o as AICharacter); });
+
             Tick();
         }
 
@@ -56,13 +58,20 @@ namespace Game.Script.Subsystem
 
         void TickLogic(AICharacter character, float deltaTime)
         {
-            foreach (var logic in _logics)
+            var logicConfig = character.Logic;
+            if (null != logicConfig)
             {
-                logic.Tick(character, deltaTime);
+                foreach (var logicName in logicConfig.logics)
+                {
+                    if (_logics.TryGetValue(logicName, out var logic))
+                    {
+                        logic.Tick(character, deltaTime);
+                    }
+                }
             }
         }
 
-       async void Tick()
+        async void Tick()
         {
             while (true)
             {
@@ -80,7 +89,7 @@ namespace Game.Script.Subsystem
                         TickCharacters(delta);
                     }
                 }
-                
+
 
                 await TimerSubsystem.Delay(1);
             }

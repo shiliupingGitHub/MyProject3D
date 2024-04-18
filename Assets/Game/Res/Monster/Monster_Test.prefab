@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 8185087281091078231}
   - component: {fileID: 3039102168389616578}
   - component: {fileID: -5404792935868450373}
+  - component: {fileID: 8603277615290571672}
   m_Layer: 9
   m_Name: Monster_Test
   m_TagString: Untagged
@@ -250,3 +251,17 @@ MonoBehaviour:
   skills: []
   externalBehaviorTree: {fileID: 11400000, guid: a47db7b25a25d444daf40fc760dab93b,
     type: 2}
+--- !u!114 &8603277615290571672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5248929476824234659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33ac51c8d32649a4a4bdcaadf84dbf0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logics:
+  - DiscoveryTarget

@@ -1,7 +1,11 @@
 ﻿
+using System.Collections;
+using System.Collections.Generic;
 using BehaviorDesigner.Runtime;
 using Game.Script.AI;
+using Game.Script.AI.Logic;
 using Game.Script.Subsystem;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 
@@ -10,9 +14,10 @@ namespace Game.Script.Character
     [RequireComponent(typeof(AICharacterMovement))]
     [RequireComponent(typeof(AICharacterAnimation))]
     [RequireComponent(typeof(CharacterController))]
+    [RequireComponent(typeof(LogicConfig))]
     public class AICharacter : Character
     {
-        
+        public LogicConfig Logic { get; private set; }
         private GameBehaviorTree _gameBehaviorTree;
         public ExternalBehavior externalBehaviorTree;
         public GameBehaviorTree BehaviorTree => _gameBehaviorTree;
@@ -31,9 +36,7 @@ namespace Game.Script.Character
                 
             }
         }
-
         
-
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -54,7 +57,13 @@ namespace Game.Script.Character
             var eventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
             eventSubsystem.Raise("addMonster", this);
         }
-        
+
+        protected override void Awake()
+        {
+            base.Awake();
+            Logic = GetComponent<LogicConfig>();
+        }
+
         protected override void OnDestroy()
         {
             base.OnDestroy();
