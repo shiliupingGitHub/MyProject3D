@@ -30,7 +30,6 @@ namespace Game.Script.Common
         private int xStep = 0;
         private int zStep = 0;
         private Collider _collider;
-        public virtual bool IsAddToSearch => false;
 
         protected virtual void Start()
         {
@@ -62,21 +61,13 @@ namespace Game.Script.Common
         {
             CacheTransform = transform;
 
-            if (IsAddToSearch)
-            {
-                var actorSearchSubsystem = Common.Game.Instance.GetSubsystem<ActorSearchSubsystem>();
-                actorSearchSubsystem.Add(this);
-            }
+          
         }
 
         protected virtual void OnDestroy()
         {
             LeaveAllGrid();
-            if (IsAddToSearch)
-            {
-                var actorSearchSubsystem = Common.Game.Instance.GetSubsystem<ActorSearchSubsystem>();
-                actorSearchSubsystem.Remove(this);
-            }
+       
         }
 
         void LeaveAllGrid()
