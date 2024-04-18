@@ -33,7 +33,8 @@ namespace Game.Script.Character
         }
 
         protected override bool IsBlock { get; } = false;
-        
+        public override SearchFilterType FilterType => SearchFilterType.FightPlayer;
+
         public override void OnStartAuthority()
         {
             base.OnStartAuthority();

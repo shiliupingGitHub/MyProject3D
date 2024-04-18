@@ -1,6 +1,8 @@
-﻿using BehaviorDesigner.Runtime;
+﻿using System.Collections.Generic;
+using BehaviorDesigner.Runtime;
 using Game.Script.Character;
 using Game.Script.Common;
+using Game.Script.Subsystem;
 using UnityEngine;
 
 namespace Game.Script.AI.Logic

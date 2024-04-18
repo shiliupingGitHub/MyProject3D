@@ -18,10 +18,13 @@ namespace Game.Script.Character
             LastTickTime = Time.unscaledTime;
             if (IsAddToSearch)
             {
-                var actorSearchSubsystem = Common.Game.Instance.GetSubsystem<ActorSearchSubsystem>();
+                var actorSearchSubsystem = Common.Game.Instance.GetSubsystem<SearchSubsystem>();
                 actorSearchSubsystem.Add(this);
             }
         }
+
+        public virtual SearchFilterType FilterType => SearchFilterType.None;
+     
 
         protected override void OnDestroy()  
         {
@@ -29,7 +32,7 @@ namespace Game.Script.Character
             Common.Game.Instance.UnRegisterPawn(this);
             if (IsAddToSearch)
             {
-                var actorSearchSubsystem = Common.Game.Instance.GetSubsystem<ActorSearchSubsystem>();
+                var actorSearchSubsystem = Common.Game.Instance.GetSubsystem<SearchSubsystem>();
                 actorSearchSubsystem.Remove(this);
             }
         }

@@ -32,6 +32,8 @@ namespace Game.Script.Character
             }
         }
 
+        public override SearchFilterType FilterType => SearchFilterType.Monster;
+
         public override void OnStartServer()
         {
             base.OnStartServer();
