@@ -133,6 +133,11 @@ namespace Game.Script.Subsystem
             }
         }
 
+        public void Search(Vector3 position, ref List<Pawn> results)
+        {
+            
+        }
+
         void CreateTree(MapBk mapBk)
         {
             _root = new Area();
