@@ -58,7 +58,7 @@ namespace Game.Script.Subsystem
 
         void TickLogic(AICharacter character, float deltaTime)
         {
-            var logicConfig = character.Logic;
+            var logicConfig = character.AILogic;
             if (null != logicConfig)
             {
                 foreach (var logicName in logicConfig.logics)

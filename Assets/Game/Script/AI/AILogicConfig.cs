@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game.Script.AI.Logic
 {
-    public class LogicConfig : MonoBehaviour
+    public class AILogicConfig : MonoBehaviour
     {
         [ValueDropdown("GetLogicNames")] public List<string> logics = new();
 #if UNITY_EDITOR

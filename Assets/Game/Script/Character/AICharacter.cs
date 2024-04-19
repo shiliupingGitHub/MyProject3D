@@ -14,10 +14,10 @@ namespace Game.Script.Character
     [RequireComponent(typeof(AICharacterMovement))]
     [RequireComponent(typeof(AICharacterAnimation))]
     [RequireComponent(typeof(CharacterController))]
-    [RequireComponent(typeof(LogicConfig))]
+    [RequireComponent(typeof(AILogicConfig))]
     public class AICharacter : Character
     {
-        public LogicConfig Logic { get; private set; }
+        public AILogicConfig AILogic { get; private set; }
         private GameBehaviorTree _gameBehaviorTree;
         public ExternalBehavior externalBehaviorTree;
         public GameBehaviorTree BehaviorTree => _gameBehaviorTree;
@@ -61,7 +61,7 @@ namespace Game.Script.Character
         protected override void Awake()
         {
             base.Awake();
-            Logic = GetComponent<LogicConfig>();
+            AILogic = GetComponent<AILogicConfig>();
         }
 
         protected override void OnDestroy()
