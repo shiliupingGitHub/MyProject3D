@@ -2,6 +2,7 @@
 using Game.Script.Common;
 using Game.Script.Map;
 using Game.Script.Res;
+using Game.Script.Setting;
 using Game.Script.UI;
 using Game.Script.UI.Frames;
 using Unity.Mathematics;
@@ -74,6 +75,7 @@ namespace Game.Script.Subsystem
             eventSubsystem.Subscribe("AllMapLoaded", _ =>
             {
                 MapLoaded = true;
+                GameSetting.Instance.ShowGrid = Common.Game.Instance.Mode == GameMode.Edit;
             });
             eventSubsystem.Subscribe("serverSceneChanged", o => { LoadMap(Common.Game.Instance.LoadMapName, true); });
             Common.Game.Instance.serverFightNewPlayer += () =>
