@@ -16,12 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: a6c76a8b088fe4d4ebc16ce5002bdf20
-  m_SerializeEntries:
-  - m_GUID: 84e3ddaaee53bf74493b44a67a3a1da3
-    m_Address: Assets/Game/Res/Skill/skill_0001.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 8a5b7fa2f7b110e499305b11415bf217, type: 2}
   m_SchemaSet:
