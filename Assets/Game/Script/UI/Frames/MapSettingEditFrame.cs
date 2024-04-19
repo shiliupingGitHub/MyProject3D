@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Game.Script.Attribute;
 using Game.Script.Map;
-using Game.Script.Map.Actor;
 using Game.Script.Subsystem;
 using Game.Script.UI.Ext;
 using OneP.InfinityScrollView;
@@ -19,7 +18,7 @@ namespace Game.Script.UI.Frames
         [UIPath("offset/ddLogics")] private Dropdown _ddLogics;
         [UIPath("offset/btnAddLogic")] private Button _btnAddLogic;
         private MapData _curMapData;
-        List<string> _options = new List<string>();
+        List<string> _options = new ();
         
         public override void Init(Transform parent)
         {
@@ -28,19 +27,27 @@ namespace Game.Script.UI.Frames
             var localizeSubsystem = Common.Game.Instance.GetSubsystem<LocalizationSubsystem>();
             _logicRoot.onItemReload += (o, i) =>
             {
-                var name = _curMapData.logics[i];
+                var logicData = _curMapData.logics[i];
+                var name = logicData.Name;
                 var lbName = o.transform.Find("lbName").GetComponent<Text>();
                 var btnRemove = o.transform.Find("btnRemove").GetComponent<Button>();
+                var btnEdit = o.transform.Find("btnEdit").GetComponent<Button>();
+                btnEdit.onClick.RemoveAllListeners();
                 lbName.text = localizeSubsystem.Get(name);
                 btnRemove.onClick.RemoveAllListeners();
                 btnRemove.onClick.AddListener(() =>
                 {
-                    if (_curMapData.logics.Contains(name))
+                    if (_curMapData.ContainLogic(name))
                     {
-                        _curMapData.logics.Remove(name);
-                        RefreshDDLogic();
+                        _curMapData.RemoveLogic(name);
+                        RefreshDdLogic();
                         _logicRoot.Setup(_curMapData.logics.Count);
                     }
+                });
+                btnEdit.onClick.AddListener(() =>
+                {
+                    var frame = UIManager.Instance.Show<MapLogicEditFrame>();
+                    frame.Edit(logicData);
                 });
             };
             _btnAddLogic.onClick.AddListener(() =>
@@ -48,10 +55,10 @@ namespace Game.Script.UI.Frames
                 if (_options.Count > _ddLogics.value)
                 {
                     var logicName = _options[_ddLogics.value];
-                    if (!_curMapData.logics.Contains(logicName))
+                    if (!_curMapData.ContainLogic(logicName))
                     {
-                        _curMapData.logics.Add(logicName);
-                        RefreshDDLogic();
+                        _curMapData.AddLogic(logicName, null);
+                        RefreshDdLogic();
                         _logicRoot.Setup(_curMapData.logics.Count);
                     }
                     
@@ -59,14 +66,14 @@ namespace Game.Script.UI.Frames
             });
         }
 
-        void RefreshDDLogic()
+        void RefreshDdLogic()
         {
             var logicSubsystem = Common.Game.Instance.GetSubsystem<MapLogicSubsystem>();
             _ddLogics.ClearOptions();
             _options.Clear();
             foreach (var logicName in logicSubsystem.AllLogicNames)
             {
-                if (!_curMapData.logics.Contains(logicName))
+                if (!_curMapData.ContainLogic(logicName))
                 {
                     _options.Add(logicName);
                 }
@@ -90,7 +97,7 @@ namespace Game.Script.UI.Frames
             {
                 _curMapData = value;
                 RefreshActorUI();
-                RefreshDDLogic();
+                RefreshDdLogic();
             }
            
         }
@@ -98,7 +105,7 @@ namespace Game.Script.UI.Frames
         void RefreshActorUI()
         {
             FieldDrawer.BeginDraw(_paramsRoot);
-            FieldDrawer.Draw(_paramsRoot, _curMapData.BaseSetting, (info, o) =>
+            FieldDrawer.Draw(_paramsRoot, _curMapData.BaseSetting, (_, _) =>
             {
                
             });

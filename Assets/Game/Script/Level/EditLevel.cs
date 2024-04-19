@@ -4,6 +4,7 @@ using Game.Script.Common;
 using Game.Script.Subsystem;
 using Game.Script.UI;
 using Game.Script.UI.Frames;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Game.Script.Level
@@ -23,6 +24,7 @@ namespace Game.Script.Level
         
         async UniTaskVoid Start()
         {
+            
             await SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
             UIManager.Instance.Show<EditFrame>();
             _ = LoadComplete();

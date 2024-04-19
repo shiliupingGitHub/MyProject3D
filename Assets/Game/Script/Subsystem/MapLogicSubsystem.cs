@@ -1,18 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Game.Script.Attribute;
 using Game.Script.Common;
 using Game.Script.Map.Logic;
+using UnityEngine;
+
 namespace Game.Script.Subsystem
 {
     public class MapLogicSubsystem : GameSubsystem
     {
         private readonly Dictionary<string, MapLogic> _logics = new();
+        private Dictionary<string, Type> _logicTypes = new();
         public List<string> AllLogicNames { get; set; } = new();
 
         private bool _bEnter;
         private List<MapLogic> _workLogics = new();
+
+        public MapLogic Create(string name)
+        {
+            if (_logicTypes.TryGetValue(name, out var type))
+            {
+                var logic = (MapLogic)Activator.CreateInstance(type);
+                return logic;
+            }
+            
+            return null;
+        }
 
         public override void OnInitialize()
         {
@@ -30,13 +45,14 @@ namespace Game.Script.Subsystem
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             if(mapSubsystem.CurMapData == null)
                 return;
-            foreach (var logicName in mapSubsystem.CurMapData.logics)
+            foreach (var logicData in mapSubsystem.CurMapData.logics)
             {
-                if (_logics.TryGetValue(logicName, out var logic))
+                if (_logics.TryGetValue(logicData.Name, out var logic))
                 {
                     if (!_workLogics.Contains(logic))
                     {
                         _workLogics.Add(logic);
+                        JsonUtility.FromJsonOverwrite(logicData.Data, logic);
                         logic.Enter();
                     }
                     
@@ -84,6 +100,7 @@ namespace Game.Script.Subsystem
                         var logic = System.Activator.CreateInstance(type) as MapLogic;
                         _logics.Add(attribute.Des, logic);
                         AllLogicNames.Add(attribute.Des);
+                        _logicTypes.Add(attribute.Des, type);
                     }
                 }
             }

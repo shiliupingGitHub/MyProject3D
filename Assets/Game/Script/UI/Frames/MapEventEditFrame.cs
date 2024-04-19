@@ -195,16 +195,34 @@ namespace Game.Script.UI.Frames
 
         void RefreshTimeActionList()
         {
+            _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.timeEvents.Count - 1);
+            if (_curSelectEvent < 0)
+            {
+                _actionList.Setup(0);
+                return;
+            }
             _actionList.Setup(_curMapData.timeEvents[_curSelectEvent].actions.Count);
         }
         
         void RefreshSystemActionList()
         {
+            _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.systemEvents.Count - 1);
+            if (_curSelectEvent < 0)
+            {
+                _actionList.Setup(0);
+                return;
+            }
             _actionList.Setup(_curMapData.systemEvents[_curSelectEvent].actions.Count);
         }
         
         void RefreshCustomActionList()
         {
+            _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.customEvents.Count - 1);
+            if (_curSelectEvent < 0)
+            {
+                _actionList.Setup(0);
+                return;
+            }
             _actionList.Setup(_curMapData.customEvents[_curSelectEvent].actions.Count);
         }
 
@@ -258,17 +276,21 @@ namespace Game.Script.UI.Frames
             });
             _btnRemoveEvent.onClick.AddListener(() =>
             {
+                
                 if (_curSelectEvent > 0)
                 {
                     switch (_curEventPage)
                     {
                         case EventPage.Time:
+                            _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.timeEvents.Count - 1);
                             _curMapData.timeEvents.RemoveAt(_curSelectEvent);
                             break;
                         case EventPage.System:
+                            _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.systemEvents.Count - 1);
                             _curMapData.systemEvents.RemoveAt(_curSelectEvent);
                             break;
                         case EventPage.Custom:
+                            _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.customEvents.Count - 1);
                             _curMapData.customEvents.RemoveAt(_curSelectEvent);
                             break;
                     }

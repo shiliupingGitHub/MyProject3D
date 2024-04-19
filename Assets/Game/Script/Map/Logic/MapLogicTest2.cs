@@ -2,10 +2,10 @@ using Game.Script.Attribute;
 
 namespace Game.Script.Map.Logic
 {
-    [MapLogicDes("MapLogicTest")]
-    public class MapLogicTest : MapLogic
+    [MapLogicDes("MapLogicTest2")]
+    public class MapLogicTest2 : MapLogic
     {
-        public string testParam = "1";
+        public int test = 1;
         public override void Tick(float deltaTime)
         {
             
@@ -13,7 +13,7 @@ namespace Game.Script.Map.Logic
 
         public override void Enter()
         {
-            
+           
         }
 
         public override void Exit()

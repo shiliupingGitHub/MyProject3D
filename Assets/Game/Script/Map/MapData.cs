@@ -76,7 +76,12 @@ namespace Game.Script.Map
         [SerializeField] public float eventPeriod = 5f;
         [SerializeField] public bool reSetTimeAfterEnd = false;
     }
-
+    [Serializable]
+    public class mapLogicData
+    {
+        [SerializeField] public string Name;
+        [SerializeField] public string Data;
+    }
     public class MapData
     {
         [SerializeField] public int bkId;
@@ -85,9 +90,24 @@ namespace Game.Script.Map
         [SerializeField] public List<MapSystemEventData> systemEvents = new();
         [SerializeField] public List<MapCustomEventData> customEvents = new();
         [SerializeField] public MapBaseSetting BaseSetting = new();
-        [SerializeField] public List<string> logics = new();
+        [SerializeField] public List<mapLogicData> logics = new();
         [NonSerialized] private GameObject _bkMapGo;
         public GameObject BkMapGo => _bkMapGo;
+
+        public bool ContainLogic(string name)
+        {
+            return logics.Exists(data => data.Name == name);
+        }
+
+        public void AddLogic(string name, string data)
+        { 
+            logics.Add(new mapLogicData() { Name = name, Data = data });
+        }
+
+        public void RemoveLogic(string name)
+        {
+            logics.RemoveAll(data => data.Name == name);
+        }
 
         public void LoadSync(bool preview = true, bool net = false)
         {
