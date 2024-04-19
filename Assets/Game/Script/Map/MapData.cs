@@ -43,7 +43,7 @@ namespace Game.Script.Map
     {
         [SerializeField] public string data;
         [SerializeField] public string name;
-        [SerializeField] public MapActionType type;
+        [SerializeField] public string type;
     }
 
     [Serializable]

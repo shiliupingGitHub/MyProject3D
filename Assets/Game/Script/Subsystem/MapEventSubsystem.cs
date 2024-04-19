@@ -22,7 +22,8 @@ namespace Game.Script.Subsystem
         }
 
 
-        public Dictionary<MapActionType, System.Type> ActionTypes { get; } = new();
+        public Dictionary<string, System.Type> ActionTypes { get; } = new();
+        public List<string> ActionNames { get; set; } = new();
 
         readonly SimplePriorityQueue<TimeExecuteEvent> _timeEvents = new();
         readonly Dictionary<string, List<ExecuteEvent>> _executeEvents = new();
@@ -230,7 +231,8 @@ namespace Game.Script.Subsystem
                     {
                         if (attr is MapActionDesAttribute desAttribute)
                         {
-                            ActionTypes.Add(desAttribute.ActionType, type);
+                            ActionTypes.Add(desAttribute.Des, type);
+                            ActionNames.Add(desAttribute.Des);
                         }
                     }
                 }

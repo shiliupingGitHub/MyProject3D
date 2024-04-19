@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Game.Script.Attribute;
 using Game.Script.Common;
@@ -20,26 +19,42 @@ namespace Game.Script.UI.Frames
             System,
             Custom,
         }
+
         protected override string ResPath => "Assets/Game/Res/UI/MapEventEditFrame.prefab";
         [UIPath("offset/btnClose")] private Button _btnClose;
         [UIPath("offset/btnAddEvent")] private Button _btnAddEvent;
         [UIPath("offset/btnRemoveEvent")] private Button _btnRemoveEvent;
-        [UIPath("offset/Content/btnAddAction")] private Button _btnAddAction;
-        [UIPath("offset/Content/btnRemoveAction")] private Button _btnRemoveAction;
+
+        [UIPath("offset/Content/btnAddAction")]
+        private Button _btnAddAction;
+
+        [UIPath("offset/Content/btnRemoveAction")]
+        private Button _btnRemoveAction;
+
         [UIPath("offset/btnTimeEvent")] private Button _btnTimeEvent;
         [UIPath("offset/btnSystemEvent")] private Button _btnSystemEvent;
         [UIPath("offset/btnCustomEvent")] private Button _btnCustomEvent;
         [UIPath("offset/eventList")] private InfinityScrollView _eventList;
-        [UIPath("offset/Content/inputEventName")] private InputField _inputEventName;
+
+        [UIPath("offset/Content/inputEventName")]
+        private InputField _inputEventName;
+
         [UIPath("offset/Content/inputTime")] private InputField _inputTime;
         [UIPath("offset/Content/actionList")] private InfinityScrollView _actionList;
-        [UIPath("offset/Content/ActionDetail/inputActionName")] private InputField _inputActionName;
-        [UIPath("offset/Content/ActionDetail/params")] private Transform _paramRoot;
-        [UIPath("offset/Content/ActionDetail/ddActionType")] private Dropdown _ddActionType;
+
+        [UIPath("offset/Content/ActionDetail/inputActionName")]
+        private InputField _inputActionName;
+
+        [UIPath("offset/Content/ActionDetail/params")]
+        private Transform _paramRoot;
+
+        [UIPath("offset/Content/ActionDetail/ddActionType")]
+        private Dropdown _ddActionType;
+
         [UIPath("offset/Content/ActionDetail")]
-        
         private GameObject _actionDetail;
-        private EventPage _curEventPage ;
+
+        private EventPage _curEventPage;
         private int _curSelectEvent = -1;
         private MapData _curMapData;
         private bool _bRefreshEventList = false;
@@ -49,7 +64,7 @@ namespace Game.Script.UI.Frames
         private bool _bSerilizeAction = false;
         private MapActionData _curActionData;
         private MapAction _drawAction = null;
-        
+
         public override void Init(Transform parent)
         {
             base.Init(parent);
@@ -59,7 +74,7 @@ namespace Game.Script.UI.Frames
             InitBtns();
             GameLoop.Add(OnUpdate);
         }
-        
+
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -73,14 +88,15 @@ namespace Game.Script.UI.Frames
                 _bRefreshEventList = false;
                 RefreshEventList();
             }
-            
-            if(_bRefreshActionList)
+
+            if (_bRefreshActionList)
             {
                 _bRefreshActionList = false;
                 RefreshActionList();
                 RefreshCurSelectEvent();
             }
-            if(_bRefreshActionDetail)
+
+            if (_bRefreshActionDetail)
             {
                 _bRefreshActionDetail = false;
                 RefreshActionDetail();
@@ -95,18 +111,17 @@ namespace Game.Script.UI.Frames
 
         void SerializeAction()
         {
-            if(_curActionData == null)
+            if (_curActionData == null)
             {
                 return;
             }
-            
-            if(null == _drawAction)
+
+            if (null == _drawAction)
             {
                 return;
             }
 
             _curActionData.data = JsonUtility.ToJson(_drawAction);
-
         }
 
         public void SetData(MapData mapData)
@@ -119,11 +134,12 @@ namespace Game.Script.UI.Frames
 
         void RefreshActionDetail()
         {
-            if (_curActionData == null)
+            if (_curActionData == null || _curSelectAction < 0)
             {
                 _actionDetail.SetActive(false);
                 return;
             }
+
             _actionDetail.SetActive(true);
             _inputActionName.text = _curActionData.name;
             _inputActionName.onSubmit.RemoveAllListeners();
@@ -133,27 +149,29 @@ namespace Game.Script.UI.Frames
                 _bRefreshActionList = true;
             });
             _ddActionType.ClearOptions();
+            var mapEventSubsystem = Common.Game.Instance.GetSubsystem<MapEventSubsystem>();
+            var localizeSubsystem = Common.Game.Instance.GetSubsystem<LocalizationSubsystem>();
             List<string> options = new List<string>();
-            foreach (var actionType in Enum.GetValues(typeof(MapActionType)))
+            foreach (var actionType in mapEventSubsystem.ActionNames)
             {
-                options.Add(actionType.ToString());
+                options.Add(localizeSubsystem.Get(actionType));
             }
+
             _ddActionType.AddOptions(options);
             _ddActionType.onValueChanged.RemoveAllListeners();
             _ddActionType.onValueChanged.AddListener(index =>
             {
-                var str = options[index];
-                _curActionData.type =  Enum.Parse<MapActionType>(str);
+                var str = mapEventSubsystem.ActionNames[index];
+                _curActionData.type = str;
                 _bRefreshActionDetail = true;
             });
-            
-            
-            _ddActionType.value = (int)_curActionData.type;
-            DrawAction(_curActionData.type, _curActionData.data);
 
+
+            _ddActionType.value = mapEventSubsystem.ActionNames.FindIndex(name => name == _curActionData.type);
+            DrawAction(_curActionData.type, _curActionData.data);
         }
-        
-        void DrawAction(MapActionType actionType, string param)
+
+        void DrawAction(string actionType, string param)
         {
             var mapActionSubsystem = Common.Game.Instance.GetSubsystem<MapEventSubsystem>();
             var type = mapActionSubsystem.ActionTypes[actionType];
@@ -163,11 +181,9 @@ namespace Game.Script.UI.Frames
             {
                 _drawAction = Activator.CreateInstance(type) as MapAction;
             }
+
             FieldDrawer.BeginDraw(_paramRoot);
-            FieldDrawer.Draw(_paramRoot, _drawAction, (_, _) =>
-            {
-                _bSerilizeAction = true;
-            });
+            FieldDrawer.Draw(_paramRoot, _drawAction, (_, _) => { _bSerilizeAction = true; });
         }
 
         void RefreshActionList()
@@ -190,7 +206,6 @@ namespace Game.Script.UI.Frames
                     RefreshCustomActionList();
                     break;
             }
-            
         }
 
         void RefreshTimeActionList()
@@ -201,9 +216,10 @@ namespace Game.Script.UI.Frames
                 _actionList.Setup(0);
                 return;
             }
+
             _actionList.Setup(_curMapData.timeEvents[_curSelectEvent].actions.Count);
         }
-        
+
         void RefreshSystemActionList()
         {
             _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.systemEvents.Count - 1);
@@ -212,9 +228,10 @@ namespace Game.Script.UI.Frames
                 _actionList.Setup(0);
                 return;
             }
+
             _actionList.Setup(_curMapData.systemEvents[_curSelectEvent].actions.Count);
         }
-        
+
         void RefreshCustomActionList()
         {
             _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.customEvents.Count - 1);
@@ -223,6 +240,7 @@ namespace Game.Script.UI.Frames
                 _actionList.Setup(0);
                 return;
             }
+
             _actionList.Setup(_curMapData.customEvents[_curSelectEvent].actions.Count);
         }
 
@@ -255,7 +273,7 @@ namespace Game.Script.UI.Frames
                     break;
             }
         }
-        
+
 
         void InitBtns()
         {
@@ -276,22 +294,29 @@ namespace Game.Script.UI.Frames
             });
             _btnRemoveEvent.onClick.AddListener(() =>
             {
-                
                 if (_curSelectEvent >= 0)
                 {
                     switch (_curEventPage)
                     {
                         case EventPage.Time:
                             _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.timeEvents.Count - 1);
-                            _curMapData.timeEvents.RemoveAt(_curSelectEvent);
+                            if (_curSelectEvent >= 0)
+                                _curMapData.timeEvents.RemoveAt(_curSelectEvent);
+
+                            _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.timeEvents.Count - 1);
                             break;
                         case EventPage.System:
                             _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.systemEvents.Count - 1);
-                            _curMapData.systemEvents.RemoveAt(_curSelectEvent);
+                            if (_curSelectEvent >= 0)
+                                _curMapData.systemEvents.RemoveAt(_curSelectEvent);
+                            _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.systemEvents.Count - 1);
                             break;
                         case EventPage.Custom:
+
                             _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.customEvents.Count - 1);
-                            _curMapData.customEvents.RemoveAt(_curSelectEvent);
+                            if (_curSelectEvent >= 0)
+                                _curMapData.customEvents.RemoveAt(_curSelectEvent);
+                            _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.customEvents.Count - 1);
                             break;
                     }
 
@@ -329,7 +354,7 @@ namespace Game.Script.UI.Frames
 
                 _bRefreshEventList = true;
             });
-            
+
             _btnRemoveAction.onClick.AddListener(() =>
             {
                 if (_curSelectEvent > 0)
@@ -337,13 +362,32 @@ namespace Game.Script.UI.Frames
                     switch (_curEventPage)
                     {
                         case EventPage.Time:
-                            _curMapData.timeEvents[_curSelectEvent].actions.RemoveAt(_curSelectAction);
+                            _curSelectAction = Mathf.Min(_curSelectAction, _curMapData.timeEvents[_curSelectEvent].actions.Count - 1);
+
+                            if (_curSelectAction >= 0)
+                            {
+                                _curMapData.timeEvents[_curSelectEvent].actions.RemoveAt(_curSelectAction);
+                            }
+
+                            _curSelectAction = Mathf.Min(_curSelectAction, _curMapData.timeEvents[_curSelectEvent].actions.Count - 1);
                             break;
                         case EventPage.System:
-                            _curMapData.systemEvents[_curSelectEvent].actions.RemoveAt(_curSelectAction);
+                            _curSelectAction = Mathf.Min(_curSelectAction, _curMapData.systemEvents[_curSelectEvent].actions.Count - 1);
+                            if (_curSelectAction >= 0)
+                            {
+                                _curMapData.systemEvents[_curSelectEvent].actions.RemoveAt(_curSelectAction);
+                            }
+
+                            _curSelectAction = Mathf.Min(_curSelectAction, _curMapData.systemEvents[_curSelectEvent].actions.Count - 1);
                             break;
                         case EventPage.Custom:
-                            _curMapData.customEvents[_curSelectEvent].actions.RemoveAt(_curSelectAction);
+                            _curSelectAction = Mathf.Min(_curSelectAction, _curMapData.customEvents[_curSelectEvent].actions.Count - 1);
+                            if (_curSelectAction >= 0)
+                            {
+                                _curMapData.customEvents[_curSelectEvent].actions.RemoveAt(_curSelectAction);
+                            }
+
+                            _curSelectAction = Mathf.Min(_curSelectAction, _curMapData.customEvents[_curSelectEvent].actions.Count - 1);
                             break;
                     }
 
@@ -353,21 +397,25 @@ namespace Game.Script.UI.Frames
             });
             _btnAddAction.onClick.AddListener(() =>
             {
+                var mapEventSubsystem = Common.Game.Instance.GetSubsystem<MapEventSubsystem>();
+
+                if (mapEventSubsystem.ActionNames.Count == 0)
+                    return;
+
                 _bRefreshActionList = true;
                 var action = new MapActionData();
                 action.name = "new action";
-                action.type = MapActionType.BornMonster;
+                action.type = mapEventSubsystem.ActionNames[0];
                 switch (_curEventPage)
                 {
                     case EventPage.Time:
                     {
-                     
                         _curMapData.timeEvents[_curSelectEvent].actions.Add(action);
                     }
                         break;
                     case EventPage.System:
                     {
-                      _curMapData.systemEvents[_curSelectEvent].actions.Add(action);
+                        _curMapData.systemEvents[_curSelectEvent].actions.Add(action);
                     }
                         break;
                     case EventPage.Custom:
@@ -376,10 +424,7 @@ namespace Game.Script.UI.Frames
                     }
                         break;
                 }
-                
             });
-            
-            
         }
 
         void InitActionList()
@@ -394,12 +439,13 @@ namespace Game.Script.UI.Frames
                         data = _curMapData.timeEvents[_curSelectEvent].actions[index];
                         break;
                     case EventPage.System:
-                        data  = _curMapData.systemEvents[_curSelectEvent].actions[index];
+                        data = _curMapData.systemEvents[_curSelectEvent].actions[index];
                         break;
                     case EventPage.Custom:
-                        data  = _curMapData.customEvents[_curSelectEvent].actions[index];
+                        data = _curMapData.customEvents[_curSelectEvent].actions[index];
                         break;
                 }
+
                 var btn = go.GetComponent<Button>();
                 var image = go.GetComponent<Image>();
                 btn.onClick.RemoveAllListeners();
@@ -412,7 +458,7 @@ namespace Game.Script.UI.Frames
                 });
 
                 text.text = data.name;
-                image.color = index == _curSelectAction?Color.green:Color.white;
+                image.color = index == _curSelectAction ? Color.green : Color.white;
             };
         }
 
@@ -437,6 +483,7 @@ namespace Game.Script.UI.Frames
                 }
                     break;
             }
+
             ed.name = name;
         }
 
@@ -446,9 +493,9 @@ namespace Game.Script.UI.Frames
             {
                 return;
             }
-            MapTimeEventData ed  = _curMapData.timeEvents[_curSelectEvent];
-            ed.time = time;
 
+            MapTimeEventData ed = _curMapData.timeEvents[_curSelectEvent];
+            ed.time = time;
         }
 
         void RefreshCurSelectEvent()
@@ -458,6 +505,7 @@ namespace Game.Script.UI.Frames
                 _actionDetail.SetActive(false);
                 return;
             }
+
             MapEventData ed = null;
             switch (_curEventPage)
             {
@@ -477,9 +525,10 @@ namespace Game.Script.UI.Frames
                 }
                     break;
             }
+
             if (_curEventPage == EventPage.Time)
             {
-                _inputTime.text = ((MapTimeEventData) (ed)).time.ToString();
+                _inputTime.text = ((MapTimeEventData)(ed)).time.ToString();
                 _inputTime.onSubmit.RemoveAllListeners();
                 _inputTime.onSubmit.AddListener(str =>
                 {
@@ -487,10 +536,9 @@ namespace Game.Script.UI.Frames
                     {
                         ChangeEventTime(time);
                     }
-                           
                 });
             }
-                    
+
             _inputEventName.text = ed.name;
             _inputEventName.onSubmit.RemoveAllListeners();
             _inputEventName.onSubmit.AddListener(str =>
@@ -499,9 +547,9 @@ namespace Game.Script.UI.Frames
                 _bRefreshEventList = true;
             });
         }
+
         void InitEventList()
         {
-           
             _eventList.onItemReload += (go, index) =>
             {
                 MapEventData ed = null;
@@ -524,6 +572,7 @@ namespace Game.Script.UI.Frames
                     }
                         break;
                 }
+
                 var btn = go.GetComponent<Button>();
                 var image = go.GetComponent<Image>();
                 btn.onClick.RemoveAllListeners();
@@ -532,12 +581,10 @@ namespace Game.Script.UI.Frames
                     _curSelectEvent = index;
                     _bRefreshEventList = true;
                     _bRefreshActionList = true;
-                    
-
                 });
-                
+
                 text.text = ed.name;
-                image.color = index == _curSelectEvent?Color.green:Color.white;
+                image.color = index == _curSelectEvent ? Color.green : Color.white;
             };
         }
     }

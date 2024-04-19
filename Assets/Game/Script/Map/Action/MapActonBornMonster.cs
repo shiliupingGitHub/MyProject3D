@@ -2,7 +2,7 @@
 
 namespace Game.Script.Map
 {
-    [MapActionDes(MapActionType.BornMonster)]
+    [MapActionDes("mapActionBornMonster")]
     public class MapActonBornMonster : MapAction
     {
         public override void Execute()
