@@ -21,9 +21,13 @@ namespace Game.Script.Character
             {
                 foreach (var skill in skills)
                 {
-                    var instanceSkill = Instantiate(skill);
-                    _instanceSkills.Add(instanceSkill);
-                    instanceSkill.Init();
+                    if (null != skill)
+                    {
+                        var instanceSkill = Instantiate(skill);
+                        _instanceSkills.Add(instanceSkill);
+                        instanceSkill.Init();
+                    }
+                    
                 }
             }
         }
