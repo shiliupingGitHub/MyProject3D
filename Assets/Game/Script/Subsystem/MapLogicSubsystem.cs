@@ -9,6 +9,7 @@ namespace Game.Script.Subsystem
     public class MapLogicSubsystem : GameSubsystem
     {
         private readonly Dictionary<string, MapLogic> _logics = new();
+        public List<string> AllLogicNames { get; set; } = new();
 
         public override void OnInitialize()
         {
@@ -41,6 +42,7 @@ namespace Game.Script.Subsystem
                     {
                         var logic = System.Activator.CreateInstance(type) as MapLogic;
                         _logics.Add(attribute.Des, logic);
+                        AllLogicNames.Add(attribute.Des);
                     }
                 }
             }
