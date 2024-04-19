@@ -96,6 +96,10 @@ namespace OneP.InfinityScrollView
 				if (!isInit) {
 					if (i < totalNumberItem) {
 						obj = GameObject.Instantiate (prefab) as GameObject;
+						if (!obj.activeSelf)
+						{
+							obj.SetActive(true);
+						}
 						obj.name = "item_" + (i);
 						obj.transform.SetParent (content.transform, false);
 						obj.transform.localScale = Vector3.one;
