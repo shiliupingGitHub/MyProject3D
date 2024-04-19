@@ -277,7 +277,7 @@ namespace Game.Script.UI.Frames
             _btnRemoveEvent.onClick.AddListener(() =>
             {
                 
-                if (_curSelectEvent > 0)
+                if (_curSelectEvent >= 0)
                 {
                     switch (_curEventPage)
                     {
@@ -294,7 +294,10 @@ namespace Game.Script.UI.Frames
                             _curMapData.customEvents.RemoveAt(_curSelectEvent);
                             break;
                     }
-                    RefreshEventList();
+
+                    _bRefreshEventList = true;
+                    _bRefreshActionDetail = true;
+                    _bRefreshActionList = true;
                 }
             });
             _btnAddEvent.onClick.AddListener(() =>
@@ -323,7 +326,8 @@ namespace Game.Script.UI.Frames
                     }
                         break;
                 }
-                RefreshEventList();
+
+                _bRefreshEventList = true;
             });
             
             _btnRemoveAction.onClick.AddListener(() =>
@@ -344,6 +348,7 @@ namespace Game.Script.UI.Frames
                     }
 
                     _bRefreshActionList = true;
+                    _bRefreshActionDetail = true;
                 }
             });
             _btnAddAction.onClick.AddListener(() =>
@@ -448,6 +453,11 @@ namespace Game.Script.UI.Frames
 
         void RefreshCurSelectEvent()
         {
+            if (_curSelectEvent < 0)
+            {
+                _actionDetail.SetActive(false);
+                return;
+            }
             MapEventData ed = null;
             switch (_curEventPage)
             {
