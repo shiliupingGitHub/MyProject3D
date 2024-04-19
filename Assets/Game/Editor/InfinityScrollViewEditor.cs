@@ -28,7 +28,7 @@ public class InfinityScrollViewEditor {
 	}
 
 	private static void CreateInfinityScrollView(int type){
-		string path = "Assets/InfinityScrollView/Editor/BaseObject/";
+		string path = "Assets/Game/Editor/BaseObject/";
 		switch (type) {
 			case 1: path+="Infinity_VTD.prefab";
 				break;

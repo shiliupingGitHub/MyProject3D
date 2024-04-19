@@ -15,6 +15,16 @@ namespace Game.Script.Subsystem
             base.OnInitialize();
             GameLoop.Add(OnUpdate);
             InitLogic();
+            var gameEventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
+            gameEventSubsystem.Subscribe("AllMapLoaded", OnAllMapLoaded);
+        }
+
+        void OnAllMapLoaded(System.Object _)
+        {
+            foreach (var logic in _logics)
+            {
+                logic.Value.Reset();
+            }
         }
         
         void InitLogic()
@@ -32,8 +42,6 @@ namespace Game.Script.Subsystem
                         var logic = System.Activator.CreateInstance(type) as MapLogic;
                         _logics.Add(attribute.Des, logic);
                     }
-                    
-                    
                 }
             }
         }
@@ -44,6 +52,8 @@ namespace Game.Script.Subsystem
                 return;
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             if(mapSubsystem.CurMapData == null)
+                return;
+            if(!mapSubsystem.MapLoaded)
                 return;
             
             int num = mapSubsystem.CurMapData.logics.Count;

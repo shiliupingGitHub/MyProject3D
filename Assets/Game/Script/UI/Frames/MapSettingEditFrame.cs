@@ -2,6 +2,7 @@
 using Game.Script.Map;
 using Game.Script.Map.Actor;
 using Game.Script.UI.Ext;
+using OneP.InfinityScrollView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,8 @@ namespace Game.Script.UI.Frames
     {
         protected override string ResPath => "Assets/Game/Res/UI/MapSettingEditFrame.prefab";
         [UIPath("offset/btnClose")] private Button _btnClose;
-        [UIPath("offset/Scroll View/Viewport/Content/params")] private Transform _paramsRoot;
+        [UIPath("offset/svBaseParams/Viewport/Content/params")] private Transform _paramsRoot;
+        [UIPath("offset/svLogics")] private InfinityScrollView _logicRoot;
         private MapData _curMapData;
         
         public override void Init(Transform parent)
