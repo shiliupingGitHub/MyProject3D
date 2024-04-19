@@ -3,6 +3,7 @@ using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Cysharp.Threading.Tasks;
 using Game.Script.Character;
+using Game.Script.Common;
 using Game.Script.Subsystem;
 using UnityEngine;
 
@@ -52,7 +53,13 @@ namespace Game.Script.AI.Action
         async  UniTaskVoid FindPath(Vector3 start, Vector3 end)
         {
             var pathSystem = Common.Game.Instance.GetSubsystem<PathSubsystem>();
-            var path = await pathSystem.AddPath(start, end, ref _pathId);
+            Actor ignoreActor = null;
+
+            if (target.Value != null)
+            {
+                ignoreActor = target.Value.GetComponent<Actor>();
+            }
+            var path = await pathSystem.AddPath(start, end, ignoreActor, ref _pathId);
             _ = DoPath(path);
         }
 

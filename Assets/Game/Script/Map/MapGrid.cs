@@ -44,13 +44,22 @@ namespace Game.Script.Map
             }
         }
 
-        bool ActorBlocked
+        public bool IsBlocked(Common.Actor ignoreActor)
         {
-            get
+            if (MapBlocked)
             {
-                return _blockActors.Count > 0;
+                return true;
             }
+
+            if (_blockActors.Count > 0)
+            {
+                return !_blockActors.Contains(ignoreActor);
+            }
+
+            return false;
+
         }
-        
+
+        bool ActorBlocked => _blockActors.Count > 0;
     }
 }

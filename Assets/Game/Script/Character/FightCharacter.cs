@@ -32,7 +32,7 @@ namespace Game.Script.Character
             gameCheatSubsystem.Execute(str);
         }
 
-        protected override bool IsBlock { get; } = false;
+        protected override bool IsBlock { get; } = true;
         public override SearchFilterType FilterType => SearchFilterType.FightPlayer;
 
         public override void OnStartAuthority()

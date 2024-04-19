@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Game.Script.Common;
-using Game.Script.Map;
 using Priority_Queue;
 using UnityEngine;
 
@@ -18,6 +17,7 @@ namespace Game.Script.Subsystem
         public int EndX;
         public int EndY;
         public ulong PathId;
+        public Actor IgnoreActor;
         public  UniTaskCompletionSource<List<Vector3>>  Tcs;
     }
 
@@ -56,7 +56,7 @@ namespace Game.Script.Subsystem
             
         }
 
-        public UniTask<List<Vector3>> AddPath(Vector3 start, Vector3 end,  ref ulong pathId)
+        public UniTask<List<Vector3>> AddPath(Vector3 start, Vector3 end, Actor ignoreActor, ref ulong pathId)
         {
              pathId = _pathId;
             _pathId++;
@@ -66,7 +66,7 @@ namespace Game.Script.Subsystem
             (int sX, int sY) = mapSubsystem.MapBk.GetGridIndex(start);
             (int eX, int eY) = mapSubsystem.MapBk.GetGridIndex(end);
 
-            _pathRequestList.Add(new PathRequest() { Tcs = curTcs,StartPosition = start, EndPosition = end, PathId = pathId , StartX = sX, StartY = sY, EndX = eX, EndY = eY});
+            _pathRequestList.Add(new PathRequest() { IgnoreActor = ignoreActor,Tcs = curTcs,StartPosition = start, EndPosition = end, PathId = pathId , StartX = sX, StartY = sY, EndX = eX, EndY = eY});
             return curTcs.Task;
         }
 
@@ -99,7 +99,7 @@ namespace Game.Script.Subsystem
                 Parallel.For(0, num, (i, _) =>
                 {
                     var request = _pathRequestList[i];
-                    var path = GeneratePath(request.StartX, request.StartY, request.EndX, request.EndY);
+                    var path = GeneratePath(request.StartX, request.StartY, request.EndX, request.EndY, request.IgnoreActor);
                     
                     List<Vector3> finalPath = new();
 
@@ -124,20 +124,13 @@ namespace Game.Script.Subsystem
                 _pathRequestList.RemoveRange(0, num);
             }
         }
-
-        private List<(int, int)> DoPath(Vector3 start, Vector3 end, MapBk mapBk)
-        {
-            (int startX, int startY) = mapBk.GetGridIndex(start);
-            (int endX, int endY) = mapBk.GetGridIndex(end);
-            return GeneratePath(startX, startY, endX, endY);
-        }
-
+        
         private static float CalcHeuristicManhattan(int nodeX, int nodeY, int goalX, int goalY)
         {
             return Mathf.Abs(nodeX - goalX) + Mathf.Abs(nodeY - goalY);
         }
 
-        bool IsBlock(int x, int y)
+        bool IsBlock(int x, int y, Actor ignoreActor)
         {
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
 
@@ -145,7 +138,7 @@ namespace Game.Script.Subsystem
             {
                 var area = mapSubsystem.GetGrid(x, y);
 
-                return area?.Blocked ?? false;
+                return area?.IsBlocked(ignoreActor) ?? false;
             }
 
             return false;
@@ -174,7 +167,7 @@ namespace Game.Script.Subsystem
             return path;
         }
 
-        private (bool, (int, int))[] GetNeighbours(int xCoordinate, int yCoordinate, bool walkableDiagonals = false)
+        private (bool, (int, int))[] GetNeighbours(int xCoordinate, int yCoordinate,Actor ignoreActor, bool walkableDiagonals = false)
         {
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             List<(bool, (int, int))> neighbourCells = new List<(bool, (int, int))>();
@@ -198,7 +191,7 @@ namespace Game.Script.Subsystem
                         continue;
                     }
 
-                    if (IsBlock(x, y))
+                    if (IsBlock(x, y, ignoreActor))
                     {
                         continue;
                     }
@@ -207,22 +200,22 @@ namespace Game.Script.Subsystem
                     {
                         if ((x == xCoordinate - range) && (y == yCoordinate - range || y == yCoordinate + range))
                         {
-                            if (IsBlock(xCoordinate, y))
+                            if (IsBlock(xCoordinate, y , ignoreActor))
                                 continue;
-                            if(IsBlock(x, yCoordinate))
+                            if(IsBlock(x, yCoordinate , ignoreActor))
                                 continue;
                         }
 
                         if ((x == xCoordinate + range) && (y == yCoordinate - range || y == yCoordinate + range))
                         {
-                            if (IsBlock(xCoordinate, y))
+                            if (IsBlock(xCoordinate, y , ignoreActor))
                                 continue;
-                            if(IsBlock(x, yCoordinate))
+                            if(IsBlock(x, yCoordinate , ignoreActor))
                                 continue;
                         }
                     }
 
-                    neighbourCells.Add((!IsBlock(x, y), (x, y)));
+                    neighbourCells.Add((!IsBlock(x, y , ignoreActor), (x, y)));
                 }
             }
 
@@ -230,7 +223,7 @@ namespace Game.Script.Subsystem
         }
 
 
-        private List<(int, int)> GeneratePath(int startX, int startY, int goalX, int goalY, bool manhattanHeuristic = true, bool walkableDiagonals = false)
+        private List<(int, int)> GeneratePath(int startX, int startY, int goalX, int goalY, Actor ignoreActor, bool manhattanHeuristic = true, bool walkableDiagonals = false)
         {
             var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
             // Set the heuristic function to use based on the manhattanHeuristic parameter
@@ -272,7 +265,7 @@ namespace Game.Script.Subsystem
                 openSet.Dequeue();
 
                 // Get the neighbours of the current node
-                (bool, (int, int))[] neighbours = GetNeighbours(currentX, currentY, walkableDiagonals);
+                (bool, (int, int))[] neighbours = GetNeighbours(currentX, currentY, ignoreActor, walkableDiagonals);
 
                 // Process each neighbour
                 for (int i = 0; i < neighbours.Length; i++)
