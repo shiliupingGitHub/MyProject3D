@@ -310,7 +310,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5298371127373922123}
   m_HandleRect: {fileID: 1290854235292512661}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1904,7 +1904,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000007526153}
+  m_AnchoredPosition: {x: 0, y: -0.000023969964}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &5415147896908354561
@@ -3314,6 +3314,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8383159352836614173}
     m_Modifications:
+    - target: {fileID: 100000, guid: 9a548c89f2bd64d02a9d33c8ee962df2, type: 3}
+      propertyPath: m_Name
+      value: lbName
+      objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 9a548c89f2bd64d02a9d33c8ee962df2, type: 3}
       propertyPath: m_Name
       value: LogicTemplate

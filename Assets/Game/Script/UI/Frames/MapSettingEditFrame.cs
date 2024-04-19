@@ -25,9 +25,23 @@ namespace Game.Script.UI.Frames
         {
             base.Init(parent);
             _btnClose.onClick.AddListener(Hide);
+            var localizeSubsystem = Common.Game.Instance.GetSubsystem<LocalizationSubsystem>();
             _logicRoot.onItemReload += (o, i) =>
             {
-
+                var name = _curMapData.logics[i];
+                var lbName = o.transform.Find("lbName").GetComponent<Text>();
+                var btnRemove = o.transform.Find("btnRemove").GetComponent<Button>();
+                lbName.text = localizeSubsystem.Get(name);
+                btnRemove.onClick.RemoveAllListeners();
+                btnRemove.onClick.AddListener(() =>
+                {
+                    if (_curMapData.logics.Contains(name))
+                    {
+                        _curMapData.logics.Remove(name);
+                        RefreshDDLogic();
+                        _logicRoot.Setup(_curMapData.logics.Count);
+                    }
+                });
             };
             _btnAddLogic.onClick.AddListener(() =>
             {
@@ -49,6 +63,7 @@ namespace Game.Script.UI.Frames
         {
             var logicSubsystem = Common.Game.Instance.GetSubsystem<MapLogicSubsystem>();
             _ddLogics.ClearOptions();
+            _options.Clear();
             foreach (var logicName in logicSubsystem.AllLogicNames)
             {
                 if (!_curMapData.logics.Contains(logicName))
