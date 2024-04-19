@@ -29,6 +29,7 @@ namespace Game.Script.AI.Logic
 
             return list;
         }
-    }
 #endif
+    }
+
 }
