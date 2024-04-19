@@ -29,7 +29,7 @@ namespace Game.Script.Character
         }
         public void StartControl()
         {
-            var virtualCameraTemplate = GameResMgr.Instance.LoadAssetSync<GameObject>("Assets/Game/Res/Player/CameraSetting.prefab");
+            var virtualCameraTemplate = GameResMgr.Instance.LoadAssetSync<GameObject>("Assets/Game/Res/Misc/CameraSetting.prefab");
             var virtualCameraGo = Object.Instantiate(virtualCameraTemplate);
             var vTr = virtualCameraGo.transform.Find("VirtualCamera");
             var confiner = vTr.GetComponent<CinemachineConfiner>();

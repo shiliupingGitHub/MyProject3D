@@ -105,7 +105,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   _assetId: 2281256083
-  _assetPath: Assets/Game/Res/Player/PlayerPrefab.prefab
+  _assetPath: Assets/Game/Res/Misc/PlayerPrefab.prefab
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -124,15 +124,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  MoveUpAction: {fileID: -2468474444503369740, guid: 16f4a2f894cb2fe45820759235d1629f,
-    type: 3}
-  MoveDownAction: {fileID: 4702593330310682347, guid: 16f4a2f894cb2fe45820759235d1629f,
-    type: 3}
-  MoveLeftAction: {fileID: -6761461685217620460, guid: 16f4a2f894cb2fe45820759235d1629f,
-    type: 3}
-  MoveRightAction: {fileID: 7607208071823929490, guid: 16f4a2f894cb2fe45820759235d1629f,
-    type: 3}
-  MoveSpeed: 1
+  moveSpeed: 1
 --- !u!143 &8292481537670165040
 CharacterController:
   m_ObjectHideFlags: 0
@@ -171,9 +163,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76829800a5fc49c89142ebb4d3a35ab5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   idleAnimation: idle
   walkAnimation: walk
 --- !u!23 &3747330008020860516

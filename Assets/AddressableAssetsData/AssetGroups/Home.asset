@@ -16,12 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: f144a941c302ac14abafa17d787ae527
-  m_SerializeEntries:
-  - m_GUID: 555477e2ad335df40a140d8741550fc9
-    m_Address: Assets/Game/Res/Home/TestHomeActor.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 8a5b7fa2f7b110e499305b11415bf217, type: 2}
   m_SchemaSet:

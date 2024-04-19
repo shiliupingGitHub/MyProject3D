@@ -42,8 +42,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3cda06cd45478144085422c7e29fc06c
-    m_Address: Assets/Game/Res/Misc/GameSettingConfig.prefab
+  - m_GUID: 5a6af2fa42abce448af4e47ed86afd82
+    m_Address: Assets/Game/Res/Misc/CameraSetting.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

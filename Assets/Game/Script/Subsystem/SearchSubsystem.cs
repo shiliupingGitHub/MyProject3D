@@ -22,8 +22,6 @@ namespace Game.Script.Subsystem
             float Width { get; set; }
             float Height { get; set; }
             Vector3 Center { get; set; }
-            private bool _isLeaf;
-
             private List<Area> Children { get; set; } = new();
 
             List<Pawn> _pawns = new();
@@ -159,7 +157,6 @@ namespace Game.Script.Subsystem
                 else
                 {
                     leafQueue.Add(this);
-                    _isLeaf = true;
                 }
             }
 
