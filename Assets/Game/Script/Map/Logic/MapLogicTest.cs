@@ -10,7 +10,12 @@ namespace Game.Script.Map.Logic
             
         }
 
-        public override void Reset()
+        public override void Enter()
+        {
+            
+        }
+
+        public override void Exit()
         {
             
         }

@@ -11,6 +11,9 @@ namespace Game.Script.Subsystem
         private readonly Dictionary<string, MapLogic> _logics = new();
         public List<string> AllLogicNames { get; set; } = new();
 
+        private bool _bEnter;
+        private List<MapLogic> _workLogics = new();
+
         public override void OnInitialize()
         {
             base.OnInitialize();
@@ -18,14 +21,52 @@ namespace Game.Script.Subsystem
             InitLogic();
             var gameEventSubsystem = Common.Game.Instance.GetSubsystem<EventSubsystem>();
             gameEventSubsystem.Subscribe("AllMapLoaded", OnAllMapLoaded);
+            gameEventSubsystem.Subscribe("LeaveLevel", OnLeaveLevel);
+            gameEventSubsystem.Subscribe("AllMapUnLoaded", OnAllMapUnload);
         }
 
         void OnAllMapLoaded(System.Object _)
         {
-            foreach (var logic in _logics)
+            var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
+            if(mapSubsystem.CurMapData == null)
+                return;
+            foreach (var logicName in mapSubsystem.CurMapData.logics)
             {
-                logic.Value.Reset();
+                if (_logics.TryGetValue(logicName, out var logic))
+                {
+                    if (!_workLogics.Contains(logic))
+                    {
+                        _workLogics.Add(logic);
+                        logic.Enter();
+                    }
+                    
+                }
+              
             }
+            
+        }
+        void OnLeaveLevel(System.Object o)
+        {
+            LevelType lt = o is LevelType ? (LevelType)o : LevelType.None;
+
+            if (lt == LevelType.Fight || lt == LevelType.Home)
+            {
+                Exit();
+            }
+        }
+
+        void OnAllMapUnload(System.Object o)
+        {
+            Exit();
+        }
+
+        void Exit()
+        {
+            foreach (var logic in _workLogics)
+            {
+                logic.Exit();
+            }
+            _workLogics.Clear();
         }
         
         void InitLogic()
@@ -50,24 +91,11 @@ namespace Game.Script.Subsystem
 
         void OnUpdate(float deltaTime)
         {
-            if (Common.Game.Instance.Mode != GameMode.Host && Common.Game.Instance.Mode != GameMode.Home)
-                return;
-            var mapSubsystem = Common.Game.Instance.GetSubsystem<MapSubsystem>();
-            if(mapSubsystem.CurMapData == null)
-                return;
-            if(!mapSubsystem.MapLoaded)
-                return;
-            
-            int num = mapSubsystem.CurMapData.logics.Count;
-
-            if (num > 0)
+            if (_workLogics.Count > 0)
             {
-                Parallel.ForEach(mapSubsystem.CurMapData.logics, loigcName =>
+                Parallel.ForEach(_workLogics, logic =>
                 {
-                    if (_logics.TryGetValue(loigcName, out var logic))
-                    {
-                        logic.Tick(deltaTime);
-                    }
+                    logic.Tick(deltaTime);
                 });
             }
             
