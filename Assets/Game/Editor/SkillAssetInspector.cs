@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using DG.DemiEditor;
 using Game.Script.Attribute;
 using Game.Script.Character.Skill;
 using UnityEditor;
@@ -97,10 +96,10 @@ namespace Skill.Editor
             
         }
 
-        string DrawAction(SkillType skill, string param)
+        string DrawAction(string skill, string param)
         {
             
-            var type = SkillMgr.Instance.ActionTypes[skill];
+            var type = SkillMgr.Instance.ActionTypesDic[skill];
             var action = JsonUtility.FromJson(param, type);
 
             if (null == action)
@@ -152,12 +151,12 @@ namespace Skill.Editor
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.BeginHorizontal();
-            var sortDes = SkillMgr.Instance.GetSortDes();
+            var sortDes = SkillMgr.Instance.ActionTypesList;
             GUILayout.Label("行为:");
-            selectActionIndex = EditorGUILayout.Popup(selectActionIndex, sortDes.ToArray(), GUILayout.Width(100));
+            selectActionIndex = EditorGUILayout.Popup(selectActionIndex, sortDes.ToArray(), GUILayout.Width(300));
             if (GUILayout.Button("添加行为", GUILayout.Width(100)))
             {
-                var type = (SkillType)selectActionIndex;
+                var type = SkillMgr.Instance.ActionTypesList[selectActionIndex];
                 if (SkillMgr.Instance.DefaultActions.TryGetValue(type, out var defaultAction))
                 {
                     var param = JsonUtility.ToJson(defaultAction);
@@ -175,7 +174,7 @@ namespace Skill.Editor
 
         void DrawActions()
         {
-            var sortDes = SkillMgr.Instance.GetSortDes();
+            var sortDes = SkillMgr.Instance.ActionTypesList;
             EditorGUILayout.Space(50);
             // style.normal.background = _backGround;
             EditorGUILayout.BeginVertical();
@@ -184,14 +183,13 @@ namespace Skill.Editor
             SkillActonConfig removeActionConfig = null;
             foreach (var action in _skill.actions)
             {
-                // style.normal.background = _backGround;
                 EditorGUILayout.BeginHorizontal();
-                int skillTypeIndex = (int)action.skillType;
-
-                if (sortDes.Count() > skillTypeIndex)
+                int skillTypeIndex = SkillMgr.Instance.ActionTypesList.FindIndex(x => x == action.skillType);
+                
+                if (sortDes.Count() > skillTypeIndex && skillTypeIndex >= 0)
                 {
-                    
-                    action.skillType = (SkillType)EditorGUILayout.Popup(skillTypeIndex, sortDes.ToArray(), GUILayout.Width(100));
+                    skillTypeIndex =  EditorGUILayout.Popup(skillTypeIndex, sortDes.ToArray(), GUILayout.Width(300));
+                    action.skillType = SkillMgr.Instance.ActionTypesList[skillTypeIndex];
                     action.time = EditorGUILayout.FloatField(action.time , GUILayout.Width(50));
                     EditorGUILayout.Space(50);
                     var oldColor = GUI.color;

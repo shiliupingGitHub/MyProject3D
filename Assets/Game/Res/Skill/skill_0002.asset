@@ -13,7 +13,4 @@ MonoBehaviour:
   m_Name: skill_0002
   m_EditorClassIdentifier: 
   maxTime: 1
-  actions:
-  - time: 0
-    skillType: 0
-    param: 
+  actions: []

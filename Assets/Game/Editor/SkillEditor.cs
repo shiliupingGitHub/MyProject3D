@@ -13,7 +13,7 @@ namespace Game.Editor
         private static void OpenWindow()           
         {               
             var window = GetWindow<SkillEditor>();               
-            window.position = GUIHelper.GetEditorWindowRect().AlignCenter(800, 600);     
+            window.position = GUIHelper.GetEditorWindowRect().AlignCenter(1024, 600);     
         }
         protected override OdinMenuTree BuildMenuTree()
         {

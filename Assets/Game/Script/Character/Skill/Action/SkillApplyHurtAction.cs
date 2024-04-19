@@ -1,6 +1,6 @@
 ﻿namespace Game.Script.Character.Skill.Action
 {
-    [SkillDes(SkillType.ApplyHurt, "产生伤害")]
+    [SkillDes("SkillActionApplyHurt")]
     public class SkillApplyHurtAction: SkillAction
     {
         

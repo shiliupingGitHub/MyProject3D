@@ -11,7 +11,7 @@ namespace Skill
     public class SkillActonConfig
     {
         [SerializeField] public float time = 0;
-        [SerializeField] public SkillType skillType;
+        [SerializeField] public string skillType;
         [SerializeField] public string param;
     }
 
@@ -35,7 +35,7 @@ namespace Skill
         {
             foreach (var action in actions)
             {
-                if (SkillMgr.Instance.ActionTypes.TryGetValue(action.skillType, out var type))
+                if (SkillMgr.Instance.ActionTypesDic.TryGetValue(action.skillType, out var type))
                 {
                     if (JsonUtility.FromJson(action.param, type) is SkillAction skillAction)
                     {

@@ -2,12 +2,10 @@
 {
     public class SkillDesAttribute : System.Attribute
     {
-        public SkillType SkillType { get; }
-        public string Des { get; }
-        public SkillDesAttribute(SkillType skillType, string des)
+        public string SkillType { get; }
+        public SkillDesAttribute(string skillType)
         {
             this.SkillType = skillType;
-            this.Des = des;
         }
     }
 }

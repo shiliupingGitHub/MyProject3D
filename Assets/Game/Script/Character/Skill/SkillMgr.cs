@@ -22,9 +22,9 @@ namespace Game.Script.Character.Skill
 #endif
     public class SkillMgr : Singleton<SkillMgr>
     {
-        public Dictionary<SkillType, SkillAction> DefaultActions { get; } = new();
-        public Dictionary<SkillType, System.Type> ActionTypes { get; } = new();
-        public Dictionary<SkillType, string> Descriptions = new();
+        public Dictionary<string, SkillAction> DefaultActions { get; } = new();
+        public Dictionary<string, System.Type> ActionTypesDic { get; } = new();
+        public List<string> ActionTypesList { get; set; } = new();
 
 #if UNITY_EDITOR
  [RuntimeInitializeOnLoadMethod]
@@ -33,23 +33,12 @@ namespace Game.Script.Character.Skill
         SkillMgr.Instance.Init();
 }
 #endif
-        public List<string> GetSortDes()
-        {
-            List<string> ret = new();
 
-            foreach (SkillType skillType in Enum.GetValues(typeof(SkillType)))
-            {
-                ret.Add(Descriptions.TryGetValue(skillType, out var Des) ? Des : "Unknow");
-            }
-
-            return ret;
-        }
 
         public void Init()
         {
             DefaultActions.Clear();
-            ActionTypes.Clear();
-            Descriptions.Clear();
+            ActionTypesDic.Clear();
             var baseType = typeof(SkillAction);
             var types = baseType.Assembly.GetTypes();
 
@@ -63,9 +52,9 @@ namespace Game.Script.Character.Skill
                     {
                         if (attr is SkillDesAttribute skillDesAttribute)
                         {
-                            ActionTypes.Add(skillDesAttribute.SkillType, type);
+                            ActionTypesDic.Add(skillDesAttribute.SkillType, type);
                             DefaultActions.Add(skillDesAttribute.SkillType, System.Activator.CreateInstance(type) as SkillAction);
-                            Descriptions.Add(skillDesAttribute.SkillType, skillDesAttribute.Des);
+                            ActionTypesList.Add(skillDesAttribute.SkillType);
                         }
                     }
                 }

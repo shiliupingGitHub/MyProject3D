@@ -317,7 +317,7 @@ namespace Game.Script.UI.Frames
                             if (_curSelectEvent >= 0)
                                 _curMapData.customEvents.RemoveAt(_curSelectEvent);
                             _curSelectEvent = Mathf.Min(_curSelectEvent, _curMapData.customEvents.Count - 1);
-                            break;
+                            break; 
                     }
 
                     _bRefreshEventList = true;
