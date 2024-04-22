@@ -1,4 +1,5 @@
 ﻿using Game.Script.Common;
+using Game.Script.Res;
 using Game.Script.Subsystem;
 using Game.Script.UI;
 using UnityEngine;

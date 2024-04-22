@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using Game.Script.Res;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
@@ -20,7 +21,15 @@ namespace Game.Editor
         [MenuItem("Tools/PreBuild")]
         public static void PreBuild()
         {
+            RefreshIcons();
             RefreshAsset();
+        }
+
+        static void RefreshIcons()
+        {
+            IconManager.Instance.LoadFromAsset();
+            IconManager.Instance.WriteToConfig();
+            
         }
          static void RefreshAsset()
         {
