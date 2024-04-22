@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: (Auto) BT
+  m_EditorClassIdentifier: 
+  m_GroupName: (Auto) BT
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 7b888ee98f2c6874080dd616ba3c6a88
+  m_SerializeEntries:
+  - m_GUID: a47db7b25a25d444daf40fc760dab93b
+    m_Address: Assets/Game/Res/BT/BT_00001.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a5b7fa2f7b110e499305b11415bf217, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 533c3afe658b84f4990c20e2f3be3f0c, type: 2}
+    - {fileID: 11400000, guid: 82ea47def6c95364298f14fc5d4344b7, type: 2}

@@ -14,7 +14,7 @@ namespace Game.Script.Subsystem
     public class MapSubsystem : GameSubsystem
     {
         const string AssetMapPath = "Assets/Game/Res/Map/Data/";
-        const string PlayerAssetPath = "Assets/Game/Res/Player/PlayerPrefab.prefab";
+        const string PlayerAssetPath = "Assets/Game/Res/Misc/PlayerPrefab.prefab";
 
         string MapExtension => ".txt";
         private MapBk _mapBk;

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: (Auto) Localization
+  m_EditorClassIdentifier: 
+  m_GroupName: (Auto) Localization
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 5b32b34aa8a395044848e88fbedfef6d
+  m_SerializeEntries:
+  - m_GUID: c28f56554bb39144c9c170717a68e137
+    m_Address: Assets/Game/Res/Localization/LocalizationConfig.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9f9efc8ca4b50840bb2394323586fac
+    m_Address: Assets/Game/Res/Localization/Chinese.csv
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a5b7fa2f7b110e499305b11415bf217, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2e1bd242fab433b4fa6c62b31d71da82, type: 2}
+    - {fileID: 11400000, guid: 1cf667b54c997364b8ad5b63ee830fe8, type: 2}

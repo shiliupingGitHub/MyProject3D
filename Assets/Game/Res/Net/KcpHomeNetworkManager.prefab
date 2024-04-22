@@ -81,8 +81,8 @@ MonoBehaviour:
   sendRate: 60
   autoStartServerBuild: 0
   autoConnectClientBuild: 0
-  offlineScene: Assets/Game/Res/Scene/Hall.unity
-  onlineScene: Assets/Game/Res/Scene/Home.unity
+  offlineScene: Assets/Art/Scene/Home.unity
+  onlineScene: Assets/Art/Scene/Fight.unity
   transport: {fileID: 0}
   networkAddress: localhost
   maxConnections: 100

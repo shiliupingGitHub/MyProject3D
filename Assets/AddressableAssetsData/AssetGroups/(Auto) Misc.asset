@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: (Auto) Misc
+  m_EditorClassIdentifier: 
+  m_GroupName: (Auto) Misc
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 6c7cceeb512932845b2631dccbcdaf00
+  m_SerializeEntries:
+  - m_GUID: 5a6af2fa42abce448af4e47ed86afd82
+    m_Address: Assets/Game/Res/Misc/CameraSetting.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: baa839a4a17f6dd46ae16c1c4507ff9a
+    m_Address: Assets/Game/Res/Misc/InputManager.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b21043cf2520634aae298a0572074ba
+    m_Address: Assets/Game/Res/Misc/PlayerPrefab.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a5b7fa2f7b110e499305b11415bf217, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: d59f0656990331442b9b34a6fb6e4aac, type: 2}
+    - {fileID: 11400000, guid: aeb769a0bfb9973478e076113d8ffdd3, type: 2}

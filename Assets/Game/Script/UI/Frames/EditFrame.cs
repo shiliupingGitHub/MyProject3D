@@ -175,6 +175,11 @@ namespace Game.Script.UI.Frames
             _ddSaveMaps.ClearOptions();
             List<string> allMaps = new();
             var path = SavePath;
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             var files = Directory.GetFiles(path);
 
             foreach (var file in files)

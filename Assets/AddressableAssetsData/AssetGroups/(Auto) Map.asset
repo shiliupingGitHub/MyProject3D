@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: (Auto) Map
+  m_EditorClassIdentifier: 
+  m_GroupName: (Auto) Map
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 0f5b26a5fdaf2e2459284164cc7d2c21
+  m_SerializeEntries:
+  - m_GUID: 334bf0246d7c2c349b1836507180af63
+    m_Address: Assets/Game/Res/Map/Bk/SceneTemplate.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f3196c7715e206b4fa100078f5f80885
+    m_Address: Assets/Game/Res/Map/Bk/TestScene.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6dc51f2ba7f2424f8431d47d0b02412
+    m_Address: Assets/Game/Res/Map/Data/map_test_1.txt
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a5b7fa2f7b110e499305b11415bf217, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e0a6381dd7bcb6240bd8a17e5f34b70b, type: 2}
+    - {fileID: 11400000, guid: b53f5b5b8f0378447a533f727d238cc8, type: 2}

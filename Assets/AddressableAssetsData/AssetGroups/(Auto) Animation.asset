@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: (Auto) Animation
+  m_EditorClassIdentifier: 
+  m_GroupName: (Auto) Animation
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 9220d1ce66eb42643bda68b0c17742bc
+  m_SerializeEntries:
+  - m_GUID: 53bad7645acc282409ffd06b4538a08c
+    m_Address: Assets/Game/Res/Animation/Animation_Test.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a5b7fa2f7b110e499305b11415bf217, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 957fd09e33a292642af07b0641021434, type: 2}
+    - {fileID: 11400000, guid: daa1556779cc34b43a861325826e15e3, type: 2}
