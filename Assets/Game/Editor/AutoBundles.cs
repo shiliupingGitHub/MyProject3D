@@ -16,13 +16,13 @@ namespace Game.Editor
         public override bool CanFix { get { return true; } }
         public override string ruleName { get { return "AutoBundles"; } }
 
-        string templateToUse = "Packed Assets"; // Group settings template to use for newly created groups.
-        const string autoGroupPrefix = "(Auto) "; // Created groups will have this prefix. Do not change after starting to use it.
-        const string autoBundlesFolderName = "Game/Res"; // Name of the folder that will be scanned.
-        const string assetFilter = "t:textasset t:ScriptableObject t:AnimationClip t:AudioClip t:AudioMixer t:ComputeShader t:Font t:GUISkin t:Material t:Mesh t:Model t:PhysicMaterial t:Prefab t:Scene t:Shader t:Sprite t:Texture t:VideoClip";
-        string[] ignoreExtensions = {".fbx", ".psd"};
-        string[] alwaysIncludeExtensions = {".unity"};
-        string forceLabel = "ForceAddressable"; // Assets with this label are always included no matter what.
+       public string templateToUse = "Packed Assets"; // Group settings template to use for newly created groups.
+       public const string autoGroupPrefix = "(Auto) "; // Created groups will have this prefix. Do not change after starting to use it.
+       public const string autoBundlesFolderName = "Game/Res"; // Name of the folder that will be scanned.
+       public const string assetFilter = "t:textasset t:ScriptableObject t:AnimationClip t:AudioClip t:AudioMixer t:ComputeShader t:Font t:GUISkin t:Material t:Mesh t:Model t:PhysicMaterial t:Prefab t:Scene t:Shader t:Sprite t:Texture t:VideoClip";
+       public string[] ignoreExtensions = {".fbx", ".psd"};
+       public string[] alwaysIncludeExtensions = {".unity"};
+       public string forceLabel = "ForceAddressable"; // Assets with this label are always included no matter what.
 
         public struct AssetAction {
             public bool create;     // True = create, false = remove addressable asset
@@ -42,39 +42,7 @@ namespace Game.Editor
             assetActions.Clear();
         }
         
-        [MenuItem("Tools/Refresh Addressables")]
-        public static void RefreshAddressables()
-        {
-            var settings = AddressableAssetSettingsDefaultObject.Settings;
-            var group = settings.DefaultGroup;
-            var rootPath = "Assets/" + autoBundlesFolderName;
-            var subFolders = AssetDatabase.GetSubFolders(rootPath);
-            var entriesAdded = new List<AddressableAssetEntry>();
-            foreach (var subFolder in subFolders)
-            {
-                var guids = AssetDatabase.FindAssets(assetFilter, new[] {subFolder});
-
-                var folderName = Path.GetFileName(subFolder);
-                
-                for (int i = 0; i < guids.Length; i++)
-                {
-                    var curGroup= settings.FindGroup(autoGroupPrefix + folderName);
-
-                    if (curGroup == null)
-                    {
-                        curGroup = group;
-                    }
-                
-                    var entry = settings.CreateOrMoveEntry(guids[i], curGroup, readOnly: false, postEvent: false);
-                    entry.address = AssetDatabase.GUIDToAssetPath(guids[i]);
-                    entriesAdded.Add(entry);
-                }
-            }
-         
- 
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, true);
-        }
-
+        
         public override List<AnalyzeResult> RefreshAnalysis(AddressableAssetSettings settings)
         {
             List<AnalyzeResult> results = new List<AnalyzeResult>();

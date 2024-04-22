@@ -28,7 +28,7 @@ namespace Game.Script.Res
         GameResMgr.Instance.Init();
 }
 #endif
-       
+
         public void Init()
         {
             CsvHelper.mLoader = OnCsvRead;
@@ -52,18 +52,20 @@ namespace Game.Script.Res
         private void OnCsvRead(string szName, System.Action<string, string, System.Action<List<CsvRow>>> readCallBack, System.Action<List<CsvRow>> userCallBack)
         {
             var path = System.IO.Path.Combine("Assets/Game/Res/Config/", szName + ".csv");
-            var op = Addressables.LoadAssetAsync<TextAsset>(path);
-            var textAsset = op.WaitForCompletion();
-
+            var textAsset = LoadAssetSync<TextAsset>(path);
             var content = System.Text.Encoding.GetEncoding("GBK").GetString(textAsset.bytes);
             readCallBack(szName, content, userCallBack);
         }
 
-        public T LoadAssetSync<T>(string path)
+        public T LoadAssetSync<T>(string path) where T : UnityEngine.Object
         {
+#if UNITY_EDITOR
+            return UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+#else
             var op = Addressables.LoadAssetAsync<T>(path);
 
             return op.WaitForCompletion();
+#endif
         }
     }
 }
