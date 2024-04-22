@@ -42,11 +42,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a4f821b53bf768f45acc2a61e2895abc
-    m_Address: Assets/Game/Res/UI/HomeFrame.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 204f4fc8b0680fb498fdbb0b6d990cf4
     m_Address: Assets/Game/Res/UI/LoadingFrame.prefab
     m_ReadOnly: 0
