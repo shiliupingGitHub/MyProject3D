@@ -14,11 +14,15 @@ namespace Game.Editor
         public int callbackOrder { get; } = 0;
         public void OnPreprocessBuild(BuildReport report)
         {
+            //RefreshAsset();
+        }
+
+        [MenuItem("Tools/PreBuild")]
+        public static void PreBuild()
+        {
             RefreshAsset();
         }
-        
-        [MenuItem("Tools/Refresh Addressables")]
-        public static void RefreshAsset()
+         static void RefreshAsset()
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             var group = settings.DefaultGroup;
