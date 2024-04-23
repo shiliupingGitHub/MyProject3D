@@ -37,12 +37,19 @@ namespace Game.Script.Res
                 if (_iconPath.TryGetValue(name, out var atlasPath))
                 {
                     var atlas = GameResMgr.Instance.LoadAssetSync<SpriteAtlas>(atlasPath);
-                    var sprite = atlas.GetSprite(name);
-                    if(null != sprite)
-                    {
-                        _iconSprites.Add(name, sprite);
-                        return sprite;
-                    }
+                   
+                        Sprite[] sprites = new Sprite[atlas.spriteCount];
+                        atlas.GetSprites(sprites);
+                        foreach (var sprite in sprites)
+                        {
+                            var tempName = sprite.name.Remove(sprite.name.Length - 7);
+                            _iconSprites.Add(tempName, sprite);
+                        }
+                        
+                        if (_iconSprites.TryGetValue(name, out var temp))
+                        {
+                            return temp;
+                        }
                 }
             }
             return null;
